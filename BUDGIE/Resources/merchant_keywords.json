@@ -1,0 +1,21 @@
+//Keyword Matching System (Database) --> Json
+{
+  "Food": [
+    "starbucks",
+    "hungerstation",
+    "ubereats",
+    "mcdonalds"
+  ],
+
+  "Transport": [
+    "uber",
+    "careem",
+    "bolt"
+  ],
+
+  "Entertainment": [
+    "netflix",
+    "vox",
+    "spotify"
+  ]
+}
