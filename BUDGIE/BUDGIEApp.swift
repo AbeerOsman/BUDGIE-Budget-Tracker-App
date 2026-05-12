@@ -1,23 +1,31 @@
-//
-//  BUDGIEApp.swift
-//  BUDGIE
-//
-//  Created by Abeer Jeilani Osman  on 20/11/1447 AH.
-//
-
 import SwiftUI
 import SwiftData
 
 @main
 struct BUDGIEApp: App {
+    
     var sharedModelContainer: ModelContainer = {
+        //Models that we have in the app
         let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            User.self,
+            Category.self,
+            Transaction.self,
+            MerchantMapping.self,
+            DailyInsight.self,
+            WeeklyInsight.self,
+            MonthlyInsight.self
+        ] as! [any PersistentModel.Type])
+        
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false
+        )
 
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try ModelContainer(
+                for: schema,
+                configurations: [modelConfiguration]
+            )
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }

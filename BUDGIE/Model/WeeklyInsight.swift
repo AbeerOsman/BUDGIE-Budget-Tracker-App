@@ -14,6 +14,4 @@ struct WeeklyInsight {
     let totalSpent: Double
     
     let highestSpendingDay: String
-    
-    let dailySummaries: [DailySummary]
 }
