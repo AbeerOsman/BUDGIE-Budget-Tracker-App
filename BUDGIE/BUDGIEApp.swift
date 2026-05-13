@@ -33,7 +33,7 @@ struct BUDGIEApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Main()
+            wasanTestView()
         }
         //.modelContainer(sharedModelContainer)
     }

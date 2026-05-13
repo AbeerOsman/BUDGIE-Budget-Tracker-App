@@ -6,8 +6,45 @@
 //
 
 //مسؤول عن استقبال بيانات الـ Shortcut.
+//import Foundation
+//class ShortcutService {
+//    
+////    func receiveTransaction(from message: String)
+//}
+
+
+
 import Foundation
-class ShortcutService {
+
+final class ShortcutService {
     
-//    func receiveTransaction(from message: String)
+    private let storageKey = "parsedTransactions"
+    
+    func receiveTransaction(from message: String) {
+        let parser = SMSParserService()
+        let parsedTransaction = parser.parse(message)
+        save(parsedTransaction)
+    }
+    
+    func getSavedTransactions() -> [ParsedTransaction] {
+        guard let data = UserDefaults.standard.data(forKey: storageKey),
+              let transactions = try? JSONDecoder().decode([ParsedTransaction].self, from: data) else {
+            return []
+        }
+        
+        return transactions
+    }
+    
+    func clearTransactions() {
+        UserDefaults.standard.removeObject(forKey: storageKey)
+    }
+    
+    private func save(_ transaction: ParsedTransaction) {
+        var transactions = getSavedTransactions()
+        transactions.insert(transaction, at: 0)
+        
+        if let data = try? JSONEncoder().encode(transactions) {
+            UserDefaults.standard.set(data, forKey: storageKey)
+        }
+    }
 }
