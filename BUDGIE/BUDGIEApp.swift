@@ -34,6 +34,7 @@ struct BUDGIEApp: App {
     var body: some Scene {
         WindowGroup {
             wasanTestView()
+                .preferredColorScheme(.dark)
         }
         //.modelContainer(sharedModelContainer)
     }
