@@ -64,25 +64,27 @@ struct FilterView: View {
     
 //Transactions
     //هنا وسونه
-    @State private var items: [FilterItem] = [
-        FilterItem(
-            merchantName: "Albaik",
-            date: "12/04/2026",
-            amount: 30
-        ),
-        
-        FilterItem(
-            merchantName: "HungerStation",
-            date: "26/04/2026",
-            amount: 60
-        ),
-        
-        FilterItem(
-            merchantName: "Jarir",
-            date: "27/04/2026",
-            amount: 120
-        )
-    ]
+//    @State private var items: [FilterItem] = [
+//        FilterItem(
+//            merchantName: "Albaik",
+//            date: "12/04/2026",
+//            amount: 30
+//        ),
+//        
+//        FilterItem(
+//            merchantName: "HungerStation",
+//            date: "26/04/2026",
+//            amount: 60
+//        ),
+//        
+//        FilterItem(
+//            merchantName: "Jarir",
+//            date: "27/04/2026",
+//            amount: 120
+//        )
+//    ]
+   
+    @State var items: [FilterItem]
     
 // Selected Item
     @State private var selectedItem: FilterItem?
@@ -216,5 +218,5 @@ extension FilterView {
 }
 
 #Preview {
-    FilterView()
+    FilterView(items: [])
 }
