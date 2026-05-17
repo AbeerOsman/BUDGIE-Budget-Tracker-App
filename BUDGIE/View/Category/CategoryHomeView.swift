@@ -7,6 +7,7 @@ import SwiftUI
 
 struct CategoryHomeView: View {
     @Environment(CategoriesViewModel.self) private var viewModel
+    @State private var showAllCategories = false
 
     private let columns = [
         GridItem(.fixed(181), spacing: 12),
@@ -28,6 +29,9 @@ struct CategoryHomeView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.background)
+        .navigationDestination(isPresented: $showAllCategories) {
+            CategoriesView()
+        }
     }
 
     private var header: some View {
@@ -37,8 +41,8 @@ struct CategoryHomeView: View {
 
             Spacer()
 
-            NavigationLink {
-                CategoriesView()
+            Button {
+                showAllCategories = true
             } label: {
                 Text("Show All")
                     .font(.custom("SF Pro Rounded", size: 17))
