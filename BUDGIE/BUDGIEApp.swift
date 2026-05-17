@@ -3,7 +3,8 @@ import SwiftData
 
 @main
 struct BUDGIEApp: App {
-    
+    @State private var categoriesViewModel = CategoriesViewModel()
+
 //    var sharedModelContainer: ModelContainer = {
 //        //Models that we have in the app
 //        let schema = Schema([
@@ -34,6 +35,7 @@ struct BUDGIEApp: App {
     var body: some Scene {
         WindowGroup {
             Splash()
+                .environment(categoriesViewModel)
         }
         //.modelContainer(sharedModelContainer)
     }

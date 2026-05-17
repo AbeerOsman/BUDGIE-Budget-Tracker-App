@@ -2,15 +2,11 @@
 //  CategoryHomeView.swift
 //  BUDGIE
 //
-//  Created by Lojaen Jehad Ayash on 30/11/1447 AH.
-//
 
 import SwiftUI
 
-// MARK: - Reusable home section
-
 struct CategoryHomeView: View {
-    var categories: [CategoryCardItem]
+    @Environment(CategoriesViewModel.self) private var viewModel
 
     private let columns = [
         GridItem(.fixed(181), spacing: 12),
@@ -22,8 +18,11 @@ struct CategoryHomeView: View {
             header
 
             LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
-                ForEach(categories) { category in
-                    CategoryCardView(item: category)
+                ForEach(viewModel.categories) { category in
+                    CategoryCardView(
+                        item: category,
+                        accentColor: viewModel.accentColor(for: category)
+                    )
                 }
             }
         }
@@ -39,7 +38,7 @@ struct CategoryHomeView: View {
             Spacer()
 
             NavigationLink {
-                CategoriesView(categories: categories)
+                CategoriesView()
             } label: {
                 Text("Show All")
                     .font(.custom("SF Pro Rounded", size: 17))
@@ -50,16 +49,13 @@ struct CategoryHomeView: View {
     }
 }
 
-// MARK: - Category card
-
-struct CategoryCardView: View {
-    let item: CategoryCardItem
+private struct CategoryCardView: View {
+    let item: Category
+    let accentColor: Color
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-
             HStack(alignment: .top, spacing: 6) {
-
                 Text(item.emoji)
                     .font(.system(size: 16))
 
@@ -71,7 +67,7 @@ struct CategoryCardView: View {
 
                 Spacer(minLength: 4)
 
-                Text(budgetLabel)
+                Text(item.budgetSummary)
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(.white.opacity(0.7))
                     .lineLimit(1)
@@ -83,66 +79,35 @@ struct CategoryCardView: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 12)
         .frame(width: 181, height: 90)
-        .background(item.color)
-       // .background(Color("Sky Blue"))
-        .clipShape(
-            RoundedRectangle(
-                cornerRadius: 16,
-                style: .continuous
-            )
-        )
-    }
-
-    private var budgetLabel: String {
-        let spent = Int(item.spent)
-        let budget = Int(item.budget)
-
-        return "$\(spent) / $\(budget)"
+        .background(accentColor)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }
 
-// MARK: - Progress bar
-
-struct CategoryBudgetProgressBar: View {
+private struct CategoryBudgetProgressBar: View {
     let progress: Double
 
     var body: some View {
         GeometryReader { geometry in
-
             ZStack(alignment: .leading) {
-
                 Capsule()
                     .fill(.black.opacity(0.2))
 
                 Capsule()
                     .fill(.white)
-                    .frame(
-                        width: geometry.size.width * progress
-                    )
+                    .frame(width: geometry.size.width * progress)
             }
         }
         .frame(height: 6)
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         ScrollView {
-            CategoryHomeView(
-                categories: CategoryCardItem.previewItems
-            )
-            .padding(.horizontal, 16)
-        }
-    }
-}
-
-#Preview("Show All → empty") {
-    NavigationStack {
-        ScrollView {
-            CategoryHomeView(categories: [])
+            CategoryHomeView()
                 .padding(.horizontal, 16)
         }
     }
+    .environment(CategoriesViewModel())
 }

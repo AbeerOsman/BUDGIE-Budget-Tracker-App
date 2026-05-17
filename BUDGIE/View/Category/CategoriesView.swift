@@ -6,26 +6,16 @@
 import SwiftUI
 
 struct CategoriesView: View {
-    @State private var categories: [CategoryCardItem]
+    @Environment(CategoriesViewModel.self) private var viewModel
     var onAdd: (() -> Void)?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @State private var showAddCategory = false
-    @State private var selectedType: CategoryType = .spending
-
-    init(categories: [CategoryCardItem] = [], onAdd: (() -> Void)? = nil) {
-        _categories = State(initialValue: categories)
-        self.onAdd = onAdd
-    }
-
-    private var filteredCategories: [CategoryCardItem] {
-        categories.filter { $0.type == selectedType }
-    }
 
     var body: some View {
         Group {
-            if categories.isEmpty {
+            if viewModel.isEmpty {
                 emptyState
             } else {
                 categoriesList
@@ -50,8 +40,8 @@ struct CategoriesView: View {
             }
         }
         .sheet(isPresented: $showAddCategory) {
-            AddCategorySheet(categoryIndex: categories.count) { newCategory in
-                categories.append(newCategory)
+            AddCategorySheet(categoryIndex: viewModel.categories.count) { category in
+                viewModel.add(category)
             }
             .presentationDetents([.large])
         }
@@ -79,16 +69,19 @@ struct CategoriesView: View {
     }
 
     private var categoriesList: some View {
-        ScrollView {
+        @Bindable var viewModel = viewModel
+
+        return ScrollView {
             VStack(spacing: 16) {
-                categoryTypePicker
+                categoryTypePicker(selectedType: $viewModel.selectedType)
                     .padding(.horizontal, 16)
 
                 VStack(spacing: 12) {
-                    ForEach(Array(filteredCategories.enumerated()), id: \.element.id) { index, category in
+                    ForEach(viewModel.filteredCategories) { category in
                         CategoryListCardView(
                             item: category,
-                            iconColor: CategoryCardItem.color(forIndex: index)
+                            iconColor: viewModel.accentColor(for: category),
+                            progressFillColor: viewModel.progressFillColor(for: category)
                         )
                     }
                 }
@@ -99,12 +92,12 @@ struct CategoriesView: View {
         }
     }
 
-    private var categoryTypePicker: some View {
+    private func categoryTypePicker(selectedType: Binding<CategoryType>) -> some View {
         HStack(spacing: 0) {
             ForEach(CategoryType.pickerOrder, id: \.self) { type in
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
-                        selectedType = type
+                        selectedType.wrappedValue = type
                     }
                 } label: {
                     Text(type.displayName)
@@ -114,7 +107,7 @@ struct CategoriesView: View {
                         .padding(.vertical, 10)
                         .background(
                             Capsule()
-                                .fill(selectedType == type ? typePickerSelectionFill : Color.clear)
+                                .fill(selectedType.wrappedValue == type ? typePickerSelectionFill : Color.clear)
                         )
                 }
                 .buttonStyle(.plain)
@@ -138,17 +131,12 @@ struct CategoriesView: View {
     }
 }
 
-// MARK: - List-style category card (Categories screen)
-
-struct CategoryListCardView: View {
-    let item: CategoryCardItem
-    var iconColor: Color
+private struct CategoryListCardView: View {
+    let item: Category
+    let iconColor: Color
+    let progressFillColor: Color
 
     @Environment(\.colorScheme) private var colorScheme
-
-    private var progressFillColor: Color {
-        item.progress >= 1 ? .red : iconColor
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -167,14 +155,14 @@ struct CategoryListCardView: View {
                         .font(.headline)
                         .foregroundStyle(.primary)
 
-                    Text(budgetLabel)
+                    Text(item.budgetSummary)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
 
                 Spacer(minLength: 8)
 
-                Text(percentageLabel)
+                Text(item.progressPercentageText)
                     .font(.headline)
                     .foregroundStyle(.primary)
             }
@@ -194,23 +182,7 @@ struct CategoryListCardView: View {
             ? Color(.secondarySystemGroupedBackground)
             : Color(.systemGray6)
     }
-
-    private var budgetLabel: String {
-        let spent = Int(item.spent)
-        let budget = Int(item.budget)
-        return "$\(spent) / $\(budget)"
-    }
-
-    private var percentageLabel: String {
-        let value = item.progress * 100
-        if value.truncatingRemainder(dividingBy: 1) == 0 {
-            return "%\(Int(value))"
-        }
-        return String(format: "%%%.1f", value)
-    }
 }
-
-// MARK: - List progress bar
 
 private struct CategoryListProgressBar: View {
     let progress: Double
@@ -231,8 +203,6 @@ private struct CategoryListProgressBar: View {
     }
 }
 
-// MARK: - Circular toolbar button
-
 struct CircleNavButton: View {
     let systemImage: String
     let action: () -> Void
@@ -247,16 +217,9 @@ struct CircleNavButton: View {
     }
 }
 
-// MARK: - Previews
-
-#Preview("Empty") {
+#Preview {
     NavigationStack {
-        CategoriesView(categories: [])
+        CategoriesView()
     }
-}
-
-#Preview("Spending list") {
-    NavigationStack {
-        CategoriesView(categories: CategoryCardItem.previewItems)
-    }
+    .environment(CategoriesViewModel())
 }
