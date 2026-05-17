@@ -81,11 +81,10 @@ struct AutomationIntroView: View {
     var body: some View {
         
         VStack(spacing: 0) {
-            
+            SetupStepProgress(currentStep: 2)
             Spacer()
             
             VStack(spacing: 22) {
-                
                 Text("Track Your Expenses Automatically")
                     .font(.system(size: 30, weight: .bold))
                     .foregroundStyle(.primary)
@@ -133,8 +132,8 @@ struct AutomationImageView: View {
     var body: some View {
         
         VStack(spacing: 0) {
+            SetupStepProgress(currentStep: 2)
             
-            Spacer()
             
             Image("shortcutPreview")
                 .resizable()
@@ -194,7 +193,8 @@ struct AutomationVideoView: View {
     var body: some View {
         
         VStack(spacing: 0) {
-            
+            SetupStepProgress(currentStep: 2)
+            Spacer()
             VideoPlayer(player: player)
                 .frame(height: 360)
                 .clipShape(RoundedRectangle(cornerRadius: 12))

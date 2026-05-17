@@ -16,7 +16,7 @@ struct Onboarding2: View {
         if goToIncomeOnboarding {
             IncomeOnboarding()
         } else if goToMain {
-            Main()
+            ContentView()
         } else {
             ZStack {
                 
