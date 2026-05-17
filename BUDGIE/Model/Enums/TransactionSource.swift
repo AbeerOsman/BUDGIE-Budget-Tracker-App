@@ -6,7 +6,7 @@
 //
 
 import Foundation
-enum TransactionSource: String {
+enum TransactionSource: String, Codable {
     case shortcut
     case manual
 }
