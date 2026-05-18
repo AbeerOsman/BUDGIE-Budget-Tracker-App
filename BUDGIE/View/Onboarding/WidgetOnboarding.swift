@@ -75,7 +75,7 @@ struct WidgetIntroView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            
+            SetupStepProgress(currentStep: 3)
             Spacer()
             
             VStack(spacing: 22) {
@@ -123,7 +123,7 @@ struct WidgetImageView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            
+            SetupStepProgress(currentStep: 3)
             Spacer()
             
             Image("widgetPreview")
@@ -178,7 +178,8 @@ struct WidgetVideoView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            
+            SetupStepProgress(currentStep: 3)
+            Spacer()
             VideoPlayer(player: player)
                 .frame(height: 360)
                 .clipShape(RoundedRectangle(cornerRadius: 8))

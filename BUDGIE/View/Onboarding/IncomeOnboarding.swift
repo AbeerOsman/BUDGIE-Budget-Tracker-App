@@ -86,7 +86,7 @@ struct IncomeIntroView: View {
     var body: some View {
         
         VStack(spacing: 0) {
-            
+            SetupStepProgress(currentStep: 1)
             Spacer()
             
             VStack(spacing: 18) {
@@ -142,7 +142,7 @@ struct IncomeFormView: View {
     var body: some View {
         
         VStack(spacing: 0) {
-            
+            SetupStepProgress(currentStep: 1)
             Text("Add Your Main Income")
                 .font(.headline)
                 .foregroundColor(.primary)
@@ -153,7 +153,7 @@ struct IncomeFormView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     
                     TextField("Title", text: $title)
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                     
                     Divider()
                         .background(Color.gray.opacity(0.5))
@@ -163,7 +163,7 @@ struct IncomeFormView: View {
                     
                     TextField("Amount", text: $amount)
                         .keyboardType(.numberPad)
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                     
                     Divider()
                         .background(Color.gray.opacity(0.5))
@@ -220,7 +220,7 @@ struct IncomeReadyView: View {
     var body: some View {
         
         VStack(spacing: 0) {
-            
+            SetupStepProgress(currentStep: 1)
             Spacer()
             
             Image("fly")
