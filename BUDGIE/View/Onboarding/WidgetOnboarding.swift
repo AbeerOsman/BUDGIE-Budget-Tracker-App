@@ -17,7 +17,7 @@ struct WidgetOnboarding: View {
     var body: some View {
         
         if goToMain {
-            Main()
+            ContentView()
             
         } else {
             ZStack {

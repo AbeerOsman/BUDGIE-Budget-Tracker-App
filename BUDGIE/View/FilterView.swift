@@ -7,15 +7,23 @@ import SwiftUI
 
 // Row View
 struct FilterRowView: View {
+    @Environment(\.colorScheme) var colorScheme
     
     let item: FilterItem
     
+    static var whiteToGrayGradient: LinearGradient {
+            LinearGradient(
+                gradient: Gradient(colors: [Color.white, Color.gray]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
     var body: some View {
         
         HStack(spacing: 16) {
             
             RoundedRectangle(cornerRadius: 14)
-                .fill(Color(.white))
+                .fill(FilterRowView.whiteToGrayGradient)
                 .frame(width: 57, height: 57)
                 .overlay(
                     Image(systemName: "exclamationmark.circle")
@@ -144,6 +152,9 @@ struct FilterView: View {
                         }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color(uiColor: .systemBackground))
+            
             
         }
         //.listStyle(.plain)

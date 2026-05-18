@@ -1,0 +1,228 @@
+//
+//  MainSetting.swift
+//  BUDGIE
+//
+//  Created by Abeer Jeilani Osman on 30/11/1447 AH.
+//
+
+import SwiftUI
+import UIKit
+
+struct MainSetting: View {
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 30) {
+                    GeneralSection()
+                    HelpSection()
+                    SecuritySection()
+                }
+                .padding(.vertical, 20)
+            }
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+}
+
+// MARK: - General Section
+struct GeneralSection: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionTitle("General")
+
+            VStack(spacing: 16) {
+                // Income Details
+                NavigationLink(destination: IncomeDetailsView(onSave: {
+                    print("Income saved successfully")
+                })) {
+                    SettingRow(
+                        icon: "wallet.bifold",
+                        title: "Income Details",
+                        hasChevron: true
+                    )
+                }
+
+                Divider()
+                    .background(Color.gray.opacity(0.5))
+
+                // Notifications - Open System Settings
+                SettingRow(
+                    icon: "bell.badge",
+                    title: "Notifications",
+                    hasChevron: false,
+                    action: {
+                        openSystemSettings(scheme: UIApplication.openSettingsURLString)
+                    }
+                )
+
+                Divider()
+                    .background(Color.gray.opacity(0.5))
+
+                // Language - Open System Settings
+                SettingRow(
+                    icon: "globe",
+                    title: "Language",
+                    hasChevron: false,
+                    action: {
+                        openSystemSettings(scheme: UIApplication.openSettingsURLString)
+                    }
+                )
+            }
+            .padding(25)
+            .background(
+                RoundedRectangle(cornerRadius: 28)
+                    .fill(Color.gray.opacity(0.08))
+            )
+            .padding(.horizontal, 20)
+        }
+    }
+}
+
+// MARK: - Help Section
+struct HelpSection: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionTitle("Help")
+
+            VStack(spacing: 16) {
+                // Setup Shortcut Automation - Open System Settings
+                SettingRow(
+                    icon: "bolt.circle",
+                    title: "Setup Shortcut Automation",
+                    hasChevron: false,
+                    action: {
+                        openSystemSettings(scheme: "prefs:root=SHORTCUTS")
+                    }
+                )
+
+                Divider()
+                    .background(Color.gray.opacity(0.5))
+
+                // Setup Widget - Open System Settings
+                SettingRow(
+                    icon: "square.grid.2x2",
+                    title: "Setup Widget",
+                    hasChevron: false,
+                    action: {
+                        openSystemSettings(scheme: UIApplication.openSettingsURLString)
+                    }
+                )
+            }
+            .padding(25)
+            .background(
+                RoundedRectangle(cornerRadius: 28)
+                    .fill(Color.gray.opacity(0.08))
+            )
+            .padding(.horizontal, 20)
+        }
+    }
+}
+
+// MARK: - Security Section
+struct SecuritySection: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionTitle("Security")
+
+            VStack(spacing: 16) {
+                // App Lock - Open System Settings
+                SettingRow(
+                    icon: "faceid",
+                    title: "App Lock",
+                    hasChevron: false,
+                    action: {
+                        openSystemSettings(scheme: "prefs:root=PASSCODE")
+                    }
+                )
+
+                Divider()
+                    .background(Color.gray.opacity(0.5))
+
+                // Privacy Policy
+                NavigationLink(destination: PrivacyPolicyView()) {
+                    SettingRow(
+                        icon: "newspaper",
+                        title: "Privacy Policy",
+                        hasChevron: true
+                    )
+                }
+
+                Divider()
+                    .background(Color.gray.opacity(0.5))
+
+                // Delete Data
+                NavigationLink(destination: DeleteDataView()) {
+                    SettingRow(
+                        icon: "eraser.trianglebadge.exclamationmark",
+                        title: "Delete Data",
+                        hasChevron: true
+                    )
+                }
+            }
+            .padding(25)
+            .background(
+                RoundedRectangle(cornerRadius: 28)
+                    .fill(Color.gray.opacity(0.08))
+            )
+            .padding(.horizontal, 20)
+        }
+    }
+}
+
+// MARK: - Reusable Components
+struct SectionTitle: View {
+    let title: String
+
+    init(_ title: String) {
+        self.title = title
+    }
+
+    var body: some View {
+        Text(title)
+            .font(.system(size: 22, weight: .bold))
+            .padding(.horizontal, 20)
+            .padding(.bottom, 16)
+    }
+}
+
+struct SettingRow: View {
+    let icon: String
+    let title: String
+    let hasChevron: Bool
+    var action: (() -> Void)? = nil
+    @Environment(\.colorScheme) var colorScheme
+
+    var body: some View {
+        HStack {
+            Image(systemName: icon)
+                .colorScheme(colorScheme == .dark ? .dark : .light)
+                .foregroundColor(.primary)
+
+            Text(title)
+                .colorScheme(colorScheme == .dark ? .dark : .light)
+                .foregroundColor(.primary)
+
+            Spacer()
+
+            if hasChevron {
+                Image(systemName: "chevron.forward")
+                    .foregroundColor(.gray)
+            }
+        }
+        .onTapGesture {
+            action?()
+        }
+    }
+}
+
+// Go to Setting of the phone:
+func openSystemSettings(scheme: String) {
+    if let url = URL(string: scheme) {
+        UIApplication.shared.open(url)
+    }
+}
+
+#Preview {
+    MainSetting()
+}

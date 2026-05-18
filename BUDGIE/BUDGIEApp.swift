@@ -33,7 +33,7 @@ struct BUDGIEApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Splash()
+            MainSetting()
         }
         //.modelContainer(sharedModelContainer)
     }

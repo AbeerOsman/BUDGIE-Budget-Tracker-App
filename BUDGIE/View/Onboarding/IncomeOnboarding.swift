@@ -21,7 +21,7 @@ struct IncomeOnboarding: View {
             AutomationOnboarding()
             
         } else if goToMain {
-            Main()
+            ContentView()
             
         } else {
             
