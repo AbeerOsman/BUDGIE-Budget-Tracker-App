@@ -8,6 +8,7 @@ import SwiftUI
 struct CategoryHomeView: View {
     @Environment(CategoriesViewModel.self) private var viewModel
     @State private var showAllCategories = false
+    @State private var selectedCategoryId: UUID?
 
     private let columns = [
         GridItem(.fixed(181), spacing: 12),
@@ -20,10 +21,15 @@ struct CategoryHomeView: View {
 
             LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
                 ForEach(viewModel.categories) { category in
-                    CategoryCardView(
-                        item: category,
-                        accentColor: viewModel.accentColor(for: category)
-                    )
+                    Button {
+                        selectedCategoryId = category.id
+                    } label: {
+                        CategoryCardView(
+                            item: category,
+                            accentColor: viewModel.accentColor(for: category)
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -31,6 +37,9 @@ struct CategoryHomeView: View {
         .background(.background)
         .navigationDestination(isPresented: $showAllCategories) {
             CategoriesView()
+        }
+        .navigationDestination(item: $selectedCategoryId) { categoryId in
+            CategoryDetailView(categoryId: categoryId)
         }
     }
 

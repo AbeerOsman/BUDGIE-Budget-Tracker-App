@@ -12,6 +12,7 @@ struct CategoriesView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @State private var showAddCategory = false
+    @State private var selectedCategoryId: UUID?
 
     var body: some View {
         Group {
@@ -44,6 +45,9 @@ struct CategoriesView: View {
                 viewModel.add(category)
             }
             .presentationDetents([.large])
+        }
+        .navigationDestination(item: $selectedCategoryId) { categoryId in
+            CategoryDetailView(categoryId: categoryId)
         }
     }
 
@@ -78,11 +82,16 @@ struct CategoriesView: View {
 
                 VStack(spacing: 12) {
                     ForEach(viewModel.filteredCategories) { category in
-                        CategoryListCardView(
-                            item: category,
-                            iconColor: viewModel.accentColor(for: category),
-                            progressFillColor: viewModel.progressFillColor(for: category)
-                        )
+                        Button {
+                            selectedCategoryId = category.id
+                        } label: {
+                            CategoryListCardView(
+                                item: category,
+                                iconColor: viewModel.accentColor(for: category),
+                                progressFillColor: viewModel.progressFillColor(for: category)
+                            )
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal, 16)
