@@ -8,18 +8,46 @@ import Observation
 
 @Observable
 final class AddCategoryViewModel {
+    enum Mode {
+        case add(categoryIndex: Int)
+        case edit(Category)
+    }
+
     var title = ""
     var emoji = ""
     var categoryType: CategoryType = .spending
     var budget = ""
     var dailySpending = ""
 
-    let categoryIndex: Int
+    let mode: Mode
     let recommendedDailyLimit: Int
 
-    init(categoryIndex: Int, recommendedDailyLimit: Int = 50) {
-        self.categoryIndex = categoryIndex
+    private var editingCategory: Category? {
+        if case .edit(let category) = mode { return category }
+        return nil
+    }
+
+    var isEditing: Bool {
+        editingCategory != nil
+    }
+
+    var navigationTitle: String {
+        isEditing ? "Edit Category" : "Add Category"
+    }
+
+    init(mode: Mode, recommendedDailyLimit: Int = 50) {
+        self.mode = mode
         self.recommendedDailyLimit = recommendedDailyLimit
+
+        if case .edit(let category) = mode {
+            title = category.name
+            emoji = category.emoji
+            categoryType = category.type
+            budget = String(Int(category.budget))
+            if let dailyLimit = category.dailyLimit {
+                dailySpending = String(Int(dailyLimit))
+            }
+        }
     }
 
     var trimmedTitle: String {
@@ -41,14 +69,31 @@ final class AddCategoryViewModel {
             ? parsedAmount(from: dailySpending)
             : nil
 
+        let colorIndex: Int
+        let spent: Double
+        let id: UUID
+
+        if let existing = editingCategory {
+            id = existing.id
+            spent = existing.spent
+            colorIndex = existing.colorIndex
+        } else if case .add(let index) = mode {
+            id = UUID()
+            spent = 0
+            colorIndex = CategoryStyling.colorIndex(for: index)
+        } else {
+            return nil
+        }
+
         return Category(
+            id: id,
             emoji: emoji.isEmpty ? "📁" : emoji,
             name: trimmedTitle,
             type: categoryType,
-            spent: 0,
+            spent: spent,
             budget: parsedAmount(from: budget),
             dailyLimit: dailyLimit,
-            colorIndex: CategoryStyling.colorIndex(for: categoryIndex)
+            colorIndex: colorIndex
         )
     }
 

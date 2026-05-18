@@ -13,17 +13,29 @@ struct AddCategorySheet: View {
     @Environment(\.colorScheme) private var colorScheme
 
     init(
-        categoryIndex: Int,
+        mode: AddCategoryViewModel.Mode,
         recommendedDailyLimit: Int = 50,
         onSave: @escaping (Category) -> Void
     ) {
         _viewModel = State(
             initialValue: AddCategoryViewModel(
-                categoryIndex: categoryIndex,
+                mode: mode,
                 recommendedDailyLimit: recommendedDailyLimit
             )
         )
         self.onSave = onSave
+    }
+
+    init(
+        categoryIndex: Int,
+        recommendedDailyLimit: Int = 50,
+        onSave: @escaping (Category) -> Void
+    ) {
+        self.init(
+            mode: .add(categoryIndex: categoryIndex),
+            recommendedDailyLimit: recommendedDailyLimit,
+            onSave: onSave
+        )
     }
 
     var body: some View {
@@ -52,7 +64,7 @@ struct AddCategorySheet: View {
                 .padding(.bottom, 24)
             }
             .background(Color(.systemBackground))
-            .navigationTitle("Add Category")
+            .navigationTitle(viewModel.navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
