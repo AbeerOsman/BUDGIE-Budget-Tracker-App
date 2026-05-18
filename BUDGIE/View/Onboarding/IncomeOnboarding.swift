@@ -5,8 +5,8 @@
 //  Created by Ruba Alghamdi on 29/11/1447 AH.
 //
 
-
 import SwiftUI
+import SwiftData
 
 struct IncomeOnboarding: View {
     
@@ -14,6 +14,7 @@ struct IncomeOnboarding: View {
     @State private var goToAutomation = false
     @State private var goToMain = false
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.modelContext) private var modelContext
 
     var body: some View {
         
@@ -48,7 +49,22 @@ struct IncomeOnboarding: View {
                     }
                     
                 case 1:
-                    IncomeFormView {
+                    IncomeFormView { title, amount, date in
+                        // Save income to SwiftData
+                        let newIncome = Income(
+                            title: title,
+                            amount: amount,
+                            date: date,
+                            type: "income"
+                        )
+                        modelContext.insert(newIncome)
+                        
+                        do {
+                            try modelContext.save()
+                        } catch {
+                            print("Error saving income: \(error)")
+                        }
+                        
                         withAnimation {
                             step = 2
                         }
@@ -137,7 +153,14 @@ struct IncomeFormView: View {
     @State private var amount = ""
     @State private var date = Date()
     @Environment(\.colorScheme) var colorScheme
-    var onSave: () -> Void
+    var onSave: (String, Double, Date) -> Void
+    
+    var isValid: Bool {
+        !title.trimmingCharacters(in: .whitespaces).isEmpty &&
+        !amount.isEmpty &&
+        Double(amount) != nil &&
+        Double(amount)! > 0
+    }
     
     var body: some View {
         
@@ -151,8 +174,11 @@ struct IncomeFormView: View {
             VStack(spacing: 22) {
                 
                 VStack(alignment: .leading, spacing: 10) {
+                    Text("Income Source")
+                        .font(.caption)
+                        .foregroundColor(.gray)
                     
-                    TextField("Title", text: $title)
+                    TextField("e.g., Salary, Business", text: $title)
                         .foregroundColor(.primary)
                     
                     Divider()
@@ -160,9 +186,12 @@ struct IncomeFormView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 10) {
+                    Text("Amount")
+                        .font(.caption)
+                        .foregroundColor(.gray)
                     
-                    TextField("Amount", text: $amount)
-                        .keyboardType(.numberPad)
+                    TextField("0.00", text: $amount)
+                        .keyboardType(.decimalPad)
                         .foregroundColor(.primary)
                     
                     Divider()
@@ -174,7 +203,7 @@ struct IncomeFormView: View {
                     selection: $date,
                     displayedComponents: .date
                 )
-                .colorScheme(colorScheme == .dark ? .dark :.light  )
+                .colorScheme(colorScheme == .dark ? .dark : .light)
                 .foregroundColor(.primary)
             }
             .padding(25)
@@ -194,15 +223,20 @@ struct IncomeFormView: View {
             
             Spacer()
             
-            Button(action: onSave) {
+            Button(action: {
+                if let incomeAmount = Double(amount) {
+                    onSave(title, incomeAmount, date)
+                }
+            }) {
                 Text("Save Income")
                     .font(.headline)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 58)
-                    .background(Color.skyBlue)
+                    .background(isValid ? Color.skyBlue : Color.skyBlue.opacity(0.5))
                     .clipShape(Capsule())
             }
+            .disabled(!isValid)
             .padding(.horizontal, 30)
             .padding(.bottom, 40)
         }
