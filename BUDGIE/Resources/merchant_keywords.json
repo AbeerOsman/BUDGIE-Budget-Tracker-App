@@ -138,3 +138,24 @@
     "clinic"
   ]
 }
+
+"Rent": [
+  "ejar",
+  "rent",
+  "landlord"
+],
+
+"Internet": [
+  "stc",
+  "mobily",
+  "zain",
+  "salam",
+  "internet",
+  "wifi"
+],
+
+"Bills": [
+  "electricity",
+  "seco",
+  "water"
+]
