@@ -4,7 +4,6 @@
 //
 //  Created by Raghad Aljuid on 01/12/1447 AH.
 //
-
 import SwiftUI
 
 struct InsightsEmptyState: View {
@@ -16,9 +15,8 @@ struct InsightsEmptyState: View {
             Image("ghost")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 90)
-                .frame(height: 90)
-            
+                .frame(width: 90, height: 88)
+
             VStack(spacing: 8) {
 
                 Text("No insights yet")
@@ -29,9 +27,9 @@ struct InsightsEmptyState: View {
                     .font(.system(size: 15))
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
+                    .frame(maxWidth: 260)
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
     }
 }

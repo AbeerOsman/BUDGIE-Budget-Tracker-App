@@ -36,12 +36,16 @@ struct ContentView: View {
         
         NavigationStack {
             VStack(spacing: 0) {
+
                 // Income Box
                 if totalIncome == 0 {
-                    // Empty State
-                    EmptyIncomeView(action: { showAddIncome = true })
+
+                    EmptyIncomeView(action: {
+                        showAddIncome = true
+                    })
+
                 } else {
-                    // Filled State
+
                     FilledIncomeView(
                         income: totalIncome,
                         spent: totalSpent,
@@ -49,11 +53,25 @@ struct ContentView: View {
                         progress: progressPercentage
                     )
                 }
-                
+
+                // Insights Section
+                InsightsView()
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
+
                 List {
+
                     Section {
+
                         CategoryHomeView()
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .listRowInsets(
+                                EdgeInsets(
+                                    top: 8,
+                                    leading: 16,
+                                    bottom: 8,
+                                    trailing: 16
+                                )
+                            )
                             .listRowBackground(Color.clear)
                             .listRowSeparator(.hidden)
                     }
