@@ -83,6 +83,10 @@ struct AddCategorySheet: View {
         @Bindable var viewModel = viewModel
 
         return formSection {
+            predefinedCategoryRow
+
+            formDivider
+
             CategoryFormRow(
                 placeholder: "Title",
                 text: $viewModel.title,
@@ -95,6 +99,33 @@ struct AddCategorySheet: View {
                 emoji: $viewModel.emoji,
                 sanitize: viewModel.sanitizeEmoji
             )
+        }
+    }
+
+    private var predefinedCategoryRow: some View {
+        @Bindable var viewModel = viewModel
+
+        return HStack {
+            Text("Predefined category")
+                .font(.body)
+                .foregroundStyle(.secondary)
+
+            Spacer()
+
+            Picker("", selection: $viewModel.selectedPredefinedKey) {
+                Text("Custom").tag(nil as String?)
+                ForEach(viewModel.predefinedOptions, id: \.self) { name in
+                    Text(name).tag(name as String?)
+                }
+            }
+            .labelsHidden()
+            .pickerStyle(.menu)
+            .tint(.primary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .onChange(of: viewModel.selectedPredefinedKey) { _, newValue in
+            viewModel.applyPredefinedSelection(newValue)
         }
     }
 

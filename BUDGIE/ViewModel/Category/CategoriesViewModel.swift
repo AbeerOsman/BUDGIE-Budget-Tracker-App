@@ -45,9 +45,36 @@ final class CategoriesViewModel {
             spent: cat.spent + payment.amount,
             budget: cat.budget,
             dailyLimit: cat.dailyLimit,
-            colorIndex: cat.colorIndex
+            colorIndex: cat.colorIndex,
+            predefinedKey: cat.predefinedKey
         )
         categories[index] = updated
+    }
+
+    /// Resolves a user category linked to a merchant_keywords.json key (e.g. from SMS detection).
+    func category(matchingPredefinedKey key: String) -> Category? {
+        categories.first {
+            guard let predefined = $0.predefinedKey else { return false }
+            return predefined.caseInsensitiveCompare(key) == .orderedSame
+        }
+    }
+
+    /// Adds a payment when the merchant category name is known (SMS) or a specific category is chosen (manual).
+    func addPayment(
+        _ payment: CategoryPayment,
+        merchantCategoryName: String? = nil,
+        categoryId: UUID? = nil
+    ) {
+        let targetId: UUID?
+        if let categoryId {
+            targetId = categoryId
+        } else if let name = merchantCategoryName, let matched = category(matchingPredefinedKey: name) {
+            targetId = matched.id
+        } else {
+            return
+        }
+        guard let targetId else { return }
+        addPayment(payment, to: targetId)
     }
 
     func payments(for categoryId: UUID) -> [CategoryPayment] {

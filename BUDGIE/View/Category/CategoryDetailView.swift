@@ -78,7 +78,7 @@ struct CategoryDetailView: View {
                 initialCategoryId: category.id,
                 categories: categoriesViewModel.categories
             ) { payment, categoryId in
-                categoriesViewModel.addPayment(payment, to: categoryId)
+                categoriesViewModel.addPayment(payment, categoryId: categoryId)
             }
             .presentationDetents([.large])
         }

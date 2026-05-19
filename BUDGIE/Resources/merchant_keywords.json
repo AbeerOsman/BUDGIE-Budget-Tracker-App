@@ -63,7 +63,6 @@
     "bin dawood",
     "othaim"
   ],
-
   "Transport": [
     "uber",
     "ubr",
@@ -77,7 +76,6 @@
     "naft",
     "sahel"
   ],
-
   "Shopping": [
     "amazon",
     "amazon.sa",
@@ -96,7 +94,6 @@
     "faces",
     "whites"
   ],
-
   "Entertainment": [
     "vox",
     "muvi",
@@ -108,7 +105,6 @@
     "xbox",
     "nintendo"
   ],
-
   "Subscriptions": [
     "netflix",
     "spotify",
@@ -123,7 +119,6 @@
     "notion",
     "duolingo"
   ],
-
   "Health": [
     "nahdi",
     "al-dawaa",
@@ -136,26 +131,23 @@
     "mouwasat",
     "hospital",
     "clinic"
+  ],
+  "Rent": [
+    "ejar",
+    "rent",
+    "landlord"
+  ],
+  "Internet": [
+    "stc",
+    "mobily",
+    "zain",
+    "salam",
+    "internet",
+    "wifi"
+  ],
+  "Bills": [
+    "electricity",
+    "seco",
+    "water"
   ]
 }
-
-"Rent": [
-  "ejar",
-  "rent",
-  "landlord"
-],
-
-"Internet": [
-  "stc",
-  "mobily",
-  "zain",
-  "salam",
-  "internet",
-  "wifi"
-],
-
-"Bills": [
-  "electricity",
-  "seco",
-  "water"
-]

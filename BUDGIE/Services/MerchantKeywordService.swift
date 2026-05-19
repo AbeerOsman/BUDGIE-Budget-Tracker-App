@@ -61,28 +61,13 @@ final class MerchantKeywordService {
     }
     
     // يقرأ ملف merchant_keywords.json
-    private func loadKeywords() -> [String: [String]] {
-        
-        guard let url = Bundle.main.url(
-            forResource: fileName,
-            withExtension: "json"
-        ) else {
-            print("❌ merchant_keywords.json not found in bundle")
-            return [:]
-        }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let decoded = try JSONDecoder().decode([String: [String]].self, from: data)
-            
-            print("✅ merchant_keywords.json loaded successfully")
-            
-            return decoded
-            
-        } catch {
-            print("❌ Failed to decode merchant_keywords.json:", error)
-            return [:]
-        }
+    func loadKeywords() -> [String: [String]] {
+        PredefinedCategoryCatalog.loadKeywords()
+    }
+
+    /// Sorted category names from merchant_keywords.json.
+    func allCategoryNames() -> [String] {
+        PredefinedCategoryCatalog.categoryNames
     }
     
     // ينظف النص ويوحد شكله قبل المقارنة

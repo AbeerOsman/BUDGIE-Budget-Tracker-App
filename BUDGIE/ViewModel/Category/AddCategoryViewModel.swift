@@ -18,9 +18,11 @@ final class AddCategoryViewModel {
     var categoryType: CategoryType = .spending
     var budget = ""
     var dailySpending = ""
+    var selectedPredefinedKey: String?
 
     let mode: Mode
     let recommendedDailyLimit: Int
+    let predefinedOptions: [String]
 
     private var editingCategory: Category? {
         if case .edit(let category) = mode { return category }
@@ -35,15 +37,21 @@ final class AddCategoryViewModel {
         isEditing ? "Edit Category" : "Add Category"
     }
 
+    var usesCustomPredefinedLink: Bool {
+        selectedPredefinedKey == nil
+    }
+
     init(mode: Mode, recommendedDailyLimit: Int = 50) {
         self.mode = mode
         self.recommendedDailyLimit = recommendedDailyLimit
+        self.predefinedOptions = PredefinedCategoryCatalog.categoryNames
 
         if case .edit(let category) = mode {
             title = category.name
             emoji = category.emoji
             categoryType = category.type
             budget = String(Int(category.budget))
+            selectedPredefinedKey = category.predefinedKey
             if let dailyLimit = category.dailyLimit {
                 dailySpending = String(Int(dailyLimit))
             }
@@ -60,6 +68,18 @@ final class AddCategoryViewModel {
             return base && !dailySpending.isEmpty
         }
         return base
+    }
+
+    func applyPredefinedSelection(_ key: String?) {
+        selectedPredefinedKey = key
+        guard let key else { return }
+
+        if title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            title = key
+        }
+        if emoji.isEmpty {
+            emoji = PredefinedCategoryCatalog.defaultEmoji(for: key)
+        }
     }
 
     func buildCategory() -> Category? {
@@ -93,7 +113,8 @@ final class AddCategoryViewModel {
             spent: spent,
             budget: parsedAmount(from: budget),
             dailyLimit: dailyLimit,
-            colorIndex: colorIndex
+            colorIndex: colorIndex,
+            predefinedKey: selectedPredefinedKey
         )
     }
 

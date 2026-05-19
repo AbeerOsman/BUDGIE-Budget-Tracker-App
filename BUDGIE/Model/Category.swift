@@ -14,6 +14,8 @@ struct Category: Identifiable, Equatable {
     let budget: Double
     let dailyLimit: Double?
     let colorIndex: Int
+    /// Key from `merchant_keywords.json` (e.g. "Food") for transaction / merchant matching.
+    let predefinedKey: String?
 
     init(
         id: UUID = UUID(),
@@ -23,7 +25,8 @@ struct Category: Identifiable, Equatable {
         spent: Double,
         budget: Double,
         dailyLimit: Double? = nil,
-        colorIndex: Int
+        colorIndex: Int,
+        predefinedKey: String? = nil
     ) {
         self.id = id
         self.emoji = emoji
@@ -33,6 +36,7 @@ struct Category: Identifiable, Equatable {
         self.budget = budget
         self.dailyLimit = dailyLimit
         self.colorIndex = colorIndex
+        self.predefinedKey = predefinedKey
     }
 
     var progress: Double {
