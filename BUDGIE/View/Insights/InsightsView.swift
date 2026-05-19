@@ -12,16 +12,17 @@ struct InsightsView: View {
 
     var body: some View {
 
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading) {
 
             Text("Insights")
                 .font(.system(size: 22, weight: .bold))
+                .tracking(-0.26)
                 .foregroundColor(.primary)
-            
+
+            Spacer()
 
             if viewModel.hasInsights {
 
-                // chart later
                 Text("Chart Coming Soon")
                     .foregroundColor(.primary)
 
@@ -31,13 +32,19 @@ struct InsightsView: View {
 
             }
 
+            Spacer()
         }
-        .padding(.horizontal, 16)
-                .padding(.vertical, 16)
-                .frame(maxWidth: .infinity, minHeight: 493)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color("Dark Charcoal").opacity(1))
+        .padding(16)
+        .frame(maxWidth: .infinity)
+        .frame(height: 430)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color("Dark Charcoal"))
         )
     }
+}
+
+#Preview {
+    InsightsView()
+        .padding()
 }
