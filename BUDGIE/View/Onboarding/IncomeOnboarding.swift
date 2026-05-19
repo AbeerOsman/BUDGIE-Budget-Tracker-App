@@ -89,6 +89,7 @@ struct IncomeOnboarding: View {
 
 #Preview {
     IncomeOnboarding()
+        .modelContainer(for: Income.self, inMemory: true)
 }
 
 

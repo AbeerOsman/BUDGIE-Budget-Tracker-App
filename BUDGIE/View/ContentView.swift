@@ -69,7 +69,7 @@ struct ContentView: View {
                 }
                 //Settings
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {}) {
+                    NavigationLink(destination: IncomeDetailsView(onSave: {})) {
                         Label("Setting", systemImage: "gearshape")
                     }
                 }
@@ -212,6 +212,6 @@ struct FilledIncomeView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: Income.self, inMemory: true)
         .environment(CategoriesViewModel())
 }
