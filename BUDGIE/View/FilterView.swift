@@ -21,9 +21,7 @@ struct FilterRowView: View {
     }
 
     var body: some View {
-
         HStack(spacing: 16) {
-
             RoundedRectangle(cornerRadius: 14)
                 .fill(FilterRowView.whiteToGrayGradient)
                 .frame(width: 57, height: 57)
@@ -34,7 +32,6 @@ struct FilterRowView: View {
                 )
 
             VStack(alignment: .leading, spacing: 4) {
-
                 Text(item.merchantName)
                     .font(.system(size: 17, weight: .regular))
 
@@ -55,44 +52,40 @@ struct FilterRowView: View {
             }
         }
         .padding(.vertical, 8)
+        
+            
+        
     }
 }
 
 // MARK: - Main View
 
 struct FilterView: View {
+    @Environment(CategoriesViewModel.self) private var categoriesViewModel
 
-    @Environment(CategoriesViewModel.self)
-    private var categoriesViewModel
-
-    // Categories
-    let categories = [
-        "Food",
-        "Transport",
-        "Entertainment",
-        "Shopping",
-        "Bills"
-    ]
-
-    // Transactions
-    @State var items: [FilterItem]
-
-    // Selected Item
     @State private var selectedItem: FilterItem?
-
-    // Category Sheet
     @State private var showCategorySheet = false
+    @State private var showAddCategorySheet = false
+
+    private var filterItems: [FilterItem] {
+        categoriesViewModel.uncategorizedTransactions.map { transaction in
+            FilterItem(
+                id: transaction.id,
+                merchantName: transaction.merchantName ?? "Unknown Merchant",
+                date: transaction.date.formatted(
+                    date: .abbreviated,
+                    time: .shortened
+                ),
+                amount: transaction.amount ?? 0,
+                parsedTransaction: transaction
+            )
+        }
+    }
 
     var body: some View {
-
-        VStack(alignment: .leading, spacing: 20) {
-
-            Text("Filter")
-                .font(.system(size: 17, weight: .semibold))
-                .padding(.leading, 15)
-
+        VStack(alignment: .leading, spacing: 8) {
+            
             VStack(alignment: .leading, spacing: 4) {
-
                 Text("Uncategorized Payments")
                     .font(.system(size: 25, weight: .bold))
 
@@ -100,143 +93,179 @@ struct FilterView: View {
                     .font(.system(size: 15, weight: .medium))
                     .foregroundColor(.secondary)
             }
-            .padding(.leading, 15)
+            .padding(.leading, 24)
 
-            List {
-
-                ForEach(items) { item in
-
-                    FilterRowView(item: item)
-                        .listRowSeparator(.hidden)
-                        .contentShape(Rectangle())
-
-                        .onTapGesture {
-                            selectedItem = item
-                            showCategorySheet = true
-                        }
-
-                        .swipeActions(edge: .trailing) {
-
-                            Button(role: .destructive) {
-
-                                deleteItem(item)
-
-                            } label: {
-
-                                Label("Delete", systemImage: "trash")
+            if filterItems.isEmpty {
+                ContentUnavailableView(
+                    "All caught up",
+                    systemImage: "checkmark.circle",
+                    description: Text("No unknown transactions need a category.")
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                List {
+                    ForEach(filterItems) { item in
+                        FilterRowView(item: item)
+                            .listRowSeparator(.hidden)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                selectedItem = item
+                                showCategorySheet = true
                             }
-                        }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    deleteItem(item)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                    }
                 }
+                .scrollContentBackground(.hidden)
+                .background(Color(.gray))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .scrollContentBackground(.hidden)
-            .background(Color(uiColor: .systemBackground))
         }
-
         .sheet(isPresented: $showCategorySheet) {
+            categoryPickerSheet
+        }
+        .sheet(isPresented: $showAddCategorySheet) {
+            AddCategorySheet(
+                categoryIndex: categoriesViewModel.categories.count,
+                suggestedPredefinedKey: selectedItem?.parsedTransaction.categoryName
+            ) { category in
+                categoriesViewModel.add(category)
+                if let selectedItem {
+                    categoriesViewModel.categorizeUncategorized(
+                        selectedItem.parsedTransaction,
+                        into: category
+                    )
+                }
+                showAddCategorySheet = false
+                showCategorySheet = false
+                self.selectedItem = nil
+            }
+            .presentationDetents([.large])
+        }
+        .navigationTitle("Filter")
+        .navigationBarTitleDisplayMode(.inline)
+    }
 
-            VStack(alignment: .center, spacing: 10) {
+    private var categoryPickerSheet: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 12) {
+                    if let selectedItem {
+                        Text(selectedItem.merchantName)
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
 
-                Text("Select Category")
-                    .font(.title.bold())
+                    if categoriesViewModel.categories.isEmpty {
+                        Text("Create a category to assign this payment.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    } else {
+                        ForEach(categoriesViewModel.categories) { category in
+                            Button {
+                                assignCategory(category)
+                            } label: {
+                                HStack(spacing: 12) {
+                                    Text(category.emoji)
+                                        .font(.title2)
 
-                ForEach(categories, id: \.self) { category in
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(category.name)
+                                            .font(.body.weight(.medium))
+                                            .foregroundStyle(.primary)
+
+                                        if let key = category.predefinedKey {
+                                            Text(key)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                    }
+
+                                    Spacer()
+
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
 
                     Button {
-
-                        assignCategory(category)
-
+                        showCategorySheet = false
+                        showAddCategorySheet = true
                     } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title3)
+                                .foregroundStyle(Color.skyBlue)
 
-                        HStack {
-
-                            Text(category)
-                                .foregroundColor(.primary)
+                            Text("Create Category")
+                                .font(.body.weight(.semibold))
+                                .foregroundStyle(.primary)
 
                             Spacer()
                         }
                         .padding()
                         .background(Color(.systemGray6))
-                        .cornerRadius(14)
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding()
+            }
+            .navigationTitle("Select Category")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Cancel") {
+                        showCategorySheet = false
+                        selectedItem = nil
                     }
                 }
-
-                Spacer()
             }
-            .padding()
-            .presentationDetents([.medium])
         }
+        .presentationDetents([.medium, .large])
     }
 }
 
-// MARK: - Functions
+// MARK: - Actions
 
 extension FilterView {
-
     func deleteItem(_ item: FilterItem) {
-
-        items.removeAll {
-            $0.id == item.id
+        categoriesViewModel.removeUncategorized(item.parsedTransaction)
+        if selectedItem?.id == item.id {
+            selectedItem = nil
+            showCategorySheet = false
         }
-
-        categoriesViewModel
-            .uncategorizedTransactions
-            .removeAll {
-                $0.id == item.parsedTransaction.id
-            }
     }
 
-    func assignCategory(_ category: String) {
+    func assignCategory(_ category: Category) {
+        guard let selectedItem else { return }
 
-        guard let selectedItem else {
-            return
-        }
-
-        guard let matchedCategory =
-                categoriesViewModel.category(
-                    matchingPredefinedKey: category
-                )
-        else {
-
-            print("❌ No user category found for:", category)
-
-            return
-        }
-
-        let transaction = selectedItem.parsedTransaction
-
-        guard let amount = transaction.amount else {
-            return
-        }
-
-        let payment = CategoryPayment(
-            categoryId: matchedCategory.id,
-            merchantName: transaction.merchantName ?? "Unknown Merchant",
-            date: transaction.date,
-            amount: amount
+        categoriesViewModel.categorizeUncategorized(
+            selectedItem.parsedTransaction,
+            into: category
         )
 
-        categoriesViewModel.addPayment(
-            payment,
-            to: matchedCategory.id
-        )
-
-        categoriesViewModel
-            .uncategorizedTransactions
-            .removeAll {
-                $0.id == transaction.id
-            }
-
-        items.removeAll {
-            $0.id == selectedItem.id
-        }
-
-        print("✅ Assigned to:", matchedCategory.name)
-
+        self.selectedItem = nil
         showCategorySheet = false
     }
 }
 
 #Preview {
-    FilterView(items: [])
-        .environment(CategoriesViewModel())
+    NavigationStack {
+        FilterView()
+    }
+    .environment(CategoriesViewModel())
 }

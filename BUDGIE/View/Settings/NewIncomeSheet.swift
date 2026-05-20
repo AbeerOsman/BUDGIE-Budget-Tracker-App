@@ -28,7 +28,7 @@ struct NewIncomeSheet: View {
             .toolbar {
                 //Add button
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: FilterView(items: [])) {
+                    NavigationLink(destination: FilterView()) {
                         Label("Add New Income", systemImage: "checkmark")
                     }
                 }

@@ -60,14 +60,14 @@ final class MerchantKeywordService {
         return nil
     }
     
-    // يقرأ ملف merchant_keywords.json
+    // يقرأ ملف merchant_keywords.json (bundle + user overrides on device)
     func loadKeywords() -> [String: [String]] {
-        PredefinedCategoryCatalog.loadKeywords()
+        MerchantKeywordStore.shared.loadKeywords()
     }
 
     /// Sorted category names from merchant_keywords.json.
     func allCategoryNames() -> [String] {
-        PredefinedCategoryCatalog.categoryNames
+        MerchantKeywordStore.shared.allCategoryNames()
     }
     
     // ينظف النص ويوحد شكله قبل المقارنة

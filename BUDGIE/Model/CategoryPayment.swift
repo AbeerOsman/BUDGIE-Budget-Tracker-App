@@ -35,7 +35,7 @@
 
 import Foundation
 
-struct CategoryPayment: Identifiable, Equatable {
+struct CategoryPayment: Identifiable, Equatable, Codable {
     let id: UUID
     let categoryId: UUID
     let merchantName: String

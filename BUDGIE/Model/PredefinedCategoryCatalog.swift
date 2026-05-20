@@ -32,6 +32,10 @@ enum PredefinedCategoryCatalog {
     }
 
     static func loadKeywords() -> [String: [String]] {
+        MerchantKeywordStore.shared.loadKeywords()
+    }
+
+    static func loadBundleKeywords() -> [String: [String]] {
         guard let url = Bundle.main.url(forResource: fileName, withExtension: "json"),
               let data = try? Data(contentsOf: url),
               let decoded = try? JSONDecoder().decode([String: [String]].self, from: data)

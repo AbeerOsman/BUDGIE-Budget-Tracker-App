@@ -22,6 +22,16 @@ final class CategoriesViewModel {
     // Prevent importing same SMS twice
     var importedTransactionIds: Set<UUID> = []
 
+    init() {
+        if let state = CategoriesPersistence.load() {
+            CategoriesPersistence.apply(state, to: self)
+        }
+    }
+
+    private func persist() {
+        CategoriesPersistence.save(from: self)
+    }
+
     var isEmpty: Bool {
         categories.isEmpty
     }
@@ -32,6 +42,7 @@ final class CategoriesViewModel {
 
     func add(_ category: Category) {
         categories.append(category)
+        persist()
     }
 
     func update(_ category: Category) {
@@ -42,6 +53,7 @@ final class CategoriesViewModel {
         }
 
         categories[index] = category
+        persist()
     }
 
     func delete(id: UUID) {
@@ -49,6 +61,7 @@ final class CategoriesViewModel {
         var paymentsCopy = paymentsByCategoryId
         paymentsCopy.removeValue(forKey: id)
         paymentsByCategoryId = paymentsCopy
+        persist()
     }
 
     // MARK: - Add Payment
@@ -86,6 +99,7 @@ final class CategoriesViewModel {
         )
 
         categories[index] = updatedCategory
+        persist()
     }
 
     func deletePayment(id paymentId: UUID, categoryId: UUID) {
@@ -122,6 +136,7 @@ final class CategoriesViewModel {
             colorIndex: category.colorIndex,
             predefinedKey: category.predefinedKey
         )
+        persist()
     }
 
     func updatePayment(previous: CategoryPayment, with updated: CategoryPayment) {
@@ -162,6 +177,37 @@ final class CategoriesViewModel {
                 predefinedKey: category.predefinedKey
             )
         }
+        persist()
+    }
+
+    // MARK: - Categorize unknown transaction (Filter)
+
+    func categorizeUncategorized(_ transaction: ParsedTransaction, into category: Category) {
+        guard let amount = transaction.amount else { return }
+
+        let merchantName = transaction.merchantName ?? "Unknown Merchant"
+        let keywordCategory = category.predefinedKey
+            ?? transaction.categoryName
+            ?? category.name
+
+        MerchantKeywordStore.shared.addMerchant(merchantName, toCategory: keywordCategory)
+
+        let payment = CategoryPayment(
+            categoryId: category.id,
+            merchantName: merchantName,
+            date: transaction.date,
+            amount: amount
+        )
+
+        addPayment(payment, to: category.id)
+
+        uncategorizedTransactions.removeAll { $0.id == transaction.id }
+        persist()
+    }
+
+    func removeUncategorized(_ transaction: ParsedTransaction) {
+        uncategorizedTransactions.removeAll { $0.id == transaction.id }
+        persist()
     }
 
     // MARK: - Find Category Using predefinedKey
@@ -263,6 +309,8 @@ final class CategoriesViewModel {
                 to: matchedCategory.id
             )
         }
+
+        persist()
     }
 
     // MARK: - Payments

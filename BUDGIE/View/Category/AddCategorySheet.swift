@@ -15,12 +15,14 @@ struct AddCategorySheet: View {
 
     init(
         mode: AddCategoryViewModel.Mode,
+        suggestedPredefinedKey: String? = nil,
         onSave: @escaping (Category) -> Void,
         onDelete: (() -> Void)? = nil
     ) {
         _viewModel = State(
             initialValue: AddCategoryViewModel(
-                mode: mode
+                mode: mode,
+                suggestedPredefinedKey: suggestedPredefinedKey
             )
         )
         self.onSave = onSave
@@ -29,10 +31,12 @@ struct AddCategorySheet: View {
 
     init(
         categoryIndex: Int,
+        suggestedPredefinedKey: String? = nil,
         onSave: @escaping (Category) -> Void
     ) {
         self.init(
             mode: .add(categoryIndex: categoryIndex),
+            suggestedPredefinedKey: suggestedPredefinedKey,
             onSave: onSave,
             onDelete: nil
         )

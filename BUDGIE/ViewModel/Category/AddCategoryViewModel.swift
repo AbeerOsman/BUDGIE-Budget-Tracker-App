@@ -47,9 +47,16 @@ final class AddCategoryViewModel {
         return Int((monthly / 30.0).rounded(.toNearestOrAwayFromZero))
     }
 
-    init(mode: Mode) {
+    init(mode: Mode, suggestedPredefinedKey: String? = nil) {
         self.mode = mode
         self.predefinedOptions = PredefinedCategoryCatalog.categoryNames
+
+        if let suggestedPredefinedKey,
+           predefinedOptions.contains(where: {
+               $0.caseInsensitiveCompare(suggestedPredefinedKey) == .orderedSame
+           }) {
+            setPredefinedPickerSelection(suggestedPredefinedKey)
+        }
 
         if case .edit(let category) = mode {
             title = category.name

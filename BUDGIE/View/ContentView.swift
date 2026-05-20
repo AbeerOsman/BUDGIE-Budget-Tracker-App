@@ -43,104 +43,72 @@ struct ContentView: View {
     var progressPercentage: Double {
         totalIncome > 0 ? totalSpent / totalIncome : 0
     }
+    
+    
 
     var body: some View {
-
+        ZStack{
+            
+            LinearGradient(
+                gradient: Gradient(
+                    colors: [
+                        Color(red: 0.0, green: 0.6, blue: 0.8),   // Cyan
+                        Color(red: 0.0, green: 0.2, blue: 0.6),   // Dark Blue
+                        Color(red: 0.4, green: 0.1, blue: 0.4)    // Purple
+                    ]
+                ),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
         NavigationStack {
-
-            VStack(spacing: 0) {
-
-                // MARK: Income Box
-
-                if totalIncome == 0 {
-
-                    EmptyIncomeView(action: {
-                        showAddIncome = true
-                    })
-
-                } else {
-
-                    FilledIncomeView(
-                        income: totalIncome,
-                        spent: totalSpent,
-                        remaining: remaining,
-                        progress: progressPercentage
-                    )
-                }
-
-                // MARK: Insights
-
-                InsightsView()
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 16)
-
-                // MARK: Categories
-
-                List {
-
-                    Section {
-
-                        CategoryHomeView()
-                            .listRowInsets(
-                                EdgeInsets(
-                                    top: 8,
-                                    leading: 16,
-                                    bottom: 8,
-                                    trailing: 16
-                                )
-                            )
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
+            ScrollView(showsIndicators: false) {
+                
+                VStack(spacing: 16) {
+                    
+                    // MARK: Income Box
+                    
+                    if totalIncome == 0 {
+                        
+                        EmptyIncomeView()
+                        
+                    } else {
+                        
+                        FilledIncomeView(
+                            income: totalIncome,
+                            spent: totalSpent,
+                            remaining: remaining,
+                            progress: progressPercentage
+                        )
                     }
+                    
+                    // MARK: Insights
+                    
+                    InsightsView()
+                        .padding(.horizontal, 16)
+                    
+                    // MARK: Categories
+                    
+                    CategoryHomeView()
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 20)
                 }
-                .listStyle(.plain)
+                .padding(.top, 8)
             }
-
+            
             // MARK: Toolbar
-
+            
             .toolbar {
-
+                
                 // MARK: Filter
-
+                
                 ToolbarItem(
                     placement: .navigationBarTrailing
                 ) {
-
-                    NavigationLink(
-
-                        destination:
-
-                            FilterView(
-
-                                items:
-
-                                    categoriesViewModel
-                                    .uncategorizedTransactions
-                                    .map {
-
-                                        FilterItem(
-                                            id: $0.id,
-
-                                            merchantName:
-                                                $0.merchantName
-                                                ?? "Unknown Merchant",
-
-                                            date:
-                                                $0.date.formatted(
-                                                    date: .abbreviated,
-                                                    time: .shortened
-                                                ),
-
-                                            amount:
-                                                $0.amount ?? 0,
-
-                                            parsedTransaction: $0
-                                        )
-                                    }
-                            )
-
-                    ) {
-
+                    
+                    NavigationLink(destination: FilterView()) {
+                        
                         Label(
                             "Filter unknown transaction",
                             systemImage:
@@ -148,18 +116,18 @@ struct ContentView: View {
                         )
                     }
                 }
-
+                
                 // MARK: Settings
-
+                
                 ToolbarItem(
                     placement: .navigationBarTrailing
                 ) {
-
+                    
                     NavigationLink(
                         destination:
-                            IncomeDetailsView(onSave: {})
+                            MainSetting()
                     ) {
-
+                        
                         Label(
                             "Setting",
                             systemImage: "gearshape"
@@ -168,6 +136,8 @@ struct ContentView: View {
                 }
             }
         }
+        
+    }//Zstack
 
         // MARK: Import SMS
 
@@ -187,13 +157,12 @@ struct ContentView: View {
         }
 
         // MARK: Sheet
-
         .sheet(isPresented: $showAddIncome) {
 
             Text("Add Income")
         }
     }
-
+    
     // MARK: Import SMS
 
     private func importSMS() {
@@ -222,34 +191,26 @@ struct ContentView: View {
 
 struct EmptyIncomeView: View {
 
-    var action: () -> Void
-
     var body: some View {
 
         VStack(spacing: 0) {
 
-            VStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 16) {
 
                 Text("Income")
-                    .font(
-                        .system(
-                            size: 22,
-                            weight: .bold
-                        )
-                    )
+                    .font(.system(size: 22, weight: .bold))
                     .foregroundColor(.white)
 
-                Button(action: action) {
+                NavigationLink {
+
+                    IncomeDetailsView(onSave: {})
+
+                } label: {
 
                     HStack(spacing: 8) {
 
                         Text("Add an Income")
-                            .font(
-                                .system(
-                                    size: 16,
-                                    weight: .regular
-                                )
-                            )
+                            .font(.system(size: 16, weight: .regular))
                             .foregroundColor(.gray)
 
                         Image(systemName: "plus.circle.fill")
@@ -265,13 +226,7 @@ struct EmptyIncomeView: View {
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(
-                    Color(
-                        red: 0.08,
-                        green: 0.08,
-                        blue: 0.08
-                    )
-                )
+                .fill(Color(red: 0.11, green: 0.11, blue: 0.11))
         )
         .padding(.horizontal, 16)
         .padding(.top, 16)
@@ -282,7 +237,7 @@ struct EmptyIncomeView: View {
 // MARK: - Filled Income State
 
 struct FilledIncomeView: View {
-
+    @Environment(\.colorScheme) var colorScheme
     var income: Double
     var spent: Double
     var remaining: Double
@@ -303,7 +258,7 @@ struct FilledIncomeView: View {
                             weight: .bold
                         )
                     )
-                    .foregroundColor(.white)
+                    .foregroundColor(colorScheme == .dark ? .white : .black)
 
                 Spacer()
 
@@ -314,7 +269,7 @@ struct FilledIncomeView: View {
                             weight: .bold
                         )
                     )
-                    .foregroundColor(.white)
+                    .foregroundColor(colorScheme == .dark ? .white : .black)
             }
             .padding(.horizontal, 24)
             .padding(.top, 20)
@@ -414,17 +369,11 @@ struct FilledIncomeView: View {
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(
-                    Color(
-                        red: 0.08,
-                        green: 0.08,
-                        blue: 0.08
-                    )
-                )
+                .fill(Color("Dark Charcoal"))
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
                         .stroke(
-                            Color.cyan.opacity(0.3),
+                            Color.black.opacity(0.3),
                             lineWidth: 1.5
                         )
                 )
