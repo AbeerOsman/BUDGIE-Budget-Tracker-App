@@ -9,7 +9,7 @@ import Observation
 @Observable
 final class AddCategoryViewModel {
     enum Mode {
-        case add(categoryIndex: Int)
+        case add(nextColorIndex: (CategoryType) -> Int)
         case edit(Category)
     }
 
@@ -22,6 +22,8 @@ final class AddCategoryViewModel {
 
     let mode: Mode
     let predefinedOptions: [String]
+    private let categoriesViewModel: CategoriesViewModel
+    private(set) var totalIncome: Double
 
     private var editingCategory: Category? {
         if case .edit(let category) = mode { return category }
@@ -47,8 +49,15 @@ final class AddCategoryViewModel {
         return Int((monthly / 30.0).rounded(.toNearestOrAwayFromZero))
     }
 
-    init(mode: Mode, suggestedPredefinedKey: String? = nil) {
+    init(
+        mode: Mode,
+        categoriesViewModel: CategoriesViewModel,
+        totalIncome: Double,
+        suggestedPredefinedKey: String? = nil
+    ) {
         self.mode = mode
+        self.categoriesViewModel = categoriesViewModel
+        self.totalIncome = totalIncome
         self.predefinedOptions = PredefinedCategoryCatalog.categoryNames
 
         if let suggestedPredefinedKey,
@@ -74,7 +83,48 @@ final class AddCategoryViewModel {
         title.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    var proposedBudget: Double {
+        parsedAmount(from: budget)
+    }
+
+    var budgetExceedsIncome: Bool {
+        categoriesViewModel.wouldExceedIncome(
+            proposedBudget: proposedBudget,
+            totalIncome: totalIncome,
+            excludingCategoryId: editingCategory?.id
+        )
+    }
+
+    var budgetValidationMessage: String? {
+        guard !budget.isEmpty, proposedBudget > 0 else { return nil }
+
+        if totalIncome <= 0 {
+            return "Add an income before allocating category budgets."
+        }
+
+        if budgetExceedsIncome {
+            let remaining = Int(
+                categoriesViewModel.remainingBudgetCapacity(
+                    totalIncome: totalIncome,
+                    excludingCategoryId: editingCategory?.id
+                )
+            )
+            return "Category budgets can’t exceed your income ($\(Int(totalIncome))). You have $\(remaining) left to allocate."
+        }
+
+        return nil
+    }
+
     var canSave: Bool {
+        guard meetsFormRequirements, !budgetExceedsIncome else { return false }
+        return true
+    }
+
+    func updateTotalIncome(_ amount: Double) {
+        totalIncome = amount
+    }
+
+    private var meetsFormRequirements: Bool {
         let base = !trimmedTitle.isEmpty && !emoji.isEmpty && !budget.isEmpty
         if categoryType == .spending {
             return base && !dailySpending.isEmpty
@@ -108,10 +158,10 @@ final class AddCategoryViewModel {
             id = existing.id
             spent = existing.spent
             colorIndex = existing.colorIndex
-        } else if case .add(let index) = mode {
+        } else if case .add(let nextColorIndex) = mode {
             id = UUID()
             spent = 0
-            colorIndex = CategoryStyling.colorIndex(for: index)
+            colorIndex = nextColorIndex(categoryType)
         } else {
             return nil
         }

@@ -22,6 +22,10 @@ final class CategoriesViewModel {
     // Prevent importing same SMS twice
     var importedTransactionIds: Set<UUID> = []
 
+    /// Reset prompt handling for the current calendar month (`year-month`).
+    var lastConfirmedCategoryResetPeriod: String?
+    var lastDeclinedCategoryResetPeriod: String?
+
     init() {
         if let state = CategoriesPersistence.load() {
             CategoriesPersistence.apply(state, to: self)
@@ -38,6 +42,99 @@ final class CategoriesViewModel {
 
     var filteredCategories: [Category] {
         categories.filter { $0.type == selectedType }
+    }
+
+    var spendingCategories: [Category] {
+        categories.filter { $0.type == .spending }
+    }
+
+    var isSpendingEmpty: Bool {
+        spendingCategories.isEmpty
+    }
+
+    /// Total spent from category payments (manual + SMS), rolled up on each category's `spent`.
+    var totalSpentFromPayments: Double {
+        categories.reduce(0) { $0 + $1.spent }
+    }
+
+    var hasCategoryPaymentHistory: Bool {
+        totalSpentFromPayments > 0
+            || paymentsByCategoryId.values.contains { !$0.isEmpty }
+    }
+
+    // MARK: - Monthly payment reset (linked to income date)
+
+    func shouldPromptForCategoryReset(incomeDate: Date, today: Date = Date()) -> Bool {
+        guard CategoryPaymentResetScheduler.isResetDayToday(
+            incomeDate: incomeDate,
+            today: today
+        ) else {
+            return false
+        }
+
+        let period = CategoryPaymentResetScheduler.periodIdentifier(for: today)
+        if lastConfirmedCategoryResetPeriod == period { return false }
+        if lastDeclinedCategoryResetPeriod == period { return false }
+        return true
+    }
+
+    func markCategoryResetDeclined(for date: Date = Date()) {
+        lastDeclinedCategoryResetPeriod = CategoryPaymentResetScheduler.periodIdentifier(for: date)
+        persist()
+    }
+
+    func markCategoryResetConfirmed(for date: Date = Date()) {
+        lastConfirmedCategoryResetPeriod = CategoryPaymentResetScheduler.periodIdentifier(for: date)
+        persist()
+    }
+
+    func resetAllCategoryPayments() {
+        paymentsByCategoryId = [:]
+        categories = categories.map { category in
+            Category(
+                id: category.id,
+                emoji: category.emoji,
+                name: category.name,
+                type: category.type,
+                spent: 0,
+                budget: category.budget,
+                dailyLimit: category.dailyLimit,
+                colorIndex: category.colorIndex,
+                predefinedKey: category.predefinedKey
+            )
+        }
+        persist()
+    }
+
+    func nextColorIndex(for type: CategoryType) -> Int {
+        let count = categories.filter { $0.type == type }.count
+        return CategoryStyling.colorIndex(for: count)
+    }
+
+    // MARK: - Budget vs income
+
+    func totalCategoryBudget(excludingCategoryId: UUID? = nil) -> Double {
+        categories
+            .filter { excludingCategoryId == nil || $0.id != excludingCategoryId }
+            .reduce(0) { $0 + $1.budget }
+    }
+
+    func remainingBudgetCapacity(
+        totalIncome: Double,
+        excludingCategoryId: UUID? = nil
+    ) -> Double {
+        max(0, totalIncome - totalCategoryBudget(excludingCategoryId: excludingCategoryId))
+    }
+
+    func wouldExceedIncome(
+        proposedBudget: Double,
+        totalIncome: Double,
+        excludingCategoryId: UUID? = nil
+    ) -> Bool {
+        guard proposedBudget > 0 else { return false }
+        if totalIncome <= 0 { return true }
+        let total = totalCategoryBudget(excludingCategoryId: excludingCategoryId) + proposedBudget
+        return total > totalIncome
     }
 
     func add(_ category: Category) {
@@ -339,9 +436,7 @@ final class CategoriesViewModel {
         for category: Category
     ) -> Color {
 
-        CategoryStyling.color(
-            forIndex: category.colorIndex
-        )
+        CategoryStyling.color(forIndex: category.colorIndex)
     }
 
     func progressFillColor(

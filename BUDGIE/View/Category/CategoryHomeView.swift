@@ -6,8 +6,11 @@
 import SwiftUI
 
 struct CategoryHomeView: View {
+    private static let maxDisplayedCategories = 6
+
     @Environment(CategoriesViewModel.self) private var viewModel
     @State private var showAllCategories = false
+    @State private var showAddCategory = false
     @State private var selectedCategoryId: UUID?
 
     private let columns = [
@@ -16,20 +19,26 @@ struct CategoryHomeView: View {
     ]
 
     var body: some View {
+        @Bindable var viewModel = viewModel
+
         VStack(alignment: .leading, spacing: 16) {
             header
 
-            LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
-                ForEach(viewModel.categories) { category in
-                    Button {
-                        selectedCategoryId = category.id
-                    } label: {
-                        CategoryCardView(
-                            item: category,
-                            accentColor: viewModel.accentColor(for: category)
-                        )
+            if viewModel.isSpendingEmpty {
+                categoriesEmptyState
+            } else {
+                LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
+                    ForEach(displayedCategories) { category in
+                        Button {
+                            selectedCategoryId = category.id
+                        } label: {
+                            CategoryCardView(
+                                item: category,
+                                accentColor: viewModel.accentColor(for: category)
+                            )
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
             }
         }
@@ -41,12 +50,60 @@ struct CategoryHomeView: View {
         .navigationDestination(item: $selectedCategoryId) { categoryId in
             CategoryDetailView(categoryId: categoryId)
         }
+        .sheet(isPresented: $showAddCategory) {
+            AddCategorySheet(nextColorIndex: viewModel.nextColorIndex(for:)) { category in
+                viewModel.add(category)
+            }
+            .presentationDetents([.large])
+        }
+    }
+
+    private var displayedCategories: [Category] {
+        Array(viewModel.spendingCategories.prefix(Self.maxDisplayedCategories))
+    }
+
+    private var categoriesEmptyState: some View {
+        VStack(spacing: 16) {
+            Image("box")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 100, height: 100)
+                .scaleEffect(x: -1, y: 1)
+
+            Text("No categories yet")
+                .font(.title.weight(.bold))
+                .foregroundStyle(.primary)
+
+            Button {
+                showAddCategory = true
+            } label: {
+                HStack(spacing: 10) {
+                    Text("Add a Category")
+                        .font(.system(size: 16))
+                        .foregroundStyle(.secondary)
+
+                    ZStack {
+                        Circle()
+                            .fill(Color("Sky Blue"))
+                            .frame(width: 32, height: 32)
+
+                        Image(systemName: "plus")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.white)
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 24)
     }
 
     private var header: some View {
         HStack(alignment: .firstTextBaseline) {
             Text("Categories")
-                .font(.custom("SF Pro Display", size: 22).weight(.bold))
+                .font(.system(size: 22, weight: .bold))
+                .foregroundStyle(.primary)
 
             Spacer()
 

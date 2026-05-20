@@ -41,7 +41,7 @@ struct CategoriesView: View {
             }
         }
         .sheet(isPresented: $showAddCategory) {
-            AddCategorySheet(categoryIndex: viewModel.categories.count) { category in
+            AddCategorySheet(nextColorIndex: viewModel.nextColorIndex(for:)) { category in
                 viewModel.add(category)
             }
             .presentationDetents([.large])

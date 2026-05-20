@@ -4,11 +4,21 @@
 //
 
 import SwiftUI
+import SwiftData
+
+private struct AddCategorySheetConfiguration {
+    let mode: AddCategoryViewModel.Mode
+    let suggestedPredefinedKey: String?
+    let onSave: (Category) -> Void
+    let onDelete: (() -> Void)?
+}
 
 struct AddCategorySheet: View {
-    @State private var viewModel: AddCategoryViewModel
-    var onSave: (Category) -> Void
-    var onDelete: (() -> Void)?
+    private let configuration: AddCategorySheetConfiguration
+
+    @Environment(CategoriesViewModel.self) private var categoriesViewModel
+    @Query private var incomeItems: [Income]
+    @State private var viewModel: AddCategoryViewModel?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
@@ -19,41 +29,72 @@ struct AddCategorySheet: View {
         onSave: @escaping (Category) -> Void,
         onDelete: (() -> Void)? = nil
     ) {
-        _viewModel = State(
-            initialValue: AddCategoryViewModel(
-                mode: mode,
-                suggestedPredefinedKey: suggestedPredefinedKey
-            )
+        configuration = AddCategorySheetConfiguration(
+            mode: mode,
+            suggestedPredefinedKey: suggestedPredefinedKey,
+            onSave: onSave,
+            onDelete: onDelete
         )
-        self.onSave = onSave
-        self.onDelete = onDelete
     }
 
     init(
-        categoryIndex: Int,
+        nextColorIndex: @escaping (CategoryType) -> Int,
         suggestedPredefinedKey: String? = nil,
         onSave: @escaping (Category) -> Void
     ) {
         self.init(
-            mode: .add(categoryIndex: categoryIndex),
+            mode: .add(nextColorIndex: nextColorIndex),
             suggestedPredefinedKey: suggestedPredefinedKey,
             onSave: onSave,
             onDelete: nil
         )
     }
 
+    private var totalIncome: Double {
+        incomeItems
+            .filter { $0.type == "income" }
+            .reduce(0) { $0 + $1.amount }
+    }
+
     var body: some View {
+        Group {
+            if let viewModel {
+                sheetContent(viewModel: viewModel)
+            } else {
+                Color.clear
+            }
+        }
+        .onAppear {
+            ensureViewModel()
+        }
+        .onChange(of: totalIncome) { _, newValue in
+            viewModel?.updateTotalIncome(newValue)
+        }
+    }
+
+    private func ensureViewModel() {
+        guard viewModel == nil else { return }
+        viewModel = AddCategoryViewModel(
+            mode: configuration.mode,
+            categoriesViewModel: categoriesViewModel,
+            totalIncome: totalIncome,
+            suggestedPredefinedKey: configuration.suggestedPredefinedKey
+        )
+    }
+
+    @ViewBuilder
+    private func sheetContent(viewModel: AddCategoryViewModel) -> some View {
         @Bindable var viewModel = viewModel
 
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    primaryFieldsSection
-                    typeSection
-                    budgetSection
+                    primaryFieldsSection(viewModel: viewModel)
+                    typeSection(viewModel: viewModel)
+                    budgetSection(viewModel: viewModel)
 
                     if viewModel.categoryType == .spending {
-                        dailySpendingSection
+                        dailySpendingSection(viewModel: viewModel)
 
                         Text("Recommended spending limit: $ \(viewModel.recommendedDailyLimit)")
                             .font(.subheadline)
@@ -77,7 +118,7 @@ struct AddCategorySheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     CircleNavButton(systemImage: "checkmark") {
-                        saveCategory()
+                        saveCategory(viewModel: viewModel)
                     }
                     .opacity(viewModel.canSave ? 1 : 0.4)
                     .disabled(!viewModel.canSave)
@@ -87,11 +128,11 @@ struct AddCategorySheet: View {
         .presentationDragIndicator(.visible)
     }
 
-    private var primaryFieldsSection: some View {
+    private func primaryFieldsSection(viewModel: AddCategoryViewModel) -> some View {
         @Bindable var viewModel = viewModel
 
         return formSection {
-            predefinedCategoryRow
+            predefinedCategoryRow(viewModel: viewModel)
 
             formDivider
 
@@ -110,7 +151,7 @@ struct AddCategorySheet: View {
         }
     }
 
-    private var predefinedCategoryRow: some View {
+    private func predefinedCategoryRow(viewModel: AddCategoryViewModel) -> some View {
         @Bindable var viewModel = viewModel
 
         return HStack {
@@ -140,7 +181,7 @@ struct AddCategorySheet: View {
         .padding(.vertical, 10)
     }
 
-    private var typeSection: some View {
+    private func typeSection(viewModel: AddCategoryViewModel) -> some View {
         @Bindable var viewModel = viewModel
 
         return formSection {
@@ -169,23 +210,33 @@ struct AddCategorySheet: View {
         }
     }
 
-    private var budgetSection: some View {
+    private func budgetSection(viewModel: AddCategoryViewModel) -> some View {
         @Bindable var viewModel = viewModel
 
-        return formSection {
-            CategoryFormRow(
-                placeholder: "Budget",
-                text: $viewModel.budget,
-                keyboardType: .numberPad,
-                sanitize: viewModel.sanitizeDigits,
-                showsCurrency: true
-            )
+        return VStack(alignment: .leading, spacing: 8) {
+            formSection {
+                CategoryFormRow(
+                    placeholder: "Budget",
+                    text: $viewModel.budget,
+                    keyboardType: .numberPad,
+                    sanitize: viewModel.sanitizeDigits,
+                    showsCurrency: true
+                )
+            }
+
+            if let message = viewModel.budgetValidationMessage {
+                Text(message)
+                    .font(.subheadline)
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 4)
+            }
         }
     }
 
     private var deleteSection: some View {
         Button(role: .destructive) {
-            onDelete?()
+            configuration.onDelete?()
             dismiss()
         } label: {
             Text("Delete Category")
@@ -199,7 +250,7 @@ struct AddCategorySheet: View {
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
     }
 
-    private var dailySpendingSection: some View {
+    private func dailySpendingSection(viewModel: AddCategoryViewModel) -> some View {
         @Bindable var viewModel = viewModel
 
         return formSection {
@@ -233,9 +284,9 @@ struct AddCategorySheet: View {
             .padding(.leading, 16)
     }
 
-    private func saveCategory() {
+    private func saveCategory(viewModel: AddCategoryViewModel) {
         guard let category = viewModel.buildCategory() else { return }
-        onSave(category)
+        configuration.onSave(category)
         dismiss()
     }
 }
@@ -321,5 +372,6 @@ private struct CategoryFormRow: View {
 }
 
 #Preview {
-    AddCategorySheet(categoryIndex: 0) { _ in }
+    AddCategorySheet(nextColorIndex: { _ in CategoryStyling.colorIndex(for: 0) }) { _ in }
+        .environment(CategoriesViewModel())
 }

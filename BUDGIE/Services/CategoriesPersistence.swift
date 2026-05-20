@@ -10,6 +10,8 @@ struct PersistedCategoriesState: Codable {
     var paymentsByCategoryId: [String: [CategoryPayment]]
     var uncategorizedTransactions: [ParsedTransaction]
     var importedTransactionIds: [UUID]
+    var lastConfirmedCategoryResetPeriod: String?
+    var lastDeclinedCategoryResetPeriod: String?
 }
 
 enum CategoriesPersistence {
@@ -33,7 +35,9 @@ enum CategoriesPersistence {
             categories: viewModel.categories,
             paymentsByCategoryId: payments,
             uncategorizedTransactions: viewModel.uncategorizedTransactions,
-            importedTransactionIds: Array(viewModel.importedTransactionIds)
+            importedTransactionIds: Array(viewModel.importedTransactionIds),
+            lastConfirmedCategoryResetPeriod: viewModel.lastConfirmedCategoryResetPeriod,
+            lastDeclinedCategoryResetPeriod: viewModel.lastDeclinedCategoryResetPeriod
         )
 
         if let data = try? JSONEncoder().encode(state) {
@@ -49,6 +53,8 @@ enum CategoriesPersistence {
         }
         viewModel.uncategorizedTransactions = state.uncategorizedTransactions
         viewModel.importedTransactionIds = Set(state.importedTransactionIds)
+        viewModel.lastConfirmedCategoryResetPeriod = state.lastConfirmedCategoryResetPeriod
+        viewModel.lastDeclinedCategoryResetPeriod = state.lastDeclinedCategoryResetPeriod
     }
 
     static func clear() {

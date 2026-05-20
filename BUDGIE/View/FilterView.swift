@@ -131,7 +131,7 @@ struct FilterView: View {
         }
         .sheet(isPresented: $showAddCategorySheet) {
             AddCategorySheet(
-                categoryIndex: categoriesViewModel.categories.count,
+                nextColorIndex: categoriesViewModel.nextColorIndex(for:),
                 suggestedPredefinedKey: selectedItem?.parsedTransaction.categoryName
             ) { category in
                 categoriesViewModel.add(category)

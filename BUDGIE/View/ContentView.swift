@@ -15,6 +15,7 @@ struct ContentView: View {
     @Query private var items: [Income]
 
     @State private var showAddIncome = false
+    @State private var showCategoryResetAlert = false
 
     // MARK: - Income
 
@@ -27,9 +28,7 @@ struct ContentView: View {
     // MARK: - Spent
 
     var totalSpent: Double {
-        items
-            .filter { $0.type == "expense" }
-            .reduce(0) { $0 + $1.amount }
+        categoriesViewModel.totalSpentFromPayments
     }
 
     // MARK: - Remaining
@@ -43,8 +42,22 @@ struct ContentView: View {
     var progressPercentage: Double {
         totalIncome > 0 ? totalSpent / totalIncome : 0
     }
-    
-    
+
+    private var primaryIncomeRecord: Income? {
+        items
+            .filter { $0.type == "income" }
+            .sorted { $0.timestamp > $1.timestamp }
+            .first
+    }
+
+    private var categoryResetAlertMessage: String {
+        guard let incomeDate = primaryIncomeRecord?.date else {
+            return "Today is your monthly date to reset category payments. Do you want to reset all category payments now?"
+        }
+
+        let formattedDay = CategoryPaymentResetScheduler.formattedIncomeDay(incomeDate: incomeDate)
+        return "Today is your monthly date to reset category payments (based on your income date, \(formattedDay)). Do you want to reset all category payments and clear spending totals?"
+    }
 
     var body: some View {
         ZStack{
@@ -142,8 +155,8 @@ struct ContentView: View {
         // MARK: Import SMS
 
         .onAppear {
-
             importSMS()
+            evaluateCategoryResetPrompt()
         }
 
         // MARK: Import when returning from Shortcuts
@@ -153,7 +166,19 @@ struct ContentView: View {
             if newPhase == .active {
 
                 importSMS()
+                evaluateCategoryResetPrompt()
             }
+        }
+        .alert("Reset Category Payments?", isPresented: $showCategoryResetAlert) {
+            Button("Confirm") {
+                categoriesViewModel.resetAllCategoryPayments()
+                categoriesViewModel.markCategoryResetConfirmed()
+            }
+            Button("Not Now", role: .cancel) {
+                categoriesViewModel.markCategoryResetDeclined()
+            }
+        } message: {
+            Text(categoryResetAlertMessage)
         }
 
         // MARK: Sheet
@@ -171,6 +196,15 @@ struct ContentView: View {
             .importSavedTransactions(
                 into: categoriesViewModel
             )
+    }
+
+    private func evaluateCategoryResetPrompt() {
+        guard let incomeDate = primaryIncomeRecord?.date else { return }
+        guard categoriesViewModel.hasCategoryPaymentHistory else { return }
+        guard categoriesViewModel.shouldPromptForCategoryReset(incomeDate: incomeDate) else {
+            return
+        }
+        showCategoryResetAlert = true
     }
 
     // MARK: Delete
