@@ -1,4 +1,4 @@
-//
+
 //  ContentView.swift
 //  BUDGIE
 //
@@ -16,26 +16,30 @@ struct ContentView: View {
 
     @State private var showAddIncome = false
 
-    // Calculate total income
+    // MARK: - Income
+
     var totalIncome: Double {
         items
             .filter { $0.type == "income" }
             .reduce(0) { $0 + $1.amount }
     }
 
-    // Calculate total spent
+    // MARK: - Spent
+
     var totalSpent: Double {
         items
             .filter { $0.type == "expense" }
             .reduce(0) { $0 + $1.amount }
     }
 
-    // Calculate remaining
+    // MARK: - Remaining
+
     var remaining: Double {
         totalIncome - totalSpent
     }
 
-    // Progress percentage
+    // MARK: - Progress
+
     var progressPercentage: Double {
         totalIncome > 0 ? totalSpent / totalIncome : 0
     }
@@ -46,7 +50,8 @@ struct ContentView: View {
 
             VStack(spacing: 0) {
 
-                // Income Box
+                // MARK: Income Box
+
                 if totalIncome == 0 {
 
                     EmptyIncomeView(action: {
@@ -63,10 +68,13 @@ struct ContentView: View {
                     )
                 }
 
-                // Insights Section
+                // MARK: Insights
+
                 InsightsView()
                     .padding(.horizontal, 16)
                     .padding(.bottom, 16)
+
+                // MARK: Categories
 
                 List {
 
@@ -87,27 +95,69 @@ struct ContentView: View {
                 }
                 .listStyle(.plain)
             }
+
+            // MARK: Toolbar
+
             .toolbar {
 
-                // Filter
-                ToolbarItem(placement: .navigationBarTrailing) {
+                // MARK: Filter
+
+                ToolbarItem(
+                    placement: .navigationBarTrailing
+                ) {
 
                     NavigationLink(
-                        destination: FilterView(items: [])
+
+                        destination:
+
+                            FilterView(
+
+                                items:
+
+                                    categoriesViewModel
+                                    .uncategorizedTransactions
+                                    .map {
+
+                                        FilterItem(
+                                            id: $0.id,
+
+                                            merchantName:
+                                                $0.merchantName
+                                                ?? "Unknown Merchant",
+
+                                            date:
+                                                $0.date.formatted(
+                                                    date: .abbreviated,
+                                                    time: .shortened
+                                                ),
+
+                                            amount:
+                                                $0.amount ?? 0,
+
+                                            parsedTransaction: $0
+                                        )
+                                    }
+                            )
+
                     ) {
 
                         Label(
                             "Filter unknown transaction",
-                            systemImage: "line.3.horizontal.decrease"
+                            systemImage:
+                                "line.3.horizontal.decrease"
                         )
                     }
                 }
 
-                // Settings
-                ToolbarItem(placement: .navigationBarTrailing) {
+                // MARK: Settings
+
+                ToolbarItem(
+                    placement: .navigationBarTrailing
+                ) {
 
                     NavigationLink(
-                        destination: IncomeDetailsView(onSave: {})
+                        destination:
+                            IncomeDetailsView(onSave: {})
                     ) {
 
                         Label(
@@ -119,13 +169,15 @@ struct ContentView: View {
             }
         }
 
-        // Import SMS when app opens
+        // MARK: Import SMS
+
         .onAppear {
 
             importSMS()
         }
 
-        // Import SMS again when returning from Shortcuts
+        // MARK: Import when returning from Shortcuts
+
         .onChange(of: scenePhase) { _, newPhase in
 
             if newPhase == .active {
@@ -134,13 +186,15 @@ struct ContentView: View {
             }
         }
 
+        // MARK: Sheet
+
         .sheet(isPresented: $showAddIncome) {
 
             Text("Add Income")
         }
     }
 
-    // MARK: - Import SMS
+    // MARK: Import SMS
 
     private func importSMS() {
 
@@ -150,7 +204,7 @@ struct ContentView: View {
             )
     }
 
-    // MARK: - Delete Items
+    // MARK: Delete
 
     private func deleteItems(offsets: IndexSet) {
 
@@ -177,7 +231,12 @@ struct EmptyIncomeView: View {
             VStack(spacing: 16) {
 
                 Text("Income")
-                    .font(.system(size: 22, weight: .bold))
+                    .font(
+                        .system(
+                            size: 22,
+                            weight: .bold
+                        )
+                    )
                     .foregroundColor(.white)
 
                 Button(action: action) {
@@ -185,7 +244,12 @@ struct EmptyIncomeView: View {
                     HStack(spacing: 8) {
 
                         Text("Add an Income")
-                            .font(.system(size: 16, weight: .regular))
+                            .font(
+                                .system(
+                                    size: 16,
+                                    weight: .regular
+                                )
+                            )
                             .foregroundColor(.gray)
 
                         Image(systemName: "plus.circle.fill")
@@ -201,7 +265,13 @@ struct EmptyIncomeView: View {
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(red: 0.08, green: 0.08, blue: 0.08))
+                .fill(
+                    Color(
+                        red: 0.08,
+                        green: 0.08,
+                        blue: 0.08
+                    )
+                )
         )
         .padding(.horizontal, 16)
         .padding(.top, 16)
@@ -222,31 +292,42 @@ struct FilledIncomeView: View {
 
         VStack(spacing: 0) {
 
-            // Header with Income and Amount
+            // MARK: Header
+
             HStack(spacing: 16) {
 
                 Text("Income")
-                    .font(.system(size: 22, weight: .bold))
+                    .font(
+                        .system(
+                            size: 22,
+                            weight: .bold
+                        )
+                    )
                     .foregroundColor(.white)
 
                 Spacer()
 
                 Text("$\(Int(income))")
-                    .font(.system(size: 22, weight: .bold))
+                    .font(
+                        .system(
+                            size: 22,
+                            weight: .bold
+                        )
+                    )
                     .foregroundColor(.white)
             }
             .padding(.horizontal, 24)
             .padding(.top, 20)
             .padding(.bottom, 16)
 
-            // Progress Bar
+            // MARK: Progress Bar
+
             VStack(spacing: 12) {
 
                 GeometryReader { geometry in
 
                     ZStack(alignment: .leading) {
 
-                        // Background
                         RoundedRectangle(cornerRadius: 4)
                             .fill(
                                 Color(
@@ -256,7 +337,6 @@ struct FilledIncomeView: View {
                                 )
                             )
 
-                        // Progress
                         RoundedRectangle(cornerRadius: 4)
                             .fill(
                                 LinearGradient(
@@ -267,6 +347,7 @@ struct FilledIncomeView: View {
                                                 green: 0.2,
                                                 blue: 0.2
                                             ),
+
                                             Color(
                                                 red: 0.9,
                                                 green: 0.3,
@@ -281,18 +362,26 @@ struct FilledIncomeView: View {
                             .frame(
                                 width:
                                     geometry.size.width
-                                    * CGFloat(min(progress, 1.0))
+                                    * CGFloat(
+                                        min(progress, 1.0)
+                                    )
                             )
                     }
                     .frame(height: 6)
                 }
                 .frame(height: 6)
 
-                // Spent and Left Info
+                // MARK: Info
+
                 HStack(spacing: 0) {
 
                     Text("Spent $\(Int(spent))")
-                        .font(.system(size: 14, weight: .regular))
+                        .font(
+                            .system(
+                                size: 14,
+                                weight: .regular
+                            )
+                        )
                         .foregroundColor(
                             Color(
                                 red: 0.6,
@@ -304,7 +393,12 @@ struct FilledIncomeView: View {
                     Spacer()
 
                     Text("Left $\(Int(remaining))")
-                        .font(.system(size: 14, weight: .regular))
+                        .font(
+                            .system(
+                                size: 14,
+                                weight: .regular
+                            )
+                        )
                         .foregroundColor(
                             Color(
                                 red: 0.6,
@@ -344,6 +438,9 @@ struct FilledIncomeView: View {
 #Preview {
 
     ContentView()
-        .modelContainer(for: Income.self, inMemory: true)
+        .modelContainer(
+            for: Income.self,
+            inMemory: true
+        )
         .environment(CategoriesViewModel())
 }
