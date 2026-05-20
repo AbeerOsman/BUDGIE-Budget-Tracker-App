@@ -33,16 +33,29 @@ final class AddPaymentViewModel {
         categories
     }
 
+//    func buildPayment() -> (payment: CategoryPayment, categoryId: UUID)? {
+//        guard canSave else { return nil }
+//        let payment = CategoryPayment(
+//            merchantName: trimmedTitle,
+//            date: date,
+//            amount: parsedAmount
+//        )
+//        return (payment, selectedCategoryId)
+//    }
+
     func buildPayment() -> (payment: CategoryPayment, categoryId: UUID)? {
         guard canSave else { return nil }
+
         let payment = CategoryPayment(
+            categoryId: selectedCategoryId,
             merchantName: trimmedTitle,
             date: date,
             amount: parsedAmount
         )
+
         return (payment, selectedCategoryId)
     }
-
+    
     func sanitizeTitle(_ input: String) -> String {
         let allowedPunctuation: Set<Character> = ["-", "'", "&", ".", ","]
         return input.filter { character in
