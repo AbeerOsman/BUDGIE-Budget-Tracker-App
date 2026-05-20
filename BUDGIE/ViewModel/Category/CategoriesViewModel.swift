@@ -44,6 +44,13 @@ final class CategoriesViewModel {
         categories[index] = category
     }
 
+    func delete(id: UUID) {
+        categories.removeAll { $0.id == id }
+        var paymentsCopy = paymentsByCategoryId
+        paymentsCopy.removeValue(forKey: id)
+        paymentsByCategoryId = paymentsCopy
+    }
+
     // MARK: - Add Payment
 
     func addPayment(
@@ -59,11 +66,11 @@ final class CategoriesViewModel {
 
         let category = categories[index]
 
-        var list = paymentsByCategoryId[categoryId] ?? []
-
+        var paymentsCopy = paymentsByCategoryId
+        var list = paymentsCopy[categoryId] ?? []
         list.insert(payment, at: 0)
-
-        paymentsByCategoryId[categoryId] = list
+        paymentsCopy[categoryId] = list
+        paymentsByCategoryId = paymentsCopy
 
         // Update category spent amount
         let updatedCategory = Category(
@@ -79,6 +86,82 @@ final class CategoriesViewModel {
         )
 
         categories[index] = updatedCategory
+    }
+
+    func deletePayment(id paymentId: UUID, categoryId: UUID) {
+        guard let categoryIndex = categories.firstIndex(where: {
+            $0.id == categoryId
+        }) else {
+            return
+        }
+
+        var paymentsCopy = paymentsByCategoryId
+        guard var list = paymentsCopy[categoryId] else {
+            return
+        }
+
+        guard let paymentIndex = list.firstIndex(where: {
+            $0.id == paymentId
+        }) else {
+            return
+        }
+
+        let removed = list.remove(at: paymentIndex)
+        paymentsCopy[categoryId] = list
+        paymentsByCategoryId = paymentsCopy
+
+        let category = categories[categoryIndex]
+        categories[categoryIndex] = Category(
+            id: category.id,
+            emoji: category.emoji,
+            name: category.name,
+            type: category.type,
+            spent: max(0, category.spent - removed.amount),
+            budget: category.budget,
+            dailyLimit: category.dailyLimit,
+            colorIndex: category.colorIndex,
+            predefinedKey: category.predefinedKey
+        )
+    }
+
+    func updatePayment(previous: CategoryPayment, with updated: CategoryPayment) {
+        if previous.categoryId != updated.categoryId {
+            deletePayment(id: previous.id, categoryId: previous.categoryId)
+            addPayment(updated, to: updated.categoryId)
+        } else {
+            var paymentsCopy = paymentsByCategoryId
+            guard var list = paymentsCopy[updated.categoryId],
+                  let rowIndex = list.firstIndex(where: { $0.id == updated.id })
+            else {
+                return
+            }
+
+            let oldAmount = list[rowIndex].amount
+            list[rowIndex] = updated
+            paymentsCopy[updated.categoryId] = list
+            paymentsByCategoryId = paymentsCopy
+
+            let delta = updated.amount - oldAmount
+
+            guard let categoryIndex = categories.firstIndex(where: {
+                $0.id == updated.categoryId
+            }) else {
+                return
+            }
+
+            let category = categories[categoryIndex]
+            categories[categoryIndex] = Category(
+                id: category.id,
+                emoji: category.emoji,
+                name: category.name,
+                type: category.type,
+                spent: max(0, category.spent + delta),
+                budget: category.budget,
+                dailyLimit: category.dailyLimit,
+                colorIndex: category.colorIndex,
+                predefinedKey: category.predefinedKey
+            )
+        }
     }
 
     // MARK: - Find Category Using predefinedKey

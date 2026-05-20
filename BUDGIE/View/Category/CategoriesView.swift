@@ -75,29 +75,49 @@ struct CategoriesView: View {
     private var categoriesList: some View {
         @Bindable var viewModel = viewModel
 
-        return ScrollView {
-            VStack(spacing: 16) {
+        return List {
+            Section {
                 categoryTypePicker(selectedType: $viewModel.selectedType)
-                    .padding(.horizontal, 16)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+            }
 
-                VStack(spacing: 12) {
-                    ForEach(viewModel.filteredCategories) { category in
-                        Button {
-                            selectedCategoryId = category.id
+            Section {
+                ForEach(viewModel.filteredCategories) { category in
+                    Button {
+                        selectedCategoryId = category.id
+                    } label: {
+                        CategoryListCardView(
+                            item: category,
+                            iconColor: viewModel.accentColor(for: category),
+                            progressFillColor: viewModel.progressFillColor(for: category)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 12, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            deleteCategory(category)
                         } label: {
-                            CategoryListCardView(
-                                item: category,
-                                iconColor: viewModel.accentColor(for: category),
-                                progressFillColor: viewModel.progressFillColor(for: category)
-                            )
+                            Label("Delete", systemImage: "trash")
                         }
-                        .buttonStyle(.plain)
                     }
                 }
-                .padding(.horizontal, 16)
             }
-            .padding(.top, 8)
-            .padding(.bottom, 24)
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+    }
+
+    private func deleteCategory(_ category: Category) {
+        withAnimation {
+            viewModel.delete(id: category.id)
+            if selectedCategoryId == category.id {
+                selectedCategoryId = nil
+            }
         }
     }
 

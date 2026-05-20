@@ -8,17 +8,47 @@ import Observation
 
 @Observable
 final class AddPaymentViewModel {
+    enum Mode {
+        case add(initialCategoryId: UUID)
+        case edit(CategoryPayment)
+    }
+
     var title = ""
     var amount = ""
     var date: Date
     var selectedCategoryId: UUID
 
     private let categories: [Category]
+    private let editingPaymentId: UUID?
 
-    init(initialCategoryId: UUID, categories: [Category], defaultDate: Date = Date()) {
-        self.selectedCategoryId = initialCategoryId
+    init(mode: Mode, categories: [Category], defaultDate: Date = Date()) {
         self.categories = categories
-        self.date = defaultDate
+
+        switch mode {
+        case .add(let initialCategoryId):
+            self.selectedCategoryId = initialCategoryId
+            self.date = defaultDate
+            self.editingPaymentId = nil
+
+        case .edit(let payment):
+            self.selectedCategoryId = payment.categoryId
+            self.title = payment.merchantName
+            self.amount = String(Int(payment.amount))
+            self.date = payment.date
+            self.editingPaymentId = payment.id
+        }
+    }
+
+    convenience init(initialCategoryId: UUID, categories: [Category], defaultDate: Date = Date()) {
+        self.init(
+            mode: .add(initialCategoryId: initialCategoryId),
+            categories: categories,
+            defaultDate: defaultDate
+        )
+    }
+
+    var isEditing: Bool {
+        editingPaymentId != nil
     }
 
     var trimmedTitle: String {
@@ -33,20 +63,11 @@ final class AddPaymentViewModel {
         categories
     }
 
-//    func buildPayment() -> (payment: CategoryPayment, categoryId: UUID)? {
-//        guard canSave else { return nil }
-//        let payment = CategoryPayment(
-//            merchantName: trimmedTitle,
-//            date: date,
-//            amount: parsedAmount
-//        )
-//        return (payment, selectedCategoryId)
-//    }
-
     func buildPayment() -> (payment: CategoryPayment, categoryId: UUID)? {
         guard canSave else { return nil }
 
         let payment = CategoryPayment(
+            id: editingPaymentId ?? UUID(),
             categoryId: selectedCategoryId,
             merchantName: trimmedTitle,
             date: date,
