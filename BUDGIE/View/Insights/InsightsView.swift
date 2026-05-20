@@ -12,14 +12,13 @@ struct InsightsView: View {
 
     var body: some View {
 
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 20) {
 
             Text("Insights")
                 .font(.system(size: 22, weight: .bold))
                 .tracking(-0.26)
                 .foregroundColor(.primary)
-
-            Spacer()
+                .padding(.bottom, 64)
 
             if viewModel.hasInsights {
 
@@ -31,12 +30,10 @@ struct InsightsView: View {
                 InsightsEmptyState()
 
             }
-
-            Spacer()
         }
         .padding(16)
+        .padding(.bottom, 80)
         .frame(maxWidth: .infinity)
-        .frame(height: 430)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color("Dark Charcoal"))
