@@ -7,6 +7,11 @@
 import Foundation
 import Combine
 
+enum InsightsPeriod{
+    case day, week, month
+}
+
 final class InsightsViewModel: ObservableObject {
     @Published var hasInsights: Bool = false
+    @Published var selectedPeriod: InsightsPeriod = .day
 }

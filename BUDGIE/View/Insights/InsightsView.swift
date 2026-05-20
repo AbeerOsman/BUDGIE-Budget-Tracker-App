@@ -22,15 +22,30 @@ struct InsightsView: View {
                 .padding(.bottom, 64)
 
             if viewModel.hasInsights {
+                
+                // Period Picker
+                InsightsPeriodPicker(selected: $viewModel.selectedPeriod)
+                
+                // Chart حسب الـ period
+                switch viewModel.selectedPeriod {
+                case .day:
+                    Text("Day Chart Coming Soon")
+                         .foregroundColor(.primary)
+                case .week:
+                    Text("Week Chart Coming Soon")
+                         .foregroundColor(.primary)
+                case .month:
+                    Text("Month Chart Coming Soon")
+                        .foregroundColor(.primary)
+                }
 
-                Text("Chart Coming Soon")
-                    .foregroundColor(.primary)
-
+            
             } else {
-
+                Spacer()
                 InsightsEmptyState()
-
+                Spacer()
             }
+
         }
         .padding(16)
         .padding(.bottom, 80)
