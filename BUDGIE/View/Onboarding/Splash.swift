@@ -9,25 +9,32 @@ import SwiftUI
 
 struct Splash: View {
     @Environment(\.colorScheme) var colorScheme
-    @State private var goToOnboarding = false
-    
+    @State private var navigate = false
+    @AppStorage("hasOnboarded") private var hasOnboarded: Bool = false
+
     var body: some View {
-        if goToOnboarding {
-            Onboarding()
-        } else {
-            Image(colorScheme == .dark ? "TextLogo" : "TextLogoDark")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 170)
-                .offset(y: -50)
-                .padding()
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        withAnimation {
-                            goToOnboarding = true
+        Group {
+            if navigate {
+                if hasOnboarded {
+                    ContentView()
+                } else {
+                    Onboarding()
+                }
+            } else {
+                Image(colorScheme == .dark ? "TextLogo" : "TextLogoDark")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 170)
+                    .offset(y: -50)
+                    .padding()
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            withAnimation {
+                                navigate = true
+                            }
                         }
                     }
-                }
+            }
         }
     }
 }
