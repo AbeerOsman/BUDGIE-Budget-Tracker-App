@@ -6,6 +6,9 @@
 import SwiftUI
 
 struct CategoryDetailView: View {
+    /// Embedded list rows need an explicit height when nested in `ScrollView`, or new rows stay clipped / zero-sized.
+    private static let paymentRowListStride: CGFloat = 70
+
     @Environment(CategoriesViewModel.self) private var categoriesViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
@@ -14,18 +17,22 @@ struct CategoryDetailView: View {
 
     @State private var showEditSheet = false
     @State private var showAddPayment = false
-
-    private var viewModel: CategoryDetailViewModel {
-        CategoryDetailViewModel(
-            categoryId: categoryId,
-            categoriesViewModel: categoriesViewModel
-        )
-    }
+    @State private var paymentToEdit: CategoryPayment?
 
     var body: some View {
+        @Bindable var store = categoriesViewModel
+        let detailVM = CategoryDetailViewModel(
+            categoryId: categoryId,
+            categoriesViewModel: store
+        )
+
         Group {
-            if let category = viewModel.category {
-                detailContent(category: category)
+            if let category = detailVM.category {
+                detailContent(
+                    category: category,
+                    detailVM: detailVM,
+                    store: store
+                )
             } else {
                 ContentUnavailableView("Category not found", systemImage: "folder")
             }
@@ -33,20 +40,28 @@ struct CategoryDetailView: View {
         .navigationBarBackButtonHidden(true)
     }
 
-    private func detailContent(category: Category) -> some View {
+    private func detailContent(
+        category: Category,
+        detailVM: CategoryDetailViewModel,
+        store: CategoriesViewModel
+    ) -> some View {
         ZStack(alignment: .top) {
-            headerBackground
+            headerBackground(detailVM: detailVM)
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    summarySection(category: category)
+                    summarySection(category: category, detailVM: detailVM)
                         .padding(.horizontal, 16)
                         .padding(.top, 8)
 
-                    recentSection(category: category)
-                        .padding(.horizontal, 16)
-                        .padding(.top, 32)
-                        .padding(.bottom, 32)
+                    recentSection(
+                        category: category,
+                        detailVM: detailVM,
+                        store: store
+                    )
+                    .padding(.horizontal, 16)
+                    .padding(.top, 32)
+                    .padding(.bottom, 32)
                 }
             }
         }
@@ -68,27 +83,44 @@ struct CategoryDetailView: View {
         }
         .toolbarBackground(.hidden, for: .navigationBar)
         .sheet(isPresented: $showEditSheet) {
-            AddCategorySheet(mode: .edit(category)) { updated in
-                viewModel.updateCategory(updated)
-            }
+            AddCategorySheet(
+                mode: .edit(category),
+                onSave: { updated in
+                    detailVM.updateCategory(updated)
+                },
+                onDelete: {
+                    store.delete(id: category.id)
+                    showEditSheet = false
+                    dismiss()
+                }
+            )
             .presentationDetents([.large])
         }
         .sheet(isPresented: $showAddPayment) {
             AddPaymentSheet(
                 initialCategoryId: category.id,
-                categories: categoriesViewModel.categories
+                categories: store.categories
             ) { payment, categoryId in
-                categoriesViewModel.addPayment(payment, categoryId: categoryId)
+                store.addPayment(payment, categoryId: categoryId)
+            }
+            .presentationDetents([.large])
+        }
+        .sheet(item: $paymentToEdit) { payment in
+            AddPaymentSheet(
+                mode: .edit(payment),
+                categories: store.categories
+            ) { updated, _ in
+                store.updatePayment(previous: payment, with: updated)
             }
             .presentationDetents([.large])
         }
     }
 
-    private var headerBackground: some View {
+    private func headerBackground(detailVM: CategoryDetailViewModel) -> some View {
         LinearGradient(
             colors: [
-                viewModel.accentColor,
-                viewModel.accentColor.opacity(0.45),
+                detailVM.accentColor,
+                detailVM.accentColor.opacity(0.45),
                 Color(.systemBackground)
             ],
             startPoint: UnitPoint(x: 1, y: 0),
@@ -106,7 +138,10 @@ struct CategoryDetailView: View {
         .ignoresSafeArea(edges: .top)
     }
 
-    private func summarySection(category: Category) -> some View {
+    private func summarySection(
+        category: Category,
+        detailVM: CategoryDetailViewModel
+    ) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .firstTextBaseline) {
                 Text(category.name)
@@ -122,7 +157,7 @@ struct CategoryDetailView: View {
 
             CategoryDetailProgressBar(
                 progress: category.progress,
-                fillColor: viewModel.progressFillColor
+                fillColor: detailVM.progressFillColor
             )
 
             HStack {
@@ -135,28 +170,64 @@ struct CategoryDetailView: View {
         }
     }
 
-    private func recentSection(category: Category) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+    private func recentSection(
+        category: Category,
+        detailVM: CategoryDetailViewModel,
+        store: CategoriesViewModel
+    ) -> some View {
+        let payments = detailVM.recentPayments
+
+        return VStack(alignment: .leading, spacing: 12) {
             Text("Recent")
                 .font(.title2.weight(.bold))
                 .foregroundStyle(.primary)
 
-            VStack(spacing: 0) {
-                ForEach(viewModel.recentPayments) { payment in
-                    CategoryPaymentRow(
-                        payment: payment,
-                        emoji: category.emoji,
-                        iconColor: viewModel.accentColor
-                    )
+            if !payments.isEmpty {
+                List {
+                    ForEach(payments) { payment in
+                        CategoryPaymentRow(
+                            payment: payment,
+                            emoji: category.emoji,
+                            iconColor: detailVM.accentColor
+                        )
+                        .overlay(alignment: .bottom) {
+                            if payment.id != payments.last?.id {
+                                Divider()
+                                    .padding(.leading, 60)
+                            }
+                        }
+                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                        .listRowBackground(recentListBackground)
+                        .listRowSeparator(.hidden)
+                        .swipeActions(edge: HorizontalEdge.trailing, allowsFullSwipe: false) {
+                            Button {
+                                paymentToEdit = payment
+                            } label: {
+                                Label("Edit", systemImage: "pencil")
+                            }
+                            .tint(.gray)
 
-                    if payment.id != viewModel.recentPayments.last?.id {
-                        Divider()
-                            .padding(.leading, 60)
+                            Button(role: .destructive) {
+                                store.deletePayment(
+                                    id: payment.id,
+                                    categoryId: category.id
+                                )
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                     }
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .scrollDisabled(true)
+                .environment(\.defaultMinListRowHeight, 68)
+                .frame(
+                    height: Self.paymentRowListStride * CGFloat(payments.count)
+                )
+                .id(payments.map(\.id))
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             }
-            .background(recentListBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
     }
 

@@ -13,17 +13,29 @@ struct AddPaymentSheet: View {
     @Environment(\.colorScheme) private var colorScheme
 
     init(
-        initialCategoryId: UUID,
+        mode: AddPaymentViewModel.Mode,
         categories: [Category],
         onSave: @escaping (CategoryPayment, UUID) -> Void
     ) {
         _viewModel = State(
             initialValue: AddPaymentViewModel(
-                initialCategoryId: initialCategoryId,
+                mode: mode,
                 categories: categories
             )
         )
         self.onSave = onSave
+    }
+
+    init(
+        initialCategoryId: UUID,
+        categories: [Category],
+        onSave: @escaping (CategoryPayment, UUID) -> Void
+    ) {
+        self.init(
+            mode: .add(initialCategoryId: initialCategoryId),
+            categories: categories,
+            onSave: onSave
+        )
     }
 
     var body: some View {
@@ -46,7 +58,7 @@ struct AddPaymentSheet: View {
                     }
                 }
                 ToolbarItem(placement: .principal) {
-                    Text("Add Payment")
+                    Text(viewModel.isEditing ? "Edit Payment" : "Add Payment")
                         .font(.headline.weight(.semibold))
                         .foregroundStyle(.primary)
                 }

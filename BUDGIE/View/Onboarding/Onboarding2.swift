@@ -11,6 +11,7 @@ struct Onboarding2: View {
     
     @State private var goToIncomeOnboarding = false
     @State private var goToMain = false
+    @AppStorage("hasOnboarded") private var hasOnboarded: Bool = false
     
     var body: some View {
         if goToIncomeOnboarding {
@@ -67,6 +68,7 @@ struct Onboarding2: View {
                     
                     Button {
                         withAnimation {
+                            hasOnboarded = true
                             goToMain = true
                         }
                     } label: {

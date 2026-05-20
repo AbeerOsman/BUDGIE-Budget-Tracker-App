@@ -8,33 +8,33 @@ import SwiftUI
 struct AddCategorySheet: View {
     @State private var viewModel: AddCategoryViewModel
     var onSave: (Category) -> Void
+    var onDelete: (() -> Void)?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
 
     init(
         mode: AddCategoryViewModel.Mode,
-        recommendedDailyLimit: Int = 50,
-        onSave: @escaping (Category) -> Void
+        onSave: @escaping (Category) -> Void,
+        onDelete: (() -> Void)? = nil
     ) {
         _viewModel = State(
             initialValue: AddCategoryViewModel(
-                mode: mode,
-                recommendedDailyLimit: recommendedDailyLimit
+                mode: mode
             )
         )
         self.onSave = onSave
+        self.onDelete = onDelete
     }
 
     init(
         categoryIndex: Int,
-        recommendedDailyLimit: Int = 50,
         onSave: @escaping (Category) -> Void
     ) {
         self.init(
             mode: .add(categoryIndex: categoryIndex),
-            recommendedDailyLimit: recommendedDailyLimit,
-            onSave: onSave
+            onSave: onSave,
+            onDelete: nil
         )
     }
 
@@ -57,6 +57,10 @@ struct AddCategorySheet: View {
                             .frame(maxWidth: .infinity)
                             .multilineTextAlignment(.center)
                             .padding(.top, 4)
+                    }
+
+                    if viewModel.isEditing {
+                        deleteSection
                     }
                 }
                 .padding(.horizontal, 16)
@@ -112,10 +116,16 @@ struct AddCategorySheet: View {
 
             Spacer()
 
-            Picker("", selection: $viewModel.selectedPredefinedKey) {
-                Text("Custom").tag(nil as String?)
+            Picker(
+                "",
+                selection: Binding(
+                    get: { viewModel.selectedPredefinedKey ?? "" },
+                    set: { viewModel.setPredefinedPickerSelection($0) }
+                )
+            ) {
+                Text("Custom").tag("")
                 ForEach(viewModel.predefinedOptions, id: \.self) { name in
-                    Text(name).tag(name as String?)
+                    Text(name).tag(name)
                 }
             }
             .labelsHidden()
@@ -124,9 +134,6 @@ struct AddCategorySheet: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
-        .onChange(of: viewModel.selectedPredefinedKey) { _, newValue in
-            viewModel.applyPredefinedSelection(newValue)
-        }
     }
 
     private var typeSection: some View {
@@ -170,6 +177,22 @@ struct AddCategorySheet: View {
                 showsCurrency: true
             )
         }
+    }
+
+    private var deleteSection: some View {
+        Button(role: .destructive) {
+            onDelete?()
+            dismiss()
+        } label: {
+            Text("Delete Category")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.red)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+        }
+        .buttonStyle(.plain)
+        .background(formSectionBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
     }
 
     private var dailySpendingSection: some View {

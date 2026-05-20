@@ -21,7 +21,6 @@ final class AddCategoryViewModel {
     var selectedPredefinedKey: String?
 
     let mode: Mode
-    let recommendedDailyLimit: Int
     let predefinedOptions: [String]
 
     private var editingCategory: Category? {
@@ -41,9 +40,15 @@ final class AddCategoryViewModel {
         selectedPredefinedKey == nil
     }
 
-    init(mode: Mode, recommendedDailyLimit: Int = 50) {
+    /// Even split of monthly budget across 30 days (updates as the user types budget).
+    var recommendedDailyLimit: Int {
+        let monthly = parsedAmount(from: budget)
+        guard monthly > 0 else { return 0 }
+        return Int((monthly / 30.0).rounded(.toNearestOrAwayFromZero))
+    }
+
+    init(mode: Mode) {
         self.mode = mode
-        self.recommendedDailyLimit = recommendedDailyLimit
         self.predefinedOptions = PredefinedCategoryCatalog.categoryNames
 
         if case .edit(let category) = mode {
@@ -70,16 +75,15 @@ final class AddCategoryViewModel {
         return base
     }
 
-    func applyPredefinedSelection(_ key: String?) {
-        selectedPredefinedKey = key
-        guard let key else { return }
-
-        if title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            title = key
+    /// Uses non-optional picker value: empty string = Custom. Syncs title + emoji whenever a predefined key is chosen.
+    func setPredefinedPickerSelection(_ raw: String) {
+        if raw.isEmpty {
+            selectedPredefinedKey = nil
+            return
         }
-        if emoji.isEmpty {
-            emoji = PredefinedCategoryCatalog.defaultEmoji(for: key)
-        }
+        selectedPredefinedKey = raw
+        title = raw
+        emoji = PredefinedCategoryCatalog.defaultEmoji(for: raw)
     }
 
     func buildCategory() -> Category? {
