@@ -8,6 +8,7 @@ import SwiftUI
 struct CategoryHomeView: View {
     private static let maxDisplayedCategories = 6
 
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(CategoriesViewModel.self) private var viewModel
     @State private var showAllCategories = false
     @State private var showAddCategory = false
@@ -70,7 +71,7 @@ struct CategoryHomeView: View {
                 .scaleEffect(x: -1, y: 1)
 
             Text("No categories yet")
-                .font(.title.weight(.bold))
+                .font(.system(size: 28, weight: .bold))
                 .foregroundStyle(.primary)
 
             Button {
@@ -102,8 +103,8 @@ struct CategoryHomeView: View {
         HStack(alignment: .firstTextBaseline) {
             Text("Categories")
                 .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(.white)
-                .padding(.horizontal, 24)
+                .foregroundStyle(colorScheme == .dark ? .white : .black)
+                .padding(.horizontal, 16)
 
             Spacer()
 

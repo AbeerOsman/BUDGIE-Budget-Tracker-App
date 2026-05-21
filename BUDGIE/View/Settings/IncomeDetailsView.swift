@@ -21,6 +21,7 @@ struct IncomeDetailsView: View {
     @State private var didLoadSavedIncome = false
 
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query(
         filter: #Predicate<Income> { $0.type == "income" },
@@ -230,6 +231,7 @@ struct IncomeDetailsView: View {
             title = trimmedTitle
             amount = formatAmount(incomeAmount)
             onSave()
+            dismiss()
         } catch {
             print("Error saving income: \(error)")
         }

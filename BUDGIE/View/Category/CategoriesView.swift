@@ -13,6 +13,7 @@ struct CategoriesView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var showAddCategory = false
     @State private var selectedCategoryId: UUID?
+    @State private var categoryPendingDelete: Category?
 
     var body: some View {
         Group {
@@ -49,6 +50,32 @@ struct CategoriesView: View {
         .navigationDestination(item: $selectedCategoryId) { categoryId in
             CategoryDetailView(categoryId: categoryId)
         }
+        .alert(
+            "Delete Category?",
+            isPresented: deleteCategoryAlertIsPresented,
+            presenting: categoryPendingDelete
+        ) { category in
+            Button("Cancel", role: .cancel) {
+                categoryPendingDelete = nil
+            }
+            Button("Delete", role: .destructive) {
+                deleteCategory(category)
+                categoryPendingDelete = nil
+            }
+        } message: { category in
+            Text("Are you sure you want to delete \"\(category.name)\"? This cannot be undone.")
+        }
+    }
+
+    private var deleteCategoryAlertIsPresented: Binding<Bool> {
+        Binding(
+            get: { categoryPendingDelete != nil },
+            set: { isPresented in
+                if !isPresented {
+                    categoryPendingDelete = nil
+                }
+            }
+        )
     }
 
     private var emptyState: some View {
@@ -98,9 +125,9 @@ struct CategoriesView: View {
                     .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 12, trailing: 16))
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
-                            deleteCategory(category)
+                            categoryPendingDelete = category
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }

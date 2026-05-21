@@ -9,18 +9,27 @@ import SwiftUI
 import UIKit
 
 struct MainSetting: View {
+    @Environment(\.dismiss) private var dismiss
+
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 30) {
-                    GeneralSection()
-                    HelpSection()
-                    SecuritySection()
-                }
-                .padding(.vertical, 20)
+        ScrollView {
+            VStack(spacing: 30) {
+                GeneralSection()
+                HelpSection()
+                SecuritySection()
             }
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
+            .padding(.vertical, 20)
+        }
+        .background(Color(.systemBackground))
+        .navigationTitle("Settings")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                CircleNavButton(systemImage: "chevron.left") {
+                    dismiss()
+                }
+            }
         }
     }
 }

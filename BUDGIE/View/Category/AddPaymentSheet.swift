@@ -42,15 +42,14 @@ struct AddPaymentSheet: View {
         @Bindable var viewModel = viewModel
 
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    formCard
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
-                .padding(.bottom, 24)
+            VStack(spacing: 16) {
+                formCard
             }
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(Color(.systemBackground))
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     AddPaymentGlassyIconButton(systemImage: "chevron.left") {

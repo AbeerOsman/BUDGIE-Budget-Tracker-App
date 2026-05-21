@@ -230,6 +230,7 @@ struct ContentView: View {
 // MARK: - Empty Income State
 
 struct EmptyIncomeView: View {
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
 
@@ -239,7 +240,7 @@ struct EmptyIncomeView: View {
 
                 Text("Income")
                     .font(.system(size: 22, weight: .bold))
-                    .foregroundColor(.white)
+                    .foregroundStyle(.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 NavigationLink {
@@ -252,7 +253,7 @@ struct EmptyIncomeView: View {
 
                         Text("Add an Income")
                             .font(.system(size: 16, weight: .regular))
-                            .foregroundColor(.gray)
+                            .foregroundStyle(colorScheme == .dark ? .white : .black)
 
                         Image(systemName: "plus.circle.fill")
                             .font(.system(size: 24))
@@ -266,8 +267,8 @@ struct EmptyIncomeView: View {
         .frame(height: 110)
         .frame(maxWidth: .infinity)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(red: 0.11, green: 0.11, blue: 0.11))
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(Color.budgieGroupedBoxBackground(for: colorScheme))
         )
         .padding(.horizontal, 16)
         .padding(.top, 16)
@@ -299,7 +300,7 @@ struct FilledIncomeView: View {
                             weight: .bold
                         )
                     )
-                    .foregroundColor(colorScheme == .dark ? .white : .black)
+                    .foregroundStyle(.primary)
 
                 Spacer()
 
@@ -310,7 +311,7 @@ struct FilledIncomeView: View {
                             weight: .bold
                         )
                     )
-                    .foregroundColor(colorScheme == .dark ? .white : .black)
+                    .foregroundStyle(.primary)
             }
             .padding(.horizontal, 24)
             .padding(.top, 20)
@@ -325,13 +326,7 @@ struct FilledIncomeView: View {
                     ZStack(alignment: .leading) {
 
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(
-                                Color(
-                                    red: 0.3,
-                                    green: 0.3,
-                                    blue: 0.3
-                                )
-                            )
+                            .fill(Color.primary.opacity(0.12))
 
                         RoundedRectangle(cornerRadius: 4)
                             .fill(
@@ -378,13 +373,7 @@ struct FilledIncomeView: View {
                                 weight: .regular
                             )
                         )
-                        .foregroundColor(
-                            Color(
-                                red: 0.6,
-                                green: 0.6,
-                                blue: 0.6
-                            )
-                        )
+                        .foregroundStyle(.secondary)
 
                     Spacer()
 
@@ -395,13 +384,7 @@ struct FilledIncomeView: View {
                                 weight: .regular
                             )
                         )
-                        .foregroundColor(
-                            Color(
-                                red: 0.6,
-                                green: 0.6,
-                                blue: 0.6
-                            )
-                        )
+                        .foregroundStyle(.secondary)
                 }
             }
             .padding(.horizontal, 24)
@@ -409,15 +392,8 @@ struct FilledIncomeView: View {
         }
         .frame(maxWidth: .infinity)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color("Dark Charcoal"))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(
-                            Color.black.opacity(0.3),
-                            lineWidth: 1.5
-                        )
-                )
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(Color.budgieGroupedBoxBackground(for: colorScheme))
         )
         .padding(.horizontal, 16)
         .padding(.top, 16)

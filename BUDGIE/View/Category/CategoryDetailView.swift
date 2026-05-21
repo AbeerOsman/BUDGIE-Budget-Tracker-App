@@ -18,6 +18,7 @@ struct CategoryDetailView: View {
     @State private var showEditSheet = false
     @State private var showAddPayment = false
     @State private var paymentToEdit: CategoryPayment?
+    @State private var paymentPendingDelete: CategoryPayment?
 
     var body: some View {
         @Bindable var store = categoriesViewModel
@@ -114,6 +115,32 @@ struct CategoryDetailView: View {
             }
             .presentationDetents([.large])
         }
+        .alert(
+            "Delete Payment?",
+            isPresented: deletePaymentAlertIsPresented,
+            presenting: paymentPendingDelete
+        ) { payment in
+            Button("Cancel", role: .cancel) {
+                paymentPendingDelete = nil
+            }
+            Button("Delete", role: .destructive) {
+                store.deletePayment(id: payment.id, categoryId: category.id)
+                paymentPendingDelete = nil
+            }
+        } message: { payment in
+            Text("Are you sure you want to delete \"\(payment.merchantName)\"? This cannot be undone.")
+        }
+    }
+
+    private var deletePaymentAlertIsPresented: Binding<Bool> {
+        Binding(
+            get: { paymentPendingDelete != nil },
+            set: { isPresented in
+                if !isPresented {
+                    paymentPendingDelete = nil
+                }
+            }
+        )
     }
 
     private func headerBackground(detailVM: CategoryDetailViewModel) -> some View {
@@ -208,10 +235,7 @@ struct CategoryDetailView: View {
                             .tint(.gray)
 
                             Button(role: .destructive) {
-                                store.deletePayment(
-                                    id: payment.id,
-                                    categoryId: category.id
-                                )
+                                paymentPendingDelete = payment
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }

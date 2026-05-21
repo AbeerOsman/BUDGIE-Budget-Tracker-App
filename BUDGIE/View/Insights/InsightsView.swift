@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct InsightsView: View {
+    @Environment(\.colorScheme) private var colorScheme
 
     @StateObject private var viewModel = InsightsViewModel()
 
@@ -17,7 +18,7 @@ struct InsightsView: View {
             Text("Insights")
                 .font(.system(size: 22, weight: .bold))
                 .tracking(-0.26)
-                .foregroundColor(.white)
+                .foregroundStyle(.primary)
                 .padding(.bottom, 64)
 
             if viewModel.hasInsights {
@@ -35,8 +36,8 @@ struct InsightsView: View {
         .padding(.bottom, 80)
         .frame(maxWidth: .infinity)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color("Dark Charcoal"))
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(Color.budgieGroupedBoxBackground(for: colorScheme))
         )
     }
 }

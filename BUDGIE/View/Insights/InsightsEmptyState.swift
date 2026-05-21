@@ -24,7 +24,7 @@ struct InsightsEmptyState: View {
 
                 Text("We’ll show your spending insights once there’s some activity.")
                     .font(.system(size: 15))
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 260)
             }

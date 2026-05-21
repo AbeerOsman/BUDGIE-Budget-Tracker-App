@@ -1,6 +1,13 @@
 import SwiftUI
 
 extension Color {
+    /// Grouped card surface used in sheets (Add Category, Add Payment) and home boxes.
+    static func budgieGroupedBoxBackground(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark
+            ? Color(.secondarySystemGroupedBackground)
+            : Color(.systemGray6)
+    }
+
     /// A convenient linear gradient from white to gray, left to right.
     static var whiteToGrayGradient: LinearGradient {
         LinearGradient(

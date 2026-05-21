@@ -6,13 +6,15 @@
 import SwiftUI
 
 struct FilterToolbarButton: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let showsBadge: Bool
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
             Image(systemName: "line.3.horizontal.decrease")
                 .font(.body.weight(.medium))
-                .foregroundStyle(.white)
+                .foregroundStyle(colorScheme == .dark ? .white : .black)
 
             if showsBadge {
                 Circle()
