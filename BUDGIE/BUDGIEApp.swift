@@ -26,6 +26,9 @@ struct BUDGIEApp: App {
         WindowGroup {
             Splash()
                 .environment(categoriesViewModel)
+                .onAppear {
+                    BudgieNotificationService.shared.requestAuthorizationIfNeeded()
+                }
         }
         .modelContainer(sharedModelContainer)
     }

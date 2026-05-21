@@ -26,6 +26,9 @@ final class CategoriesViewModel {
     var lastConfirmedCategoryResetPeriod: String?
     var lastDeclinedCategoryResetPeriod: String?
 
+    /// Used for income-wide budget notifications (set from ContentView).
+    var budgetAlertTotalIncome: Double = 0
+
     init() {
         if let state = CategoriesPersistence.load() {
             CategoriesPersistence.apply(state, to: self)
@@ -89,6 +92,7 @@ final class CategoriesViewModel {
     }
 
     func resetAllCategoryPayments() {
+        BudgieNotificationService.shared.clearCategoryExceededFlags()
         paymentsByCategoryId = [:]
         categories = categories.map { category in
             Category(
@@ -175,6 +179,8 @@ final class CategoriesViewModel {
         }
 
         let category = categories[index]
+        let previousCategorySpent = category.spent
+        let previousTotalSpent = totalSpentFromPayments
 
         var paymentsCopy = paymentsByCategoryId
         var list = paymentsCopy[categoryId] ?? []
@@ -197,6 +203,20 @@ final class CategoriesViewModel {
 
         categories[index] = updatedCategory
         persist()
+
+        BudgieNotificationService.shared.checkCategoryBudgetExceeded(
+            categoryId: updatedCategory.id,
+            categoryName: updatedCategory.name,
+            budget: updatedCategory.budget,
+            previousSpent: previousCategorySpent,
+            currentSpent: updatedCategory.spent
+        )
+
+        BudgieNotificationService.shared.evaluateIncomeBudgetIfNeeded(
+            totalIncome: budgetAlertTotalIncome,
+            previousTotalSpent: previousTotalSpent,
+            currentTotalSpent: totalSpentFromPayments
+        )
     }
 
     func deletePayment(id paymentId: UUID, categoryId: UUID) {
@@ -222,17 +242,21 @@ final class CategoriesViewModel {
         paymentsByCategoryId = paymentsCopy
 
         let category = categories[categoryIndex]
+        let newSpent = max(0, category.spent - removed.amount)
         categories[categoryIndex] = Category(
             id: category.id,
             emoji: category.emoji,
             name: category.name,
             type: category.type,
-            spent: max(0, category.spent - removed.amount),
+            spent: newSpent,
             budget: category.budget,
             dailyLimit: category.dailyLimit,
             colorIndex: category.colorIndex,
             predefinedKey: category.predefinedKey
         )
+        if category.budget > 0, newSpent < category.budget {
+            BudgieNotificationService.shared.clearCategoryExceededFlag(categoryId: categoryId)
+        }
         persist()
     }
 
@@ -298,6 +322,12 @@ final class CategoriesViewModel {
 
         addPayment(payment, to: category.id)
 
+        BudgieNotificationService.shared.notifyExpenseTracked(
+            merchant: merchantName,
+            amount: amount,
+            categoryName: category.name
+        )
+
         uncategorizedTransactions.removeAll { $0.id == transaction.id }
         persist()
     }
@@ -360,6 +390,7 @@ final class CategoriesViewModel {
     func importParsedTransactions(
         _ transactions: [ParsedTransaction]
     ) {
+        let previousTotalSpent = totalSpentFromPayments
 
         for transaction in transactions {
 
@@ -371,11 +402,15 @@ final class CategoriesViewModel {
 
             importedTransactionIds.insert(transaction.id)
 
+            let merchant = transaction.merchantName ?? "Unknown Merchant"
+
             // Amount required
             guard let amount = transaction.amount else {
-
                 uncategorizedTransactions.append(transaction)
-
+                BudgieNotificationService.shared.notifyNeedsFilter(
+                    merchant: merchant,
+                    amount: nil
+                )
                 continue
             }
 
@@ -384,30 +419,38 @@ final class CategoriesViewModel {
                   let matchedCategory = category(
                     matchingPredefinedKey: categoryName
                   ) else {
-
                 uncategorizedTransactions.append(transaction)
-
+                BudgieNotificationService.shared.notifyNeedsFilter(
+                    merchant: merchant,
+                    amount: amount
+                )
                 continue
             }
 
             // Create payment
             let payment = CategoryPayment(
                 categoryId: matchedCategory.id,
-                merchantName:
-                    transaction.merchantName
-                    ?? "Unknown Merchant",
+                merchantName: merchant,
                 date: transaction.date,
                 amount: amount
             )
 
-            // Add payment to category
-            addPayment(
-                payment,
-                to: matchedCategory.id
+            addPayment(payment, to: matchedCategory.id)
+
+            BudgieNotificationService.shared.notifyExpenseTracked(
+                merchant: merchant,
+                amount: amount,
+                categoryName: matchedCategory.name
             )
         }
 
         persist()
+
+        BudgieNotificationService.shared.evaluateIncomeBudgetIfNeeded(
+            totalIncome: budgetAlertTotalIncome,
+            previousTotalSpent: previousTotalSpent,
+            currentTotalSpent: totalSpentFromPayments
+        )
     }
 
     // MARK: - Payments

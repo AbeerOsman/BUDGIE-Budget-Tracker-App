@@ -43,7 +43,6 @@ struct CategoryHomeView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.background)
         .navigationDestination(isPresented: $showAllCategories) {
             CategoriesView()
         }
@@ -103,7 +102,8 @@ struct CategoryHomeView: View {
         HStack(alignment: .firstTextBaseline) {
             Text("Categories")
                 .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(.primary)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 24)
 
             Spacer()
 

@@ -17,7 +17,7 @@ struct InsightsView: View {
             Text("Insights")
                 .font(.system(size: 22, weight: .bold))
                 .tracking(-0.26)
-                .foregroundColor(.primary)
+                .foregroundColor(.white)
                 .padding(.bottom, 64)
 
             if viewModel.hasInsights {

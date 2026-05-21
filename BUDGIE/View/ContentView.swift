@@ -50,6 +50,10 @@ struct ContentView: View {
             .first
     }
 
+    private var hasUncategorizedTransactions: Bool {
+        !categoriesViewModel.uncategorizedTransactions.isEmpty
+    }
+
     private var categoryResetAlertMessage: String {
         guard let incomeDate = primaryIncomeRecord?.date else {
             return "Today is your monthly date to reset category payments. Do you want to reset all category payments now?"
@@ -94,6 +98,7 @@ struct ContentView: View {
                             remaining: remaining,
                             progress: progressPercentage
                         )
+                        
                     }
                     
                     // MARK: Insights
@@ -121,11 +126,8 @@ struct ContentView: View {
                 ) {
                     
                     NavigationLink(destination: FilterView()) {
-                        
-                        Label(
-                            "Filter unknown transaction",
-                            systemImage:
-                                "line.3.horizontal.decrease"
+                        FilterToolbarButton(
+                            showsBadge: hasUncategorizedTransactions
                         )
                     }
                 }
@@ -155,8 +157,12 @@ struct ContentView: View {
         // MARK: Import SMS
 
         .onAppear {
+            categoriesViewModel.budgetAlertTotalIncome = totalIncome
             importSMS()
             evaluateCategoryResetPrompt()
+        }
+        .onChange(of: totalIncome) { _, newIncome in
+            categoriesViewModel.budgetAlertTotalIncome = newIncome
         }
 
         // MARK: Import when returning from Shortcuts
@@ -164,7 +170,7 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, newPhase in
 
             if newPhase == .active {
-
+                categoriesViewModel.budgetAlertTotalIncome = totalIncome
                 importSMS()
                 evaluateCategoryResetPrompt()
             }
@@ -229,11 +235,12 @@ struct EmptyIncomeView: View {
 
         VStack(spacing: 0) {
 
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(spacing: 16) {
 
                 Text("Income")
                     .font(.system(size: 22, weight: .bold))
                     .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                 NavigationLink {
 
