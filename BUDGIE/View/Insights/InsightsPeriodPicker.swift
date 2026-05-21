@@ -4,12 +4,13 @@
 //
 //  Created by Raghad Aljuid on 03/12/1447 AH.
 //
-
 import SwiftUI
 
 struct InsightsPeriodPicker: View {
 
     @Binding var selected: InsightsPeriod
+
+    @Namespace private var animation
 
     var body: some View {
 
@@ -27,28 +28,45 @@ struct InsightsPeriodPicker: View {
                 .fill(.ultraThinMaterial)
                 .overlay(
                     Capsule()
-                        .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                        .stroke(
+                            Color.primary.opacity(0.08),
+                            lineWidth: 1
+                        )
                 )
         )
     }
 
-    private func tabButton(_ title: String,
-                           _ period: InsightsPeriod) -> some View {
+    private func tabButton(
+        _ title: String,
+        _ period: InsightsPeriod
+    ) -> some View {
 
         Button {
 
-            withAnimation(.spring(response: 0.3,
-                                  dampingFraction: 0.8)) {
+            withAnimation(
+                .spring(
+                    response: 0.3,
+                    dampingFraction: 0.8
+                )
+            ) {
                 selected = period
             }
 
         } label: {
 
             Text(title)
-                .font(.system(size: 15,
-                              weight: selected == period ? .semibold : .medium))
+                .font(
+                    .system(
+                        size: 15,
+                        weight: selected == period
+                        ? .semibold
+                        : .medium
+                    )
+                )
                 .foregroundStyle(
-                    selected == period ? .white : .gray
+                    selected == period
+                    ? Color.primary
+                    : Color.secondary
                 )
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
@@ -60,8 +78,8 @@ struct InsightsPeriodPicker: View {
                             .fill(
                                 LinearGradient(
                                     colors: [
-                                        Color.white.opacity(0.18),
-                                        Color.white.opacity(0.08)
+                                        Color.primary.opacity(0.18),
+                                        Color.primary.opacity(0.08)
                                     ],
                                     startPoint: .top,
                                     endPoint: .bottom
@@ -76,9 +94,8 @@ struct InsightsPeriodPicker: View {
         }
         .buttonStyle(.plain)
     }
-
-    @Namespace private var animation
 }
+
 #Preview {
 
     struct PreviewWrapper: View {
@@ -89,23 +106,11 @@ struct InsightsPeriodPicker: View {
 
             ZStack {
 
-                LinearGradient(
-                    colors: [
-                        Color.black,
-                        Color(red: 0.08, green: 0.08, blue: 0.1)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
+                Color("AppBackground")
+                    .ignoresSafeArea()
 
-                VStack(spacing: 30) {
-
-                
-
-                    InsightsPeriodPicker(selected: $selected)
-                        .padding(.horizontal)
-                }
+                InsightsPeriodPicker(selected: $selected)
+                    .padding()
             }
         }
     }

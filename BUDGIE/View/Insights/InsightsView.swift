@@ -18,46 +18,58 @@ struct InsightsView: View {
             Text("Insights")
                 .font(.system(size: 22, weight: .bold))
                 .tracking(-0.26)
-                .foregroundStyle(.primary)
-                .padding(.bottom, 64)
+                .foregroundColor(.primary)
 
             if viewModel.hasInsights {
-                
-                // Period Picker
-                InsightsPeriodPicker(selected: $viewModel.selectedPeriod)
-                
-                // Chart حسب الـ period
+
+                InsightsPeriodPicker(
+                    selected: $viewModel.selectedPeriod
+                )
+
                 switch viewModel.selectedPeriod {
+
                 case .day:
-                    Text("Day Chart Coming Soon")
-                         .foregroundColor(.primary)
+
+                    DailyInsightsView()
+
                 case .week:
+
                     Text("Week Chart Coming Soon")
-                         .foregroundColor(.primary)
+                        .foregroundColor(.primary)
+
                 case .month:
+
                     Text("Month Chart Coming Soon")
                         .foregroundColor(.primary)
                 }
 
-            
             } else {
+
                 Spacer()
+
                 InsightsEmptyState()
+
                 Spacer()
             }
-
         }
         .padding(16)
-        .padding(.bottom, 80)
         .frame(maxWidth: .infinity)
+        .frame(height: 430)
         .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color.budgieGroupedBoxBackground(for: colorScheme))
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color("Dark Charcoal"))
         )
     }
 }
 
 #Preview {
-    InsightsView()
-        .padding()
+
+    ZStack {
+
+        Color("AppBackground")
+            .ignoresSafeArea()
+
+        InsightsView()
+            .padding()
+    }
 }
