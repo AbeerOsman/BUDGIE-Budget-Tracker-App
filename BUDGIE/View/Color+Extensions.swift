@@ -1,6 +1,7 @@
 import SwiftUI
 
 extension Color {
+
     /// Grouped card surface used in sheets (Add Category, Add Payment) and home boxes.
     static func budgieGroupedBoxBackground(for colorScheme: ColorScheme) -> Color {
         colorScheme == .dark
@@ -16,21 +17,57 @@ extension Color {
             endPoint: .trailing
         )
     }
-}
 
-/// Home screen background — cyan (top-left) → royal blue → purple (bottom-right).
-struct BudgieHomeBackground: View {
-    var body: some View {
-        LinearGradient(
-            stops: [
-                .init(color: Color(red: 0.0, green: 0.78, blue: 0.90), location: 0.0),
-                .init(color: Color(red: 0.0, green: 0.55, blue: 0.78), location: 0.22),
-                .init(color: Color(red: 0.02, green: 0.18, blue: 0.52), location: 0.48),
-                .init(color: Color(red: 0.08, green: 0.10, blue: 0.42), location: 0.72),
-                .init(color: Color(red: 0.36, green: 0.06, blue: 0.40), location: 1.0)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
+    // MARK: - Hex Color
+
+    init(hex: String) {
+
+        let hex = hex.trimmingCharacters(
+            in: CharacterSet.alphanumerics.inverted
+        )
+
+        var int: UInt64 = 0
+
+        Scanner(string: hex).scanHexInt64(&int)
+
+        let a, r, g, b: UInt64
+
+        switch hex.count {
+
+        case 3:
+            (a, r, g, b) = (
+                255,
+                (int >> 8) * 17,
+                (int >> 4 & 0xF) * 17,
+                (int & 0xF) * 17
+            )
+
+        case 6:
+            (a, r, g, b) = (
+                255,
+                int >> 16,
+                int >> 8 & 0xFF,
+                int & 0xFF
+            )
+
+        case 8:
+            (a, r, g, b) = (
+                int >> 24,
+                int >> 16 & 0xFF,
+                int >> 8 & 0xFF,
+                int & 0xFF
+            )
+
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
+        }
+
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: Double(a) / 255
         )
     }
 }

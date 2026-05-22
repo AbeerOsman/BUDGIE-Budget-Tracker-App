@@ -7,69 +7,104 @@
 import SwiftUI
 
 struct InsightsView: View {
+    @Environment(CategoriesViewModel.self) private var categoriesViewModel
     @Environment(\.colorScheme) private var colorScheme
 
-    @StateObject private var viewModel = InsightsViewModel()
+    let totalIncome: Double
+
+    @State private var viewModel = InsightsViewModel()
 
     var body: some View {
-
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 18) {
 
             Text("Insights")
                 .font(.system(size: 22, weight: .bold))
                 .tracking(-0.26)
                 .foregroundColor(.primary)
+                .padding(.top, 2)
 
-            if viewModel.hasInsights {
+            if viewModel.hasInsights(
+                categoriesViewModel: categoriesViewModel,
+                totalIncome: totalIncome
+            ) {
 
-                InsightsPeriodPicker(
-                    selected: $viewModel.selectedPeriod
-                )
+                InsightsPeriodPicker(selected: $viewModel.selectedPeriod)
 
                 switch viewModel.selectedPeriod {
-
                 case .day:
-
-                    DailyInsightsView()
+                    DailyInsightsView(totalIncome: totalIncome)
 
                 case .week:
-
                     Text("Week Chart Coming Soon")
                         .foregroundColor(.primary)
 
                 case .month:
-
                     Text("Month Chart Coming Soon")
                         .foregroundColor(.primary)
                 }
 
             } else {
-
                 Spacer()
-
                 InsightsEmptyState()
-
                 Spacer()
             }
         }
         .padding(16)
-        .frame(maxWidth: .infinity)
-        .frame(height: 430)
+        .padding(.top, 14)
+        .padding(.bottom, 16)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color("Dark Charcoal"))
+                .fill(
+                    colorScheme == .dark
+                    ? Color("Dark Charcoal")
+                    : Color(.systemBackground)
+                )
         )
     }
 }
-
 #Preview {
 
-    ZStack {
+    let categoriesViewModel = CategoriesViewModel()
 
-        Color("AppBackground")
-            .ignoresSafeArea()
+    let foodCategory = Category(
+        emoji: "🍔",
+        name: "Food",
+        type: .spending,
+        spent: 0,
+        budget: 300,
+        dailyLimit: 77,
+        colorIndex: 0
+    )
 
-        InsightsView()
+    categoriesViewModel.add(foodCategory)
+
+    categoriesViewModel.addPayment(
+        CategoryPayment(
+            categoryId: foodCategory.id,
+            merchantName: "McDonalds",
+            date: Date(),
+            amount: 33.04
+        ),
+        to: foodCategory.id
+    )
+
+    return ZStack {
+
+        LinearGradient(
+            gradient: Gradient(
+                colors: [
+                    Color(red: 0.0, green: 0.6, blue: 0.8),
+                    Color(red: 0.0, green: 0.2, blue: 0.6),
+                    Color(red: 0.4, green: 0.1, blue: 0.4)
+                ]
+            ),
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .ignoresSafeArea()
+
+        InsightsView(totalIncome: 5000)
             .padding()
     }
+    .environment(categoriesViewModel)
 }
