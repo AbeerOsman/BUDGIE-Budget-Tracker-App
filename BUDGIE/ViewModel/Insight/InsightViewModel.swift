@@ -5,15 +5,29 @@
 //  Created by Raghad Aljuid on 01/12/1447 AH.
 //
 import Foundation
-import Combine
+import Observation
 
 enum InsightsPeriod {
     case day, week, month
 }
 
-final class InsightsViewModel: ObservableObject {
+@Observable
+final class InsightsViewModel {
 
-    @Published var hasInsights: Bool = true
+    var selectedPeriod: InsightsPeriod = .day
 
-    @Published var selectedPeriod: InsightsPeriod = .day
+    func hasInsights(
+        categoriesViewModel: CategoriesViewModel,
+        totalIncome: Double
+    ) -> Bool {
+        let hasIncome = totalIncome > 0
+        let hasBudget = categoriesViewModel.spendingCategories.contains {
+            $0.budget > 0 || ($0.dailyLimit ?? 0) > 0
+        }
+        let hasPayments = categoriesViewModel.paymentsByCategoryId.values.contains {
+            !$0.isEmpty
+        }
+
+        return hasIncome && hasBudget && hasPayments
+    }
 }

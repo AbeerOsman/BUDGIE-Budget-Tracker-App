@@ -12,31 +12,48 @@
  remaining today
  */
 import Foundation
+import Observation
 import SwiftUI
-import Combine
 
-final class DailyInsightViewModel: ObservableObject {
+@Observable
+final class DailyInsightViewModel {
 
-    // MARK: - Daily Spending
-
-    @Published var totalSpentToday: Double = 33.04
-
-    @Published var dailyBudget: Double = 77
-
-    // MARK: - Remaining
+    var totalSpentToday: Double = 0
+    var dailyBudget: Double = 0
 
     var remainingToday: Double {
-        dailyBudget - totalSpentToday
+        max(dailyBudget - totalSpentToday, 0)
     }
-
-    // MARK: - Progress
 
     var progress: CGFloat {
+        guard dailyBudget > 0 else { return 0 }
+        return CGFloat(min(totalSpentToday / dailyBudget, 1))
+    }
 
-        guard dailyBudget > 0 else {
-            return 0
+    var hasUsableData: Bool {
+        dailyBudget > 0
+    }
+
+    func update(
+        categoriesViewModel: CategoriesViewModel,
+        totalIncome: Double,
+        calendar: Calendar = .current
+    ) {
+        let todayPayments = categoriesViewModel.paymentsByCategoryId.values
+            .flatMap { $0 }
+            .filter { calendar.isDateInToday($0.date) }
+
+        totalSpentToday = todayPayments.reduce(0) { $0 + $1.amount }
+
+        let categoryDailyLimits = categoriesViewModel.spendingCategories
+            .compactMap { $0.dailyLimit }
+            .reduce(0, +)
+
+        if categoryDailyLimits > 0 {
+            dailyBudget = categoryDailyLimits
+        } else {
+            dailyBudget = totalIncome > 0 ? totalIncome / 30 : 0
         }
-
-        return CGFloat(totalSpentToday / dailyBudget)
     }
 }
+

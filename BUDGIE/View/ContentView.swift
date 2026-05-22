@@ -102,8 +102,7 @@ struct ContentView: View {
                     }
                     
                     // MARK: Insights
-                    
-                    InsightsView()
+                    InsightsView(totalIncome: totalIncome)
                         .padding(.horizontal, 16)
                     
                     // MARK: Categories
