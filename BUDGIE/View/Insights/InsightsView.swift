@@ -35,8 +35,7 @@ struct InsightsView: View {
                     DailyInsightsView(totalIncome: totalIncome)
 
                 case .week:
-                    Text("Week Chart Coming Soon")
-                        .foregroundColor(.primary)
+                    WeeklyInsightsView(totalIncome: totalIncome)
 
                 case .month:
                     Text("Month Chart Coming Soon")
