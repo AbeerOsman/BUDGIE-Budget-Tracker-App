@@ -18,7 +18,7 @@ struct InsightsView: View {
         VStack(alignment: .leading, spacing: 18) {
 
             Text("Insights")
-                .font(.system(size: 22, weight: .bold))
+                .font(BudgieFont.title2)
                 .tracking(-0.26)
                 .foregroundColor(.primary)
                 .padding(.top, 2)

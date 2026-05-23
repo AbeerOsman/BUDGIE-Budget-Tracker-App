@@ -19,11 +19,11 @@ struct InsightsEmptyState: View {
             VStack(spacing: 8) {
 
                 Text("No insights yet")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(BudgieFont.title)
                     .foregroundColor(.primary)
 
                 Text("We’ll show your spending insights once there’s some activity.")
-                    .font(.system(size: 15))
+                    .font(BudgieFont.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 260)
