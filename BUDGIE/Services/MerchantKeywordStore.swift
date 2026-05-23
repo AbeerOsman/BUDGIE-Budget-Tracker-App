@@ -95,6 +95,13 @@ final class MerchantKeywordStore {
         return decoded
     }
 
+    func clearUserOverrides() {
+        if FileManager.default.fileExists(atPath: userFileURL.path) {
+            try? FileManager.default.removeItem(at: userFileURL)
+        }
+        invalidateCache()
+    }
+
     @discardableResult
     private func saveUserKeywords(_ keywords: [String: [String]]) -> Bool {
         do {

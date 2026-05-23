@@ -131,6 +131,11 @@ final class BudgieNotificationService {
         }
     }
 
+    func clearAllNotificationState() {
+        clearCategoryExceededFlags()
+        UserDefaults.standard.removeObject(forKey: incomeExceededKey)
+    }
+
     func clearCategoryExceededFlag(categoryId: UUID) {
         UserDefaults.standard.removeObject(
             forKey: categoryExceededPrefix + categoryId.uuidString

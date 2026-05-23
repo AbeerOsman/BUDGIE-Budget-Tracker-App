@@ -91,6 +91,18 @@ final class CategoriesViewModel {
         persist()
     }
 
+    func wipeAllUserData() {
+        categories = []
+        paymentsByCategoryId = [:]
+        uncategorizedTransactions = []
+        importedTransactionIds = []
+        lastConfirmedCategoryResetPeriod = nil
+        lastDeclinedCategoryResetPeriod = nil
+        budgetAlertTotalIncome = 0
+        selectedType = .spending
+        CategoriesPersistence.clear()
+    }
+
     func resetAllCategoryPayments() {
         BudgieNotificationService.shared.clearCategoryExceededFlags()
         paymentsByCategoryId = [:]

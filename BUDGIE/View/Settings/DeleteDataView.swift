@@ -6,9 +6,18 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct DeleteDataView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(CategoriesViewModel.self) private var categoriesViewModel
+    @Environment(AppLockManager.self) private var appLockManager
+    @Environment(AppSessionController.self) private var appSessionController
+
     @State private var showConfirmation = false
+    @State private var isDeleting = false
+    @State private var showError = false
+    @State private var errorMessage = ""
 
     var body: some View {
         ScrollView {
@@ -21,9 +30,12 @@ struct DeleteDataView: View {
                     Text("Warning")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.red)
-                    Text("Deleting your data is permanent and cannot be undone. All your information will be removed from our servers.")
-                        .font(.system(size: 14))
-                        .foregroundColor(.gray)
+
+                    Text(
+                        "This permanently removes all data stored on this device: income, categories, payments, uncategorized transactions, shortcut imports, merchant mappings, and insights. This cannot be undone."
+                    )
+                    .font(.system(size: 14))
+                    .foregroundColor(.gray)
                 }
                 .padding(20)
                 .background(Color.red.opacity(0.1))
@@ -31,14 +43,22 @@ struct DeleteDataView: View {
                 .padding(.horizontal, 20)
 
                 Button(action: { showConfirmation = true }) {
-                    Text("Delete All Data")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(12)
-                        .background(Color.red)
-                        .cornerRadius(8)
+                    Group {
+                        if isDeleting {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Text("Delete All Data")
+                                .font(.system(size: 16, weight: .semibold))
+                        }
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(12)
+                    .background(Color.red)
+                    .cornerRadius(8)
                 }
+                .disabled(isDeleting)
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
 
@@ -51,14 +71,42 @@ struct DeleteDataView: View {
         .alert("Confirm Deletion", isPresented: $showConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) {
-                // Handle data deletion here
+                performDeletion()
             }
         } message: {
-            Text("Are you sure you want to permanently delete all your data? This action cannot be undone.")
+            Text("Are you sure you want to permanently delete all your data on this device?")
+        }
+        .alert("Could Not Delete Data", isPresented: $showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
+    }
+
+    private func performDeletion() {
+        isDeleting = true
+        do {
+            try AppDataDeletionService.deleteAllUserData(
+                modelContext: modelContext,
+                categoriesViewModel: categoriesViewModel,
+                appLockManager: appLockManager
+            )
+            isDeleting = false
+            appSessionController.restartAsNewUser()
+        } catch {
+            isDeleting = false
+            errorMessage = error.localizedDescription
+            showError = true
         }
     }
 }
 
 #Preview {
-    DeleteDataView()
+    NavigationStack {
+        DeleteDataView()
+    }
+    .modelContainer(for: Income.self, inMemory: true)
+    .environment(CategoriesViewModel())
+    .environment(AppLockManager())
+    .environment(AppSessionController())
 }

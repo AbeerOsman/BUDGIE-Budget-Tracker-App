@@ -4,6 +4,9 @@ import SwiftData
 @main
 struct BUDGIEApp: App {
     @State private var categoriesViewModel = CategoriesViewModel()
+    @State private var appLockManager = AppLockManager()
+    @State private var appSessionController = AppSessionController()
+    @Environment(\.scenePhase) private var scenePhase
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Income.self])
@@ -24,11 +27,38 @@ struct BUDGIEApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Splash()
-                .environment(categoriesViewModel)
-                .onAppear {
-                    BudgieNotificationService.shared.requestAuthorizationIfNeeded()
+            ZStack {
+                Splash()
+                    .id(appSessionController.rootSessionID)
+
+                if appLockManager.isEnabled && !appLockManager.isUnlocked {
+                    AppLockView()
+                        .transition(.opacity)
                 }
+            }
+            .environment(categoriesViewModel)
+            .environment(appLockManager)
+            .environment(appSessionController)
+            .animation(.easeInOut(duration: 0.2), value: appLockManager.isUnlocked)
+            .onAppear {
+                BudgieNotificationService.shared.requestAuthorizationIfNeeded()
+                if appLockManager.isEnabled {
+                    appLockManager.isUnlocked = false
+                    Task { await appLockManager.unlockIfNeeded() }
+                } else {
+                    appLockManager.isUnlocked = true
+                }
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                switch newPhase {
+                case .background, .inactive:
+                    appLockManager.lockIfEnabled()
+                case .active:
+                    Task { await appLockManager.unlockIfNeeded() }
+                @unknown default:
+                    break
+                }
+            }
         }
         .modelContainer(sharedModelContainer)
     }

@@ -100,9 +100,7 @@ struct HelpSection: View {
                     icon: "bolt.circle",
                     title: "Setup Shortcut Automation",
                     hasChevron: false,
-                    action: {
-                        openSystemSettings(scheme: "prefs:root=SHORTCUTS")
-                    }
+                    action: openShortcutsApp
                 )
 
                 Divider()
@@ -135,15 +133,7 @@ struct SecuritySection: View {
             SectionTitle("Security")
 
             VStack(spacing: 16) {
-                // App Lock - Open System Settings
-                SettingRow(
-                    icon: "faceid",
-                    title: "App Lock",
-                    hasChevron: false,
-                    action: {
-                        openSystemSettings(scheme: "prefs:root=PASSCODE")
-                    }
-                )
+                AppLockSettingRow()
 
                 Divider()
                     .background(Color.gray.opacity(0.5))
@@ -225,7 +215,67 @@ struct SettingRow: View {
     }
 }
 
-// Go to Setting of the phone:
+// MARK: - App Lock Row
+
+struct AppLockSettingRow: View {
+    @Environment(AppLockManager.self) private var appLockManager
+    @Environment(\.colorScheme) private var colorScheme
+
+    @State private var isOn = false
+    @State private var showError = false
+
+    var body: some View {
+        HStack {
+            Image(systemName: "faceid")
+                .foregroundColor(.primary)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("App Lock")
+                    .foregroundColor(.primary)
+
+                Text(appLockManager.biometryName)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            Toggle("", isOn: $isOn)
+                .labelsHidden()
+        }
+        .onAppear {
+            isOn = appLockManager.isEnabled
+        }
+        .onChange(of: isOn) { _, newValue in
+            guard newValue != appLockManager.isEnabled else { return }
+            Task {
+                let success = await appLockManager.setEnabled(newValue)
+                if !success {
+                    isOn = appLockManager.isEnabled
+                    showError = true
+                }
+            }
+        }
+        .alert("App Lock", isPresented: $showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            if let message = appLockManager.lastErrorMessage {
+                Text(message)
+            } else {
+                Text("Could not update App Lock. Try again.")
+            }
+        }
+    }
+}
+
+// MARK: - External apps & settings
+
+func openShortcutsApp() {
+    if let url = URL(string: "shortcuts://") {
+        UIApplication.shared.open(url)
+    }
+}
+
 func openSystemSettings(scheme: String) {
     if let url = URL(string: scheme) {
         UIApplication.shared.open(url)
@@ -233,5 +283,8 @@ func openSystemSettings(scheme: String) {
 }
 
 #Preview {
-    MainSetting()
+    NavigationStack {
+        MainSetting()
+    }
+    .environment(AppLockManager())
 }
