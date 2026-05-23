@@ -2,7 +2,6 @@
 //  ContentView.swift
 //  BUDGIE
 //
-
 import SwiftUI
 import SwiftData
 
