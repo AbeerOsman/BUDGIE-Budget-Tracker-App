@@ -172,13 +172,15 @@ struct CategoryDetailView: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .firstTextBaseline) {
                 Text(category.name)
-                    .font(.system(size: 32, weight: .bold))
+                    .font(BudgieFont.largeTitle.weight(.bold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                     .foregroundStyle(.primary)
 
                 Spacer()
 
                 Text(category.budgetDisplayText)
-                    .font(.system(size: 22, weight: .bold))
+                    .font(BudgieFont.title2.weight(.bold))
                     .foregroundStyle(.primary)
             }
 
@@ -192,7 +194,7 @@ struct CategoryDetailView: View {
                 Spacer()
                 Text(category.remainingDisplayText)
             }
-            .font(.subheadline.weight(.regular))
+            .font(BudgieFont.subheadline.weight(.regular))
             .foregroundStyle(.primary)
         }
     }
@@ -206,7 +208,7 @@ struct CategoryDetailView: View {
 
         return VStack(alignment: .leading, spacing: 12) {
             Text("Recent")
-                .font(.title2.weight(.bold))
+                .font(BudgieFont.title2.weight(.bold))
                 .foregroundStyle(.primary)
 
             if !payments.isEmpty {
@@ -269,7 +271,7 @@ private struct GlassyIconButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: systemImage)
-                .font(.system(size: 17, weight: .semibold))
+                .font(BudgieFont.body.weight(.semibold))
         }
         .buttonStyle(.plain)
     }
@@ -322,24 +324,24 @@ private struct CategoryPaymentRow: View {
                     .frame(width: 44, height: 44)
 
                 Text(emoji)
-                    .font(.system(size: 20))
+                    .font(BudgieFont.title3)
             }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(payment.merchantName)
-                    .font(.body.weight(.regular))
+                    .font(BudgieFont.body.weight(.regular))
                     .foregroundStyle(.primary)
                     .fontDesign(.rounded)
 
                 Text(payment.formattedDate)
-                    .font(.subheadline)
+                    .font(BudgieFont.subheadline)
                     .foregroundStyle(.secondary)
             }
 
             Spacer()
 
             Text(payment.formattedAmount)
-                .font(.body.weight(.semibold))
+                .font(BudgieFont.body.weight(.semibold))
                 .foregroundStyle(.primary)
         }
         .padding(.horizontal, 14)

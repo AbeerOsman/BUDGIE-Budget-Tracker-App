@@ -58,7 +58,7 @@ struct AddPaymentSheet: View {
                 }
                 ToolbarItem(placement: .principal) {
                     Text(viewModel.isEditing ? "Edit Payment" : "Add Payment")
-                        .font(.headline.weight(.semibold))
+                        .font(BudgieFont.headline.weight(.semibold))
                         .foregroundStyle(.primary)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -130,7 +130,7 @@ struct AddPaymentSheet: View {
     private func dateRow(date: Binding<Date>) -> some View {
         HStack {
             Text("Date")
-                .font(.body)
+                .font(BudgieFont.body)
                 .foregroundStyle(.secondary)
 
             Spacer()
@@ -194,7 +194,7 @@ private struct AddPaymentGlassyIconButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: systemImage)
-                .font(.system(size: 17, weight: .medium))
+                .font(BudgieFont.body.weight(.medium))
                 .foregroundStyle(.primary)
         }
         .buttonStyle(.plain)

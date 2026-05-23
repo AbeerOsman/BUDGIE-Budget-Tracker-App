@@ -237,7 +237,7 @@ struct EmptyIncomeView: View {
             VStack(spacing: 16) {
 
                 Text("Income")
-                    .font(.system(size: 22, weight: .bold))
+                    .font(BudgieFont.title2)
                     .foregroundStyle(.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -250,7 +250,7 @@ struct EmptyIncomeView: View {
                     HStack(spacing: 8) {
 
                         Text("Add an Income")
-                            .font(.system(size: 16, weight: .regular))
+                            .font(BudgieFont.body)
                             .foregroundStyle(colorScheme == .dark ? .white : .black)
 
                         Image(systemName: "plus.circle.fill")

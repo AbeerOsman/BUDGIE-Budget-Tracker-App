@@ -71,7 +71,7 @@ struct CategoryHomeView: View {
                 .scaleEffect(x: -1, y: 1)
 
             Text("No categories yet")
-                .font(.system(size: 28, weight: .bold))
+                .font(BudgieFont.title)
                 .foregroundStyle(.primary)
 
             Button {
@@ -79,7 +79,7 @@ struct CategoryHomeView: View {
             } label: {
                 HStack(spacing: 10) {
                     Text("Add a Category")
-                        .font(.system(size: 16))
+                        .font(BudgieFont.body)
                         .foregroundStyle(.secondary)
 
                     ZStack {
@@ -88,7 +88,7 @@ struct CategoryHomeView: View {
                             .frame(width: 32, height: 32)
 
                         Image(systemName: "plus")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(BudgieFont.body.weight(.semibold))
                             .foregroundStyle(.white)
                     }
                 }
@@ -102,7 +102,7 @@ struct CategoryHomeView: View {
     private var header: some View {
         HStack(alignment: .firstTextBaseline) {
             Text("Categories")
-                .font(.system(size: 22, weight: .bold))
+                .font(BudgieFont.title2)
                 .foregroundStyle(colorScheme == .dark ? .white : .black)
                 .padding(.horizontal, 16)
 
@@ -112,7 +112,7 @@ struct CategoryHomeView: View {
                 showAllCategories = true
             } label: {
                 Text("Show All")
-                    .font(.custom("SF Pro Rounded", size: 17))
+                    .font(BudgieFont.body)
                     .foregroundStyle(Color("Sky Blue"))
             }
             .buttonStyle(.plain)
@@ -128,10 +128,10 @@ private struct CategoryCardView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top, spacing: 6) {
                 Text(item.emoji)
-                    .font(.system(size: 16))
+                    .font(BudgieFont.body)
 
                 Text(item.name)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(BudgieFont.caption.weight(.semibold))
                     .foregroundStyle(.white)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
@@ -139,7 +139,7 @@ private struct CategoryCardView: View {
                 Spacer(minLength: 4)
 
                 Text(item.budgetSummary)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(BudgieFont.caption2.weight(.medium))
                     .foregroundStyle(.white.opacity(0.7))
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)

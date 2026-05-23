@@ -97,7 +97,7 @@ struct AddCategorySheet: View {
                         dailySpendingSection(viewModel: viewModel)
 
                         Text("Recommended spending limit: $ \(viewModel.recommendedDailyLimit)")
-                            .font(.subheadline)
+                            .font(BudgieFont.subheadline)
                             .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity)
                             .multilineTextAlignment(.center)
@@ -156,7 +156,7 @@ struct AddCategorySheet: View {
 
         return HStack {
             Text("Predefined category")
-                .font(.body)
+                .font(BudgieFont.body)
                 .foregroundStyle(.secondary)
 
             Spacer()
@@ -240,7 +240,7 @@ struct AddCategorySheet: View {
             dismiss()
         } label: {
             Text("Delete Category")
-                .font(.body.weight(.semibold))
+                .font(BudgieFont.body.weight(.semibold))
                 .foregroundStyle(.red)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
@@ -328,7 +328,7 @@ private struct CategoryTypeRadioRow: View {
                 Spacer()
 
                 Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
-                    .font(.title3)
+                    .font(BudgieFont.title3)
                     .foregroundStyle(isSelected ? Color("Sky Blue") : .secondary)
             }
             .padding(.horizontal, 16)

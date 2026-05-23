@@ -87,11 +87,11 @@ struct CategoriesView: View {
                 .scaleEffect(x: -1, y: 1)
 
             Text("No categories yet")
-                .font(.title.weight(.bold))
+                .font(BudgieFont.title.weight(.bold))
                 .foregroundStyle(.primary)
 
             Text("Tap the “+” to add a category.")
-                .font(.system(size: 14))
+                .font(BudgieFont.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
@@ -157,7 +157,7 @@ struct CategoriesView: View {
                     }
                 } label: {
                     Text(type.displayName)
-                        .font(.subheadline.weight(.semibold))
+                        .font(BudgieFont.subheadline.weight(.semibold))
                         .foregroundStyle(.primary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
@@ -208,11 +208,11 @@ private struct CategoryListCardView: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(item.name)
-                        .font(.headline)
+                        .font(BudgieFont.headline)
                         .foregroundStyle(.primary)
 
                     Text(item.budgetSummary)
-                        .font(.subheadline)
+                        .font(BudgieFont.subheadline)
                         .foregroundStyle(.secondary)
                 }
 
@@ -266,7 +266,7 @@ struct CircleNavButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: systemImage)
-                .font(.system(size: 17, weight: .medium))
+                .font(BudgieFont.body.weight(.medium))
                 .foregroundStyle(.primary)
         }
         .buttonStyle(.plain)
