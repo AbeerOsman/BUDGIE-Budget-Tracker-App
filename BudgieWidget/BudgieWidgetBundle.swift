@@ -11,7 +11,7 @@ import SwiftUI
 @main
 struct BudgieWidgetBundle: WidgetBundle {
     var body: some Widget {
-        BudgieWidget()
+        BudgetWidget()
         BudgieWidgetControl()
         BudgieWidgetLiveActivity()
     }

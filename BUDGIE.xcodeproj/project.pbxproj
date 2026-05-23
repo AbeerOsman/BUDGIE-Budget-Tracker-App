@@ -67,11 +67,21 @@
 			);
 			target = 972A36932FC269E700DCCB24 /* BudgieWidgetExtension */;
 		};
+		972A38B72FC26BE300DCCB24 /* Exceptions for "BUDGIE" folder in "BudgieWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+			);
+			target = 972A36932FC269E700DCCB24 /* BudgieWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		816B81392FAC6CF1005B4085 /* BUDGIE */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				972A38B72FC26BE300DCCB24 /* Exceptions for "BUDGIE" folder in "BudgieWidgetExtension" target */,
+			);
 			path = BUDGIE;
 			sourceTree = "<group>";
 		};
