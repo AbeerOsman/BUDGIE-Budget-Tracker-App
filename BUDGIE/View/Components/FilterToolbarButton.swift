@@ -13,7 +13,7 @@ struct FilterToolbarButton: View {
     var body: some View {
         ZStack(alignment: .topTrailing) {
             Image(systemName: "line.3.horizontal.decrease")
-                .font(.body.weight(.medium))
+                .font(BudgieFont.body.weight(.medium))
                 .foregroundStyle(colorScheme == .dark ? .white : .black)
 
             if showsBadge {

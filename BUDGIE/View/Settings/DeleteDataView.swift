@@ -14,15 +14,15 @@ struct DeleteDataView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Delete Data")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(BudgieFont.title)
                     .padding(.horizontal, 20)
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Warning")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(BudgieFont.body.weight(.semibold))
                         .foregroundColor(.red)
                     Text("Deleting your data is permanent and cannot be undone. All your information will be removed from our servers.")
-                        .font(.system(size: 14))
+                        .font(BudgieFont.subheadline)
                         .foregroundColor(.gray)
                 }
                 .padding(20)

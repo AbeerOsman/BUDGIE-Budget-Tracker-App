@@ -38,16 +38,16 @@ struct Onboarding2: View {
                             .frame(width: 32, height: 32)
                         
                         Text("Budgie")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(BudgieFont.body.weight(.bold))
                     }
                     
                     Text("Achieve Financial\nStability with Ease")
-                        .font(.system(size: 36, weight: .bold))
+                        .font(BudgieFont.title)
                         .lineSpacing(4)
                         .padding(.top, 20)
                     
                     Text("Track your spending. Real-time affordability insights.")
-                        .font(.system(size: 16))
+                        .font(BudgieFont.body)
                         .foregroundColor(.gray)
                         .padding(.top, 4)
                     
@@ -57,7 +57,7 @@ struct Onboarding2: View {
                         }
                     } label: {
                         Text("Start Setup")
-                            .font(.system(size: 18, weight: .medium))
+                            .font(BudgieFont.headline.weight(.medium))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding()
@@ -73,7 +73,7 @@ struct Onboarding2: View {
                         }
                     } label: {
                         Text("I’ll do it later")
-                            .font(.system(size: 15))
+                            .font(BudgieFont.subheadline)
                             .foregroundColor(.gray)
                             .frame(maxWidth: .infinity)
                     }
