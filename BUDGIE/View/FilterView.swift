@@ -27,16 +27,16 @@ struct FilterRowView: View {
                 .frame(width: 57, height: 57)
                 .overlay(
                     Image(systemName: "exclamationmark.circle")
-                        .font(.system(size: 26))
+                        .font(BudgieFont.title2)
                         .foregroundColor(.black)
                 )
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.merchantName)
-                    .font(.system(size: 17, weight: .regular))
+                    .font(BudgieFont.body)
 
                 Text(item.date)
-                    .font(.system(size: 11, weight: .regular))
+                    .font(BudgieFont.caption)
                     .foregroundColor(.secondary)
             }
 
@@ -44,7 +44,9 @@ struct FilterRowView: View {
 
             HStack {
                 Text("-\(Int(item.amount)) ")
-                    .font(.system(size: 22, weight: .bold))
+                    .font(BudgieFont.title2)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
 
                 Image("SAR")
                     .resizable()
@@ -87,11 +89,10 @@ struct FilterView: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("Uncategorized Payments")
-                    .font(.system(size: 25, weight: .bold))
+                    .font(BudgieFont.title2)
 
                 Text("Tap a transaction to assign a category")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundColor(.secondary)
+                     .font(BudgieFont.subheadline)                  .foregroundColor(.secondary)
             }
             .padding(.leading, 24)
 

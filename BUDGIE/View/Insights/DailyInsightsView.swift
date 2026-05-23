@@ -22,26 +22,14 @@ struct DailyInsightsView: View {
             VStack(alignment: .leading, spacing: 4) {
 
                 Text("Spent from budget")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(BudgieFont.subheadline)
                     .foregroundStyle(.primary)
 
                 Text("$\(viewModel.totalSpentToday, specifier: "%.2f") / $\(viewModel.dailyBudget, specifier: "%.0f")")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(Color(hex: "#3FAFD3"))
+                    .font(BudgieFont.title3)
                     .lineLimit(1)
                     .minimumScaleFactor(0.65)
-                
-                .font(.system(size: 20, weight: .bold))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [
-                            Color(hex: "#1F6DB2"),
-                            Color(hex: "#3FAFD3")
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                    .foregroundStyle(Color(hex: "#3FAFD3"))
             }
             .offset(y: -10)
 

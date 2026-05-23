@@ -47,7 +47,7 @@ struct InsightsPeriodPicker: View {
             }
         } label: {
             Text(title)
-                .font(.system(size: 15, weight: selected == period ? .semibold : .medium))
+                .font(selected == period ? BudgieFont.headline : BudgieFont.subheadline)
                 .foregroundStyle(
                     selected == period
                     ? Color.primary

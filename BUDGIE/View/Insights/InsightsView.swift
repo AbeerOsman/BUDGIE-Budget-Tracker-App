@@ -18,7 +18,7 @@ struct InsightsView: View {
         VStack(alignment: .leading, spacing: 18) {
 
             Text("Insights")
-                .font(.system(size: 22, weight: .bold))
+                .font(BudgieFont.title2)
                 .tracking(-0.26)
                 .foregroundColor(.primary)
                 .padding(.top, 2)
@@ -38,8 +38,7 @@ struct InsightsView: View {
                     WeeklyInsightsView(totalIncome: totalIncome)
 
                 case .month:
-                    Text("Month Chart Coming Soon")
-                        .foregroundColor(.primary)
+                    MonthlyInsightsView()
                 }
 
             } else {
@@ -52,11 +51,11 @@ struct InsightsView: View {
         .padding(.top, 14)
         .padding(.bottom, 16)
         .background(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(
                     colorScheme == .dark
                     ? Color("Dark Charcoal")
-                    : Color(.systemBackground)
+                    : Color.budgieGroupedBoxBackground(for: colorScheme)
                 )
         )
     }

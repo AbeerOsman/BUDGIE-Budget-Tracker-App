@@ -23,12 +23,12 @@ struct DeleteDataView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Delete Data")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(BudgieFont.title)
                     .padding(.horizontal, 20)
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Warning")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(BudgieFont.body.weight(.semibold))
                         .foregroundColor(.red)
 
                     Text(

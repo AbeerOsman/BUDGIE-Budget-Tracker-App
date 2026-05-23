@@ -15,7 +15,7 @@ struct SetupStepProgress: View {
         VStack(alignment: .leading, spacing: 10) {
             
             Text("Step \(currentStep)")
-                .font(.system(size: 18, weight: .semibold))
+                .font(BudgieFont.headline.weight(.semibold))
                 .foregroundColor(.skyBlue)
             
             HStack(spacing: 6) {
@@ -27,7 +27,7 @@ struct SetupStepProgress: View {
             }
             
             Text(steps[currentStep - 1])
-                .font(.caption)
+                .font(BudgieFont.caption)
                 .foregroundColor(.secondary)
         }
         .padding(.horizontal, 30)

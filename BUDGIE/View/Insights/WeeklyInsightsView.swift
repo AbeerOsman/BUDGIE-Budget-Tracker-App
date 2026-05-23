@@ -100,7 +100,7 @@ struct WeeklyInsightsView: View {
                         .lineStyle(StrokeStyle(lineWidth: 1))
                         .annotation(position: .trailing) {
                             Text("$ \(Int(dailyBudget))")
-                                .font(.system(size: 12))
+                                .font(BudgieFont.caption)
                                 .foregroundStyle(axisTextColor)
                         }
                 }
@@ -121,15 +121,17 @@ struct WeeklyInsightsView: View {
                         ) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(point.dayName.uppercased())
-                                    .font(.system(size: 12, weight: .medium))
+                                    .font(BudgieFont.caption)
                                     .foregroundStyle(.secondary)
 
                                 Text("$\(point.amount, specifier: "%.0f")")
-                                    .font(.system(size: 24, weight: .bold))
+                                    .font(BudgieFont.title3)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.7)
                                     .foregroundStyle(.white)
 
                                 Text(point.date.formatted(.dateTime.day().month(.abbreviated).year()))
-                                    .font(.system(size: 12, weight: .medium))
+                                    .font(BudgieFont.caption)
                                     .foregroundStyle(.secondary)
                             }
                             .padding(.horizontal, 14)

@@ -12,14 +12,14 @@ struct PrivacyPolicyView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Privacy Policy")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(BudgieFont.title)
                     .padding(.horizontal, 20)
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Data Protection")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(BudgieFont.body.weight(.semibold))
                     Text("We protect your personal data in accordance with applicable laws and regulations.")
-                        .font(.system(size: 14))
+                        .font(BudgieFont.subheadline)
                         .foregroundColor(.gray)
 
                     Text("Information Collection")
