@@ -318,7 +318,7 @@ final class CategoriesViewModel {
     func categorizeUncategorized(_ transaction: ParsedTransaction, into category: Category) {
         guard let amount = transaction.amount else { return }
 
-        let merchantName = transaction.merchantName ?? "Unknown Merchant"
+        let merchantName = transaction.merchantName ?? String(localized: "Unknown Merchant")
         let keywordCategory = category.predefinedKey
             ?? transaction.categoryName
             ?? category.name
@@ -414,7 +414,7 @@ final class CategoriesViewModel {
 
             importedTransactionIds.insert(transaction.id)
 
-            let merchant = transaction.merchantName ?? "Unknown Merchant"
+            let merchant = transaction.merchantName ?? String(localized: "Unknown Merchant")
 
             // Amount required
             guard let amount = transaction.amount else {

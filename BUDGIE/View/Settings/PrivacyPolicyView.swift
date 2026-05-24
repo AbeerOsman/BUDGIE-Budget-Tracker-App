@@ -39,124 +39,56 @@ struct PrivacyPolicyView: View {
 
                     policySection(
                         title: "1. Overview",
-                        description:
-"""
-BUDGIE is a personal budgeting and expense tracking application designed to help users monitor and organize their financial activities. To provide certain features, the app may use Apple Shortcuts automation to identify and process banking SMS notifications related to transactions and expenses.
-
-Our goal is strictly to help users track their spending and financial activity in a simple and secure way.
-"""
+                        description: String(localized: "privacy.overview")
                     )
 
                     // MARK: - Section 2
 
                     policySection(
                         title: "2. Use of Apple Shortcuts and SMS Data",
-                        description:
-"""
-BUDGIE uses Apple Shortcuts solely as a user-enabled automation tool to access and process banking SMS notifications on the user’s device.
-
-The application only extracts limited transaction-related information necessary for expense tracking, including:
-
-• Merchant name
-• Transaction amount
-• Transaction date and time
-• Basic transaction details relevant to budgeting
-
-BUDGIE does not access, collect, monitor, or store unrelated SMS content, personal conversations, passwords, authentication codes, or sensitive personal communications.
-
-The app does not attempt to gain unauthorized access to user data, banking systems, or private information beyond the transaction details intentionally processed through the user’s configured Shortcut automation.
-"""
+                        description: String(localized: "privacy.shortcuts")
                     )
 
                     // MARK: - Section 3
 
                     policySection(
                         title: "3. Data Storage and Ownership",
-                        description:
-"""
-All transaction data processed by BUDGIE is stored locally on the user’s device using Apple technologies such as SwiftData.
-
-If iCloud synchronization is enabled, synchronization occurs securely through Apple CloudKit and is associated only with the user’s personal Apple iCloud account.
-
-BUDGIE developers do not have access to:
-
-• User banking messages
-• Transaction history
-• Financial records
-• Personal SMS content
-• iCloud data
-• User databases
-
-We do not maintain external servers containing user financial information.
-
-Users remain the sole owners and controllers of their data.
-"""
+                        description: String(localized: "privacy.storage")
                     )
 
                     // MARK: - Section 4
 
                     policySection(
                         title: "4. No Data Selling or Sharing",
-                        description:
-"""
-BUDGIE does not:
-
-• Sell user data
-• Share financial information with third parties
-• Use transaction data for advertising
-• Use personal data for analytics beyond core app functionality
-• Store user financial records on external company servers
-
-The data processed by the app is used exclusively to provide budgeting, expense tracking, and financial organization features within the application.
-"""
+                        description: String(localized: "privacy.no_selling")
                     )
 
                     // MARK: - Section 5
 
                     policySection(
                         title: "5. User Responsibility",
-                        description:
-"""
-By enabling Apple Shortcuts integrations and using BUDGIE features, users acknowledge and accept that:
-
-• They voluntarily configure and authorize the Shortcut automation
-• They understand how Apple Shortcuts accesses SMS notifications on their device
-• They are responsible for reviewing and managing their device permissions and Shortcut settings
-
-BUDGIE operates only within the permissions explicitly granted by the user and Apple’s system framework.
-"""
+                        description: String(localized: "privacy.responsibility")
                     )
 
                     // MARK: - Section 6
 
                     policySection(
                         title: "6. Security",
-                        description:
-"""
-We prioritize user privacy and rely on Apple’s secure ecosystem and local device storage technologies to help protect user information.
-
-While we take reasonable measures to support secure data handling, users are responsible for maintaining the security of their own devices, Apple accounts, and access credentials.
-"""
+                        description: String(localized: "privacy.security")
                     )
 
                     // MARK: - Section 7
 
                     policySection(
                         title: "7. Changes to This Privacy Policy",
-                        description:
-"""
-We may update this Privacy Policy from time to time to reflect improvements, legal requirements, or feature updates. Continued use of the application after updates constitutes acceptance of the revised policy.
-"""
+                        description: String(localized: "privacy.changes")
                     )
 
                     // MARK: - Section 8
 
                     policySection(
                         title: "8. Contact",
-                        description:
-"""
-If you have any questions regarding this Privacy Policy, how BUDGIE handles data, or any other inquiries, please leave a comment through the App Store Reviews section.
-"""
+                        description: String(localized: "privacy.contact")
                     )
                 }
                 .padding(20)
@@ -175,7 +107,7 @@ If you have any questions regarding this Privacy Policy, how BUDGIE handles data
     // MARK: - Reusable Section
 
     @ViewBuilder
-    func policySection(title: String, description: String) -> some View {
+    func policySection(title: LocalizedStringKey, description: String) -> some View {
 
         VStack(alignment: .leading, spacing: 10) {
 

@@ -23,13 +23,13 @@ final class AppLockManager {
         let context = LAContext()
         switch context.biometryType {
         case .faceID:
-            return "Face ID"
+            return String(localized: "Face ID")
         case .touchID:
-            return "Touch ID"
+            return String(localized: "Touch ID")
         case .opticID:
-            return "Optic ID"
+            return String(localized: "Optic ID")
         default:
-            return "Biometrics"
+            return String(localized: "Biometrics")
         }
     }
 
@@ -51,7 +51,7 @@ final class AppLockManager {
     func authenticate() async -> Bool {
         lastErrorMessage = nil
         let context = LAContext()
-        context.localizedCancelTitle = "Cancel"
+        context.localizedCancelTitle = String(localized: "Cancel")
 
         let policy: LAPolicy = canUseBiometrics
             ? .deviceOwnerAuthenticationWithBiometrics
@@ -60,7 +60,7 @@ final class AppLockManager {
         do {
             let success = try await context.evaluatePolicy(
                 policy,
-                localizedReason: "Unlock BUDGIE to access your budget"
+                localizedReason: String(localized: "Unlock BUDGIE to access your budget")
             )
             isUnlocked = success
             return success
@@ -69,11 +69,11 @@ final class AppLockManager {
             case .userCancel, .systemCancel, .appCancel:
                 lastErrorMessage = nil
             case .biometryNotAvailable:
-                lastErrorMessage = "Face ID is not available on this device."
+                lastErrorMessage = String(localized: "Face ID is not available on this device.")
             case .biometryNotEnrolled:
-                lastErrorMessage = "Set up Face ID in Settings to use App Lock."
+                lastErrorMessage = String(localized: "Set up Face ID in Settings to use App Lock.")
             case .biometryLockout:
-                lastErrorMessage = "Face ID is locked. Unlock your device and try again."
+                lastErrorMessage = String(localized: "Face ID is locked. Unlock your device and try again.")
             default:
                 lastErrorMessage = error.localizedDescription
             }

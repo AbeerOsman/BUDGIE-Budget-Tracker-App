@@ -35,7 +35,9 @@ final class AddCategoryViewModel {
     }
 
     var navigationTitle: String {
-        isEditing ? "Edit Category" : "Add Category"
+        isEditing
+            ? String(localized: "Edit Category")
+            : String(localized: "Add Category")
     }
 
     var usesCustomPredefinedLink: Bool {
@@ -68,11 +70,11 @@ final class AddCategoryViewModel {
         }
 
         if case .edit(let category) = mode {
-            title = category.name
             emoji = category.emoji
             categoryType = category.type
             budget = String(Int(category.budget))
             selectedPredefinedKey = category.predefinedKey
+            title = displayTitle(for: category.name, predefinedKey: category.predefinedKey)
             if let dailyLimit = category.dailyLimit {
                 dailySpending = String(Int(dailyLimit))
             }
@@ -99,7 +101,7 @@ final class AddCategoryViewModel {
         guard !budget.isEmpty, proposedBudget > 0 else { return nil }
 
         if totalIncome <= 0 {
-            return "Add an income before allocating category budgets."
+            return String(localized: "Add an income before allocating category budgets.")
         }
 
         if budgetExceedsIncome {
@@ -109,7 +111,11 @@ final class AddCategoryViewModel {
                     excludingCategoryId: editingCategory?.id
                 )
             )
-            return "Category budgets can’t exceed your income ($\(Int(totalIncome))). You have $\(remaining) left to allocate."
+            return String(
+                format: String(localized: "Category budgets can’t exceed your income (%@). You have %@ left to allocate."),
+                BudgieNumericInput.formatAmount(Int(totalIncome)),
+                BudgieNumericInput.formatAmount(remaining)
+            )
         }
 
         return nil
@@ -139,8 +145,16 @@ final class AddCategoryViewModel {
             return
         }
         selectedPredefinedKey = raw
-        title = raw
+        title = PredefinedCategoryCatalog.localizedDisplayName(for: raw)
         emoji = PredefinedCategoryCatalog.defaultEmoji(for: raw)
+    }
+
+    private func displayTitle(for name: String, predefinedKey: String?) -> String {
+        guard let predefinedKey,
+              name.caseInsensitiveCompare(predefinedKey) == .orderedSame else {
+            return name
+        }
+        return PredefinedCategoryCatalog.localizedDisplayName(for: predefinedKey)
     }
 
     func buildCategory() -> Category? {
@@ -189,7 +203,7 @@ final class AddCategoryViewModel {
     }
 
     func sanitizeDigits(_ input: String) -> String {
-        input.filter(\.isNumber)
+        BudgieNumericInput.sanitizeIntegerInput(input)
     }
 
     func sanitizeEmoji(_ input: String) -> String {
@@ -202,7 +216,7 @@ final class AddCategoryViewModel {
     }
 
     private func parsedAmount(from text: String) -> Double {
-        Double(Int(text.filter(\.isNumber)) ?? 0)
+        Double(BudgieNumericInput.parseInteger(from: text) ?? 0)
     }
 }
 

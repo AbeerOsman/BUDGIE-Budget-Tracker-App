@@ -37,7 +37,7 @@ final class CategoryDetailViewModel {
     }
 
     var navigationTitle: String {
-        category?.name ?? "Category"
+        category?.name ?? String(localized: "Category")
     }
 
     func updateCategory(_ category: Category) {

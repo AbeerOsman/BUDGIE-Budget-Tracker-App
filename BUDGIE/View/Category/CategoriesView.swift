@@ -30,7 +30,7 @@ struct CategoriesView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                CircleNavButton(systemImage: "chevron.left") {
+                CircleNavButton(systemImage: "chevron.backward") {
                     dismiss()
                 }
             }
@@ -63,7 +63,12 @@ struct CategoriesView: View {
                 categoryPendingDelete = nil
             }
         } message: { category in
-            Text("Are you sure you want to delete \"\(category.name)\"? This cannot be undone.")
+            Text(
+                String(
+                    format: String(localized: "Are you sure you want to delete \"%@\"? This cannot be undone."),
+                    category.name
+                )
+            )
         }
     }
 
@@ -211,9 +216,13 @@ private struct CategoryListCardView: View {
                         .font(BudgieFont.headline)
                         .foregroundStyle(.primary)
 
-                    Text(item.budgetSummary)
-                        .font(BudgieFont.subheadline)
-                        .foregroundStyle(.secondary)
+                    CurrencyRatioView(
+                        leading: item.spentAmount,
+                        trailing: item.budgetAmount,
+                        font: BudgieFont.subheadline,
+                        iconSize: 14
+                    )
+                    .foregroundStyle(.secondary)
                 }
 
                 Spacer(minLength: 8)

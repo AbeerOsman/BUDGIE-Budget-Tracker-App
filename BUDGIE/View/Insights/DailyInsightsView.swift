@@ -25,11 +25,14 @@ struct DailyInsightsView: View {
                     .font(BudgieFont.subheadline)
                     .foregroundStyle(.primary)
 
-                Text("$\(viewModel.totalSpentToday, specifier: "%.2f") / $\(viewModel.dailyBudget, specifier: "%.0f")")
-                    .font(BudgieFont.title3)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.65)
-                    .foregroundStyle(Color(hex: "#3FAFD3"))
+                CurrencyRatioView(
+                    leading: Int(viewModel.totalSpentToday),
+                    trailing: Int(viewModel.dailyBudget),
+                    font: BudgieFont.title3,
+                    iconSize: 14,
+                    tint: Color(hex: "#3FAFD3")
+                )
+                .foregroundStyle(Color(hex: "#3FAFD3"))
             }
             .offset(y: -10)
 

@@ -81,7 +81,7 @@ struct MonthlyInsightsView: View {
 
                 BarMark(
                     x: .value("Month", point.monthName),
-                    y: .value("Spent", point.amount)
+                    y: .value(String(localized: "Spent"), point.amount)
                 )
                 .foregroundStyle(Color(hex: "#3FAFD3"))
                 .cornerRadius(3)

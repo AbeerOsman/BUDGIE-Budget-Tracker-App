@@ -12,8 +12,8 @@ enum CategoryType: String, Codable, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .spending: "Spending"
-        case .fixed: "Fixed"
+        case .spending: String(localized: "Spending")
+        case .fixed: String(localized: "Fixed")
         }
     }
 

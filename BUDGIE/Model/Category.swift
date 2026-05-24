@@ -44,31 +44,16 @@ struct Category: Identifiable, Equatable, Codable {
         return min(spent / budget, 1)
     }
 
-    var budgetSummary: String {
-        "$\(Int(spent)) / $\(Int(budget))"
-    }
-
-    var progressPercentageText: String {
-        let value = progress * 100
-        if value.truncatingRemainder(dividingBy: 1) == 0 {
-            return "%\(Int(value))"
-        }
-        return String(format: "%.1f%%", value)
-    }
-
     var remainingAmount: Double {
         max(budget - spent, 0)
     }
 
-    var budgetDisplayText: String {
-        "$\(Int(budget))"
+    var spentAmount: Int { Int(spent) }
+    var budgetAmount: Int { Int(budget) }
+    var remainingAmountInt: Int { Int(remainingAmount) }
+
+    var progressPercentageText: String {
+        BudgieNumericInput.formatPercent(progress)
     }
 
-    var spentDisplayText: String {
-        "Spent $\(Int(spent))"
-    }
-
-    var remainingDisplayText: String {
-        "Left $\(Int(remainingAmount))"
-    }
 }

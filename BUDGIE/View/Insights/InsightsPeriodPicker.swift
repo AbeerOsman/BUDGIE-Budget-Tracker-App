@@ -40,7 +40,7 @@ struct InsightsPeriodPicker: View {
         )
     }
 
-    private func tabButton(_ title: String, _ period: InsightsPeriod) -> some View {
+    private func tabButton(_ title: LocalizedStringKey, _ period: InsightsPeriod) -> some View {
         Button {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.82)) {
                 selected = period

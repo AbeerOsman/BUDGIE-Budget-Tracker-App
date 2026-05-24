@@ -97,6 +97,27 @@ struct BudgetWidgetView: View {
     }
 }
 
+// MARK: - WIDGET CURRENCY
+
+private struct WidgetCurrencyAmount: View {
+    let value: Int
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 2) {
+            Text("\(value)")
+                .foregroundStyle(color)
+
+            Image("SAR")
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 11, height: 11)
+                .foregroundStyle(.white)
+        }
+    }
+}
+
 // MARK: - CIRCULAR LOCK SCREEN
 
 struct CircularWidget: View {
@@ -182,12 +203,18 @@ struct RectangularWidget: View {
                     .lineLimit(1)
 
                 HStack(spacing: 2) {
+                    WidgetCurrencyAmount(
+                        value: Int(entry.spent),
+                        color: .cyan
+                    )
 
-                    Text("$33")
-                        .foregroundColor(.cyan)
-
-                    Text("/77")
+                    Text("/")
                         .foregroundColor(.gray)
+
+                    WidgetCurrencyAmount(
+                        value: Int(entry.budget),
+                        color: .gray
+                    )
                 }
                 .font(.system(size: 13, weight: .bold))
                 .lineLimit(1)

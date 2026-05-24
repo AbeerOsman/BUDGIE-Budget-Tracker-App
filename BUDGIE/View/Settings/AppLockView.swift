@@ -22,7 +22,12 @@ struct AppLockView: View {
                     .font(.title2.weight(.bold))
                     .foregroundStyle(.white)
 
-                Text("Use \(appLockManager.biometryName) to continue")
+                Text(
+                    String(
+                        format: String(localized: "Use %@ to continue"),
+                        appLockManager.biometryName
+                    )
+                )
                     .font(.subheadline)
                     .foregroundStyle(.white.opacity(0.75))
                     .multilineTextAlignment(.center)

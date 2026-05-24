@@ -96,12 +96,21 @@ struct AddCategorySheet: View {
                     if viewModel.categoryType == .spending {
                         dailySpendingSection(viewModel: viewModel)
 
-                        Text("Recommended spending limit: $ \(viewModel.recommendedDailyLimit)")
-                            .font(BudgieFont.subheadline)
-                            .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity)
-                            .multilineTextAlignment(.center)
-                            .padding(.top, 4)
+                        HStack(spacing: 4) {
+                            Text("Recommended spending limit:")
+                                .font(BudgieFont.subheadline)
+
+                            CurrencyAmountView(
+                                amount: viewModel.recommendedDailyLimit,
+                                font: BudgieFont.subheadline,
+                                iconSize: 14
+                            )
+                        }
+                        .font(BudgieFont.subheadline)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                        .padding(.top, 4)
                     }
 
                     if viewModel.isEditing {
@@ -170,7 +179,7 @@ struct AddCategorySheet: View {
             ) {
                 Text("Custom").tag("")
                 ForEach(viewModel.predefinedOptions, id: \.self) { name in
-                    Text(name).tag(name)
+                    Text(PredefinedCategoryCatalog.localizedDisplayName(for: name)).tag(name)
                 }
             }
             .labelsHidden()
@@ -218,7 +227,7 @@ struct AddCategorySheet: View {
                 CategoryFormRow(
                     placeholder: "Budget",
                     text: $viewModel.budget,
-                    keyboardType: .numberPad,
+                    numericKind: .integer,
                     sanitize: viewModel.sanitizeDigits,
                     showsCurrency: true
                 )
@@ -257,7 +266,7 @@ struct AddCategorySheet: View {
             CategoryFormRow(
                 placeholder: "Maximum daily spending",
                 text: $viewModel.dailySpending,
-                keyboardType: .numberPad,
+                numericKind: .integer,
                 sanitize: viewModel.sanitizeDigits,
                 showsCurrency: true
             )
@@ -340,29 +349,36 @@ private struct CategoryTypeRadioRow: View {
 }
 
 private struct CategoryFormRow: View {
-    let placeholder: String
+    let placeholder: LocalizedStringKey
     @Binding var text: String
-    var keyboardType: UIKeyboardType = .default
+    var numericKind: BudgieNumericInput.FieldKind?
     let sanitize: (String) -> String
     var showsCurrency: Bool = false
 
     var body: some View {
         HStack(spacing: 12) {
-            TextField(placeholder, text: $text)
-                .keyboardType(keyboardType)
+            if let numericKind {
+                WesternDigitField(
+                    placeholder: placeholder,
+                    text: $text,
+                    kind: numericKind
+                )
                 .foregroundStyle(.primary)
-                .textInputAutocapitalization(keyboardType == .numberPad ? .never : .words)
-                .autocorrectionDisabled(keyboardType == .numberPad)
-                .onChange(of: text) { _, newValue in
-                    let sanitized = sanitize(newValue)
-                    if sanitized != newValue {
-                        text = sanitized
+            } else {
+                TextField(placeholder, text: $text)
+                    .foregroundStyle(.primary)
+                    .textInputAutocapitalization(.words)
+                    .autocorrectionDisabled(false)
+                    .onChange(of: text) { _, newValue in
+                        let sanitized = sanitize(newValue)
+                        if sanitized != newValue {
+                            text = sanitized
+                        }
                     }
-                }
+            }
 
             if showsCurrency {
-                Text("$")
-                    .font(.body)
+                SARIcon(size: 16)
                     .foregroundStyle(.secondary)
             }
         }

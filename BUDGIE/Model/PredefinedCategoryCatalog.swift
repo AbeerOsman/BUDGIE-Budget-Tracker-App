@@ -31,6 +31,20 @@ enum PredefinedCategoryCatalog {
         defaultEmojis[categoryName] ?? "📁"
     }
 
+    private static let localizedNamesByKey: [String: String] = {
+        Dictionary(
+            uniqueKeysWithValues: defaultEmojis.keys.map { key in
+                (key, String(localized: String.LocalizationValue(key)))
+            }
+        )
+    }()
+
+    /// Localized label for a predefined category key (English keys in `merchant_keywords.json`).
+    static func localizedDisplayName(for categoryName: String) -> String {
+        localizedNamesByKey[categoryName]
+            ?? String(localized: String.LocalizationValue(categoryName))
+    }
+
     static func loadKeywords() -> [String: [String]] {
         MerchantKeywordStore.shared.loadKeywords()
     }

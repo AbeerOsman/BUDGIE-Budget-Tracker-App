@@ -88,10 +88,10 @@ final class AddPaymentViewModel {
     }
 
     func sanitizeAmount(_ input: String) -> String {
-        input.filter(\.isNumber)
+        BudgieNumericInput.sanitizeIntegerInput(input)
     }
 
     private var parsedAmount: Double {
-        Double(Int(amount.filter(\.isNumber)) ?? 0)
+        Double(BudgieNumericInput.parseInteger(from: amount) ?? 0)
     }
 }

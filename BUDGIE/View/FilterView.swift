@@ -42,16 +42,12 @@ struct FilterRowView: View {
 
             Spacer()
 
-            HStack {
-                Text("-\(Int(item.amount)) ")
-                    .font(BudgieFont.title2)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-
-                Image("SAR")
-                    .resizable()
-                    .frame(width: 40, height: 40)
-            }
+            CurrencyAmountView(
+                amount: Int(item.amount),
+                font: BudgieFont.title2,
+                iconSize: 28,
+                prefix: "-"
+            )
         }
         .padding(.vertical, 8)
         
@@ -73,7 +69,7 @@ struct FilterView: View {
         categoriesViewModel.uncategorizedTransactions.map { transaction in
             FilterItem(
                 id: transaction.id,
-                merchantName: transaction.merchantName ?? "Unknown Merchant",
+                merchantName: transaction.merchantName ?? String(localized: "Unknown Merchant"),
                 date: transaction.date.formatted(
                     date: .abbreviated,
                     time: .shortened
@@ -190,7 +186,7 @@ struct FilterView: View {
 
                                     Spacer()
 
-                                    Image(systemName: "chevron.right")
+                                    Image(systemName: "chevron.forward")
                                         .font(.caption.weight(.semibold))
                                         .foregroundStyle(.tertiary)
                                 }
