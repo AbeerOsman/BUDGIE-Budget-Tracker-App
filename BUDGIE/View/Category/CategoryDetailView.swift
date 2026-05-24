@@ -69,7 +69,7 @@ struct CategoryDetailView: View {
         .background(Color(.systemBackground))
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                GlassyIconButton(systemImage: "chevron.left") {
+                GlassyIconButton(systemImage: "chevron.backward") {
                     dismiss()
                 }
             }
@@ -128,7 +128,12 @@ struct CategoryDetailView: View {
                 paymentPendingDelete = nil
             }
         } message: { payment in
-            Text("Are you sure you want to delete \"\(payment.merchantName)\"? This cannot be undone.")
+            Text(
+                String(
+                    format: String(localized: "Are you sure you want to delete \"%@\"? This cannot be undone."),
+                    payment.merchantName
+                )
+            )
         }
     }
 
@@ -179,9 +184,13 @@ struct CategoryDetailView: View {
 
                 Spacer()
 
-                Text(category.budgetDisplayText)
-                    .font(BudgieFont.title2.weight(.bold))
-                    .foregroundStyle(.primary)
+                CurrencyAmountView(
+                    amount: category.budgetAmount,
+                    font: BudgieFont.title2,
+                    weight: .bold,
+                    iconSize: 20
+                )
+                .foregroundStyle(.primary)
             }
 
             CategoryDetailProgressBar(
@@ -190,11 +199,22 @@ struct CategoryDetailView: View {
             )
 
             HStack {
-                Text(category.spentDisplayText)
+                LabeledCurrencyView(
+                    label: "Spent",
+                    amount: category.spentAmount,
+                    font: BudgieFont.subheadline,
+                    iconSize: 14
+                )
+
                 Spacer()
-                Text(category.remainingDisplayText)
+
+                LabeledCurrencyView(
+                    label: "Left",
+                    amount: category.remainingAmountInt,
+                    font: BudgieFont.subheadline,
+                    iconSize: 14
+                )
             }
-            .font(BudgieFont.subheadline.weight(.regular))
             .foregroundStyle(.primary)
         }
     }
@@ -278,7 +298,7 @@ private struct GlassyIconButton: View {
 }
 
 private struct GlassyTextButton: View {
-    let title: String
+    let title: LocalizedStringKey
     let action: () -> Void
 
     var body: some View {
@@ -340,9 +360,14 @@ private struct CategoryPaymentRow: View {
 
             Spacer()
 
-            Text(payment.formattedAmount)
-                .font(BudgieFont.body.weight(.semibold))
-                .foregroundStyle(.primary)
+            CurrencyAmountView(
+                amount: payment.amountValue,
+                font: BudgieFont.body,
+                weight: .semibold,
+                iconSize: 16,
+                prefix: "-"
+            )
+            .foregroundStyle(.primary)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)

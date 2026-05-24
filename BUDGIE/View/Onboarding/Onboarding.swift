@@ -16,15 +16,15 @@ struct Onboarding: View {
     @State private var showOnboarding2 = false
     
     let titles = [
-        "Understand Your\nSpending Clearly",
-        "Track Expenses\nAutomatically",
-        "Build Better\nFinancial Habits"
+        String(localized: "Understand Your\nSpending Clearly"),
+        String(localized: "Track Expenses\nAutomatically"),
+        String(localized: "Build Better\nFinancial Habits")
     ]
     
     let descriptions = [
-        "Track payments, organize categories, and see where your money goes through simple and meaningful financial insights.",
-        "Use Apple Pay, bank SMS, shortcuts, and widgets to quickly log and manage your spending with less manual effort.",
-        "Set your own budgets, monitor category limits, and stay more aware of your spending habits every day."
+        String(localized: "Track payments, organize categories, and see where your money goes through simple and meaningful financial insights."),
+        String(localized: "Use Apple Pay, bank SMS, shortcuts, and widgets to quickly log and manage your spending with less manual effort."),
+        String(localized: "Set your own budgets, monitor category limits, and stay more aware of your spending habits every day.")
     ]
     
     let lightImages = ["charts", "box2", "wallet2"]

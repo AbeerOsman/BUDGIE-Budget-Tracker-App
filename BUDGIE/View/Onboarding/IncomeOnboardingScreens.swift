@@ -68,7 +68,7 @@ struct IncomeFormView: View {
 
     private var canSave: Bool {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        return !trimmed.isEmpty && Double(amount) ?? 0 > 0
+        return !trimmed.isEmpty && (BudgieNumericInput.parseDouble(from: amount) ?? 0) > 0
     }
 
     var body: some View {
@@ -97,9 +97,12 @@ struct IncomeFormView: View {
                                 .font(.caption)
                                 .foregroundColor(.gray)
 
-                            TextField("0.00", text: $amount)
-                                .keyboardType(.decimalPad)
-                                .foregroundColor(.primary)
+                            WesternDigitField(
+                                placeholder: "0.00",
+                                text: $amount,
+                                kind: .decimal
+                            )
+                            .foregroundColor(.primary)
 
                             Divider()
                                 .background(Color.gray.opacity(0.5))
@@ -132,7 +135,7 @@ struct IncomeFormView: View {
 
                 Button {
                     let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
-                    let value = Double(amount) ?? 0
+                    let value = BudgieNumericInput.parseDouble(from: amount) ?? 0
                     onSave(trimmed, value, date)
                 } label: {
                     Text("Save Income")

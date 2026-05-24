@@ -52,7 +52,7 @@ struct AddPaymentSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    AddPaymentGlassyIconButton(systemImage: "chevron.left") {
+                    AddPaymentGlassyIconButton(systemImage: "chevron.backward") {
                         dismiss()
                     }
                 }
@@ -112,19 +112,14 @@ struct AddPaymentSheet: View {
     }
 
     private func amountFieldRow(text: Binding<String>, viewModel: AddPaymentViewModel) -> some View {
-        TextField("Amount spent", text: text)
-            .keyboardType(.numberPad)
-            .foregroundStyle(.primary)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled(true)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
-            .onChange(of: text.wrappedValue) { _, newValue in
-                let sanitized = viewModel.sanitizeAmount(newValue)
-                if sanitized != newValue {
-                    text.wrappedValue = sanitized
-                }
-            }
+        WesternDigitField(
+            placeholder: "Amount spent",
+            text: text,
+            kind: .integer
+        )
+        .foregroundStyle(.primary)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
     }
 
     private func dateRow(date: Binding<Date>) -> some View {

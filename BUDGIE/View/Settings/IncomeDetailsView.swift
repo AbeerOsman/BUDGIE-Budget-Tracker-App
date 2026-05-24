@@ -33,18 +33,14 @@ struct IncomeDetailsView: View {
 
     var isValid: Bool {
         !title.trimmingCharacters(in: .whitespaces).isEmpty &&
-        !amount.isEmpty &&
-        Double(amount) != nil &&
-        Double(amount)! > 0
+        (BudgieNumericInput.parseDouble(from: amount) ?? 0) > 0
     }
 
     @FocusState private var amountFieldFocus: AmountField?
     @State private var amountAdjustment = ""
 
     private var parsedAmount: Double? {
-        let trimmed = amount.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-        return Double(trimmed)
+        BudgieNumericInput.parseDouble(from: amount)
     }
 
     private var showAmountMathTool: Bool {
@@ -76,10 +72,13 @@ struct IncomeDetailsView: View {
                                 .font(.caption)
                                 .foregroundColor(.gray)
 
-                            TextField("0.00", text: $amount)
-                                .keyboardType(.decimalPad)
-                                .foregroundColor(.primary)
-                                .focused($amountFieldFocus, equals: .main)
+                            WesternDigitField(
+                                placeholder: "0.00",
+                                text: $amount,
+                                kind: .decimal
+                            )
+                            .foregroundColor(.primary)
+                            .focused($amountFieldFocus, equals: .main)
 
                             Divider()
                                 .background(Color.gray.opacity(0.5))
@@ -90,10 +89,13 @@ struct IncomeDetailsView: View {
                                         .font(.caption)
                                         .foregroundColor(.gray)
 
-                                    TextField("0.00", text: $amountAdjustment)
-                                        .keyboardType(.decimalPad)
-                                        .foregroundColor(.primary)
-                                        .focused($amountFieldFocus, equals: .adjustment)
+                                    WesternDigitField(
+                                        placeholder: "0.00",
+                                        text: $amountAdjustment,
+                                        kind: .decimal
+                                    )
+                                    .foregroundColor(.primary)
+                                    .focused($amountFieldFocus, equals: .adjustment)
 
                                     HStack(spacing: 12) {
                                         Button {
@@ -186,7 +188,7 @@ struct IncomeDetailsView: View {
     private func applyAmountMath(isAdd: Bool) {
         let base = parsedAmount ?? 0
         let trimmedAdj = amountAdjustment.trimmingCharacters(in: .whitespacesAndNewlines)
-        let delta = Double(trimmedAdj) ?? 0
+        let delta = BudgieNumericInput.parseDouble(from: trimmedAdj) ?? 0
         guard base > 0, delta > 0 else { return }
 
         let newValue = isAdd ? base + delta : max(0, base - delta)
@@ -205,7 +207,7 @@ struct IncomeDetailsView: View {
     }
 
     private func saveIncome() {
-        guard let incomeAmount = Double(amount) else { return }
+        guard let incomeAmount = BudgieNumericInput.parseDouble(from: amount) else { return }
 
         let trimmedTitle = title.trimmingCharacters(in: .whitespaces)
 
@@ -238,10 +240,7 @@ struct IncomeDetailsView: View {
     }
 
     private func formatAmount(_ value: Double) -> String {
-        if value == floor(value) {
-            return String(format: "%.0f", value)
-        }
-        return String(format: "%.2f", value)
+        BudgieNumericInput.formatAmountForDisplay(value)
     }
 }
 

@@ -9,12 +9,16 @@ import SwiftUI
 struct SetupStepProgress: View {
     let currentStep: Int
     
-    private let steps = ["Income", "Automation", "Shortcut"]
+    private let steps = [
+        String(localized: "Income"),
+        String(localized: "Automation"),
+        String(localized: "Shortcut")
+    ]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             
-            Text("Step \(currentStep)")
+            Text(String(format: String(localized: "Step %lld"), currentStep))
                 .font(BudgieFont.headline.weight(.semibold))
                 .foregroundColor(.skyBlue)
             

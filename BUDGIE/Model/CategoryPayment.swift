@@ -60,7 +60,5 @@ struct CategoryPayment: Identifiable, Equatable, Codable {
         date.formatted(.dateTime.month(.twoDigits).day(.twoDigits).year())
     }
 
-    var formattedAmount: String {
-        "-$\(Int(amount))"
-    }
+    var amountValue: Int { Int(amount) }
 }

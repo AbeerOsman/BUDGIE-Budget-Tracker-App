@@ -55,11 +55,14 @@ struct ContentView: View {
 
     private var categoryResetAlertMessage: String {
         guard let incomeDate = primaryIncomeRecord?.date else {
-            return "Today is your monthly date to reset category payments. Do you want to reset all category payments now?"
+            return String(localized: "Today is your monthly date to reset category payments. Do you want to reset all category payments now?")
         }
 
         let formattedDay = CategoryPaymentResetScheduler.formattedIncomeDay(incomeDate: incomeDate)
-        return "Today is your monthly date to reset category payments (based on your income date, \(formattedDay)). Do you want to reset all category payments and clear spending totals?"
+        return String(
+            format: String(localized: "Today is your monthly date to reset category payments (based on your income date, %@). Do you want to reset all category payments and clear spending totals?"),
+            formattedDay
+        )
     }
 
     var body: some View {
@@ -302,14 +305,12 @@ struct FilledIncomeView: View {
 
                 Spacer()
 
-                Text("$\(Int(income))")
-                    .font(
-                        .system(
-                            size: 22,
-                            weight: .bold
-                        )
-                    )
-                    .foregroundStyle(.primary)
+                CurrencyAmountView(
+                    amount: Int(income),
+                    font: .system(size: 22, weight: .bold),
+                    iconSize: 22
+                )
+                .foregroundStyle(.primary)
             }
             .padding(.horizontal, 24)
             .padding(.top, 20)
@@ -364,25 +365,23 @@ struct FilledIncomeView: View {
 
                 HStack(spacing: 0) {
 
-                    Text("Spent $\(Int(spent))")
-                        .font(
-                            .system(
-                                size: 14,
-                                weight: .regular
-                            )
-                        )
-                        .foregroundStyle(.secondary)
+                    LabeledCurrencyView(
+                        label: "Spent",
+                        amount: Int(spent),
+                        font: .system(size: 14),
+                        iconSize: 14
+                    )
+                    .foregroundStyle(.secondary)
 
                     Spacer()
 
-                    Text("Left $\(Int(remaining))")
-                        .font(
-                            .system(
-                                size: 14,
-                                weight: .regular
-                            )
-                        )
-                        .foregroundStyle(.secondary)
+                    LabeledCurrencyView(
+                        label: "Left",
+                        amount: Int(remaining),
+                        font: .system(size: 14),
+                        iconSize: 14
+                    )
+                    .foregroundStyle(.secondary)
                 }
             }
             .padding(.horizontal, 24)

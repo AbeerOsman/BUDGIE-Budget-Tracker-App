@@ -133,16 +133,21 @@ private struct CategoryCardView: View {
                 Text(item.name)
                     .font(BudgieFont.caption.weight(.semibold))
                     .foregroundStyle(.white)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.85)
-
-                Spacer(minLength: 4)
-
-                Text(item.budgetSummary)
-                    .font(BudgieFont.caption2.weight(.medium))
-                    .foregroundStyle(.white.opacity(0.7))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                    .truncationMode(.tail)
+                    .minimumScaleFactor(0.85)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                    .layoutPriority(0)
+
+                CurrencyRatioView(
+                    leading: item.spentAmount,
+                    trailing: item.budgetAmount,
+                    font: BudgieFont.caption2.weight(.medium),
+                    iconSize: 12,
+                    tint: .white.opacity(0.9)
+                )
+                .fixedSize(horizontal: true, vertical: false)
+                .layoutPriority(1)
             }
 
             CategoryBudgetProgressBar(progress: item.progress)

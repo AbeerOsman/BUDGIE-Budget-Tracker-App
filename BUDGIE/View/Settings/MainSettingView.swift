@@ -26,7 +26,7 @@ struct MainSetting: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                CircleNavButton(systemImage: "chevron.left") {
+                CircleNavButton(systemImage: "chevron.backward") {
                     dismiss()
                 }
             }
@@ -171,9 +171,9 @@ struct SecuritySection: View {
 
 // MARK: - Reusable Components
 struct SectionTitle: View {
-    let title: String
+    let title: LocalizedStringKey
 
-    init(_ title: String) {
+    init(_ title: LocalizedStringKey) {
         self.title = title
     }
 
@@ -187,7 +187,7 @@ struct SectionTitle: View {
 
 struct SettingRow: View {
     let icon: String
-    let title: String
+    let title: LocalizedStringKey
     let hasChevron: Bool
     var action: (() -> Void)? = nil
     @Environment(\.colorScheme) var colorScheme

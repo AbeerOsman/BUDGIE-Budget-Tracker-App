@@ -47,9 +47,14 @@ final class BudgieNotificationService {
         amount: Double,
         categoryName: String
     ) {
-        let body = "\(formatCurrency(amount)) from \(merchant) was added to \(categoryName)."
+        let body = String(
+            format: String(localized: "%@ from %@ was added to %@."),
+            formatCurrency(amount),
+            merchant,
+            categoryName
+        )
         schedule(
-            title: "Expense Tracked!",
+            title: String(localized: "Expense Tracked!"),
             body: body,
             identifier: "expense.tracked.\(UUID().uuidString)"
         )
@@ -59,16 +64,22 @@ final class BudgieNotificationService {
         merchant: String,
         amount: Double?
     ) {
-        let amountPart: String
+        let body: String
         if let amount {
-            amountPart = "A \(formatCurrency(amount)) payment from \(merchant)"
+            body = String(
+                format: String(localized: "A %@ payment from %@ needs a category. Open Filter to assign it."),
+                formatCurrency(amount),
+                merchant
+            )
         } else {
-            amountPart = "A payment from \(merchant)"
+            body = String(
+                format: String(localized: "A payment from %@ needs a category. Open Filter to assign it."),
+                merchant
+            )
         }
 
-        let body = "\(amountPart) needs a category. Open Filter to assign it."
         schedule(
-            title: "Transaction Needs Filter",
+            title: String(localized: "Transaction Needs Filter"),
             body: body,
             identifier: "expense.filter.\(UUID().uuidString)"
         )
@@ -91,9 +102,13 @@ final class BudgieNotificationService {
 
         UserDefaults.standard.set(true, forKey: key)
 
-        let body = "You've reached your \(formatCurrency(budget)) budget for \(categoryName)."
+        let body = String(
+            format: String(localized: "You've reached your %@ budget for %@."),
+            formatCurrency(budget),
+            categoryName
+        )
         schedule(
-            title: "Category Budget Exceeded",
+            title: String(localized: "Category Budget Exceeded"),
             body: body,
             identifier: "budget.category.\(categoryId.uuidString)"
         )
@@ -116,9 +131,13 @@ final class BudgieNotificationService {
 
         UserDefaults.standard.set(true, forKey: incomeExceededKey)
 
-        let body = "Total spending (\(formatCurrency(currentTotalSpent))) has reached your income (\(formatCurrency(totalIncome)))."
+        let body = String(
+            format: String(localized: "Total spending (%@) has reached your income (%@)."),
+            formatCurrency(currentTotalSpent),
+            formatCurrency(totalIncome)
+        )
         schedule(
-            title: "Income Budget Exceeded",
+            title: String(localized: "Income Budget Exceeded"),
             body: body,
             identifier: "budget.income.exceeded"
         )
@@ -165,9 +184,7 @@ final class BudgieNotificationService {
     }
 
     private func formatCurrency(_ value: Double) -> String {
-        if value == floor(value) {
-            return String(format: "%.0f SAR", value)
-        }
-        return String(format: "%.2f SAR", value)
+        let amount = BudgieNumericInput.formatAmount(value)
+        return "\(amount) SAR"
     }
 }

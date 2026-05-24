@@ -89,26 +89,29 @@ struct WeeklyInsightsView: View {
 
                 BarMark(
                     x: .value("Day", point.dayName),
-                    y: .value("Spent", point.amount)
+                    y: .value(String(localized: "Spent"), point.amount)
                 )
                 .foregroundStyle(Color(hex: "#3FAFD3"))
                 .cornerRadius(3)
 
                 if dailyBudget > 0 {
-                    RuleMark(y: .value("Daily Limit", dailyBudget))
+                    RuleMark(y: .value(String(localized: "Daily Limit"), dailyBudget))
                         .foregroundStyle(gridLineColor)
                         .lineStyle(StrokeStyle(lineWidth: 1))
                         .annotation(position: .trailing) {
-                            Text("$ \(Int(dailyBudget))")
-                                .font(BudgieFont.caption)
-                                .foregroundStyle(axisTextColor)
+                            CurrencyAmountView(
+                                amount: Int(dailyBudget),
+                                font: BudgieFont.caption,
+                                iconSize: 12,
+                                tint: axisTextColor
+                            )
                         }
                 }
 
                 if let selectedPoint,
                    selectedPoint.dayName == point.dayName {
 
-                    RuleMark(x: .value("Selected", point.dayName))
+                    RuleMark(x: .value(String(localized: "Selected"), point.dayName))
                         .foregroundStyle(selectedLineColor)
                         .lineStyle(StrokeStyle(lineWidth: 2))
                         .annotation(
@@ -124,11 +127,12 @@ struct WeeklyInsightsView: View {
                                     .font(BudgieFont.caption)
                                     .foregroundStyle(.secondary)
 
-                                Text("$\(point.amount, specifier: "%.0f")")
-                                    .font(BudgieFont.title3)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.7)
-                                    .foregroundStyle(.white)
+                                CurrencyAmountDoubleView(
+                                    amount: point.amount,
+                                    font: BudgieFont.title3,
+                                    iconSize: 16,
+                                    tint: .white
+                                )
 
                                 Text(point.date.formatted(.dateTime.day().month(.abbreviated).year()))
                                     .font(BudgieFont.caption)
