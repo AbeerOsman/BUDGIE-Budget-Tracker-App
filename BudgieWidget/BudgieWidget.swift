@@ -2,8 +2,9 @@
 //  BudgieWidget.swift
 //  BudgieWidget
 //
-//  Created by Ruba Alghamdi on 04/12/1447 AH.
+//  Created by Ruba Alghamdi on 07/12/1447 AH.
 //
+
 
 import WidgetKit
 import SwiftUI
@@ -177,7 +178,7 @@ struct RectangularWidget: View {
             VStack(alignment: .leading, spacing: 1) {
 
                 Text("Spent")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 12, weight: .medium))
                     .lineLimit(1)
 
                 HStack(spacing: 2) {

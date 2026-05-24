@@ -2,7 +2,7 @@
 //  BudgieWidgetBundle.swift
 //  BudgieWidget
 //
-//  Created by Ruba Alghamdi on 04/12/1447 AH.
+//  Created by Ruba Alghamdi on 07/12/1447 AH.
 //
 
 import WidgetKit
