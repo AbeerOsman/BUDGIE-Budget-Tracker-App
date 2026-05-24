@@ -64,24 +64,38 @@ struct ContentView: View {
             formattedDay
         )
     }
+    @Environment(\.colorScheme) private var colorScheme
 
-    var body: some View {
-        ZStack{
-            
-            LinearGradient(
-                gradient: Gradient(
-                    colors: [
-                        Color(red: 0.0, green: 0.6, blue: 0.8),   // Cyan
-                        Color(red: 0.0, green: 0.2, blue: 0.6),   // Dark Blue
-                        Color(red: 0.4, green: 0.1, blue: 0.4)    // Purple
-                    ]
-                ),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-            
-        NavigationStack {
+        var oppositePrimary: Color {
+            colorScheme == .dark ? .black : .white
+        }
+        
+        var body: some View {
+            NavigationStack {
+                ZStack(alignment: .top) {
+
+                    LinearGradient(
+                        colors: [
+                            Color.darkNavy,
+                            Color.steelBlue,
+                            Color.skyBlue
+                        ],
+                        startPoint: .topTrailing,
+                        endPoint: .bottomLeading
+                    )
+                    .frame(height: 250)
+                    .ignoresSafeArea(edges: .top)
+                    LinearGradient(
+                        colors: [
+                            oppositePrimary.opacity(0.0),
+                            oppositePrimary
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 250)
+                    .ignoresSafeArea(edges: .top)
+                    
             ScrollView(showsIndicators: false) {
                 
                 VStack(spacing: 16) {
@@ -271,6 +285,13 @@ struct EmptyIncomeView: View {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .fill(Color.budgieGroupedBoxBackground(for: colorScheme))
         )
+        .overlay(alignment: .topLeading) {
+                    Image("main")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 76, height: 76)
+                        .offset(x: 34, y: -76)
+                }
         .padding(.horizontal, 16)
         .padding(.top, 16)
         .padding(.bottom, 16)
@@ -392,6 +413,13 @@ struct FilledIncomeView: View {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .fill(Color.budgieGroupedBoxBackground(for: colorScheme))
         )
+        .overlay(alignment: .topLeading) {
+                    Image("main")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 76, height: 76)
+                        .offset(x: 34, y: -76)
+                }
         .padding(.horizontal, 16)
         .padding(.top, 16)
         .padding(.bottom, 16)
