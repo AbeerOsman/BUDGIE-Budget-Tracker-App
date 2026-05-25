@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		972A36972FC269E700DCCB24 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 972A36962FC269E700DCCB24 /* WidgetKit.framework */; };
-		972A36992FC269E700DCCB24 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 972A36982FC269E700DCCB24 /* SwiftUI.framework */; };
-		972A36AA2FC269E800DCCB24 /* BudgieWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 972A36942FC269E700DCCB24 /* BudgieWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		972A2EFE2FBEF3D900DCCB24 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 972A2EFD2FBEF3D900DCCB24 /* WidgetKit.framework */; };
+		972A2F002FBEF3D900DCCB24 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 972A2EFF2FBEF3D900DCCB24 /* SwiftUI.framework */; };
+		972A2F112FBEF3D900DCCB24 /* BudgieWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 972A2EFB2FBEF3D900DCCB24 /* BudgieWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,23 +27,23 @@
 			remoteGlobalIDString = 816B81362FAC6CF1005B4085;
 			remoteInfo = BUDGIE;
 		};
-		972A36A82FC269E800DCCB24 /* PBXContainerItemProxy */ = {
+		972A2F0F2FBEF3D900DCCB24 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 816B812F2FAC6CF1005B4085 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 972A36932FC269E700DCCB24;
+			remoteGlobalIDString = 972A2EFA2FBEF3D900DCCB24;
 			remoteInfo = BudgieWidgetExtension;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		972A36AB2FC269E800DCCB24 /* Embed Foundation Extensions */ = {
+		972A2F122FBEF3D900DCCB24 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				972A36AA2FC269E800DCCB24 /* BudgieWidgetExtension.appex in Embed Foundation Extensions */,
+				972A2F112FBEF3D900DCCB24 /* BudgieWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -54,25 +54,26 @@
 		816B81372FAC6CF1005B4085 /* BUDGIE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BUDGIE.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		816B81462FAC6CF3005B4085 /* BUDGIETests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BUDGIETests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		816B81502FAC6CF3005B4085 /* BUDGIEUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BUDGIEUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		972A36942FC269E700DCCB24 /* BudgieWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BudgieWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		972A36962FC269E700DCCB24 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
-		972A36982FC269E700DCCB24 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		972A2EFB2FBEF3D900DCCB24 /* BudgieWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BudgieWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		972A2EFD2FBEF3D900DCCB24 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		972A2EFF2FBEF3D900DCCB24 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		972A3D092FC44BE800DCCB24 /* BudgieWidgetExtensionDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BudgieWidgetExtensionDebug.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		972A36AE2FC269E800DCCB24 /* Exceptions for "BudgieWidget" folder in "BudgieWidgetExtension" target */ = {
+		972A2F152FBEF3D900DCCB24 /* Exceptions for "BudgieWidget" folder in "BudgieWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = 972A36932FC269E700DCCB24 /* BudgieWidgetExtension */;
+			target = 972A2EFA2FBEF3D900DCCB24 /* BudgieWidgetExtension */;
 		};
-		972A38B72FC26BE300DCCB24 /* Exceptions for "BUDGIE" folder in "BudgieWidgetExtension" target */ = {
+		972A2F182FBF0D0E00DCCB24 /* Exceptions for "BUDGIE" folder in "BudgieWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
 			);
-			target = 972A36932FC269E700DCCB24 /* BudgieWidgetExtension */;
+			target = 972A2EFA2FBEF3D900DCCB24 /* BudgieWidgetExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -80,7 +81,7 @@
 		816B81392FAC6CF1005B4085 /* BUDGIE */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				972A38B72FC26BE300DCCB24 /* Exceptions for "BUDGIE" folder in "BudgieWidgetExtension" target */,
+				972A2F182FBF0D0E00DCCB24 /* Exceptions for "BUDGIE" folder in "BudgieWidgetExtension" target */,
 			);
 			path = BUDGIE;
 			sourceTree = "<group>";
@@ -95,10 +96,10 @@
 			path = BUDGIEUITests;
 			sourceTree = "<group>";
 		};
-		972A369A2FC269E700DCCB24 /* BudgieWidget */ = {
+		972A2F012FBEF3D900DCCB24 /* BudgieWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				972A36AE2FC269E800DCCB24 /* Exceptions for "BudgieWidget" folder in "BudgieWidgetExtension" target */,
+				972A2F152FBEF3D900DCCB24 /* Exceptions for "BudgieWidget" folder in "BudgieWidgetExtension" target */,
 			);
 			path = BudgieWidget;
 			sourceTree = "<group>";
@@ -127,12 +128,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		972A36912FC269E700DCCB24 /* Frameworks */ = {
+		972A2EF82FBEF3D900DCCB24 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				972A36992FC269E700DCCB24 /* SwiftUI.framework in Frameworks */,
-				972A36972FC269E700DCCB24 /* WidgetKit.framework in Frameworks */,
+				972A2F002FBEF3D900DCCB24 /* SwiftUI.framework in Frameworks */,
+				972A2EFE2FBEF3D900DCCB24 /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,11 +143,12 @@
 		816B812E2FAC6CF1005B4085 = {
 			isa = PBXGroup;
 			children = (
+				972A3D092FC44BE800DCCB24 /* BudgieWidgetExtensionDebug.entitlements */,
 				816B81392FAC6CF1005B4085 /* BUDGIE */,
 				816B81492FAC6CF3005B4085 /* BUDGIETests */,
 				816B81532FAC6CF3005B4085 /* BUDGIEUITests */,
-				972A369A2FC269E700DCCB24 /* BudgieWidget */,
-				972A36952FC269E700DCCB24 /* Frameworks */,
+				972A2F012FBEF3D900DCCB24 /* BudgieWidget */,
+				972A2EFC2FBEF3D900DCCB24 /* Frameworks */,
 				816B81382FAC6CF1005B4085 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -157,16 +159,16 @@
 				816B81372FAC6CF1005B4085 /* BUDGIE.app */,
 				816B81462FAC6CF3005B4085 /* BUDGIETests.xctest */,
 				816B81502FAC6CF3005B4085 /* BUDGIEUITests.xctest */,
-				972A36942FC269E700DCCB24 /* BudgieWidgetExtension.appex */,
+				972A2EFB2FBEF3D900DCCB24 /* BudgieWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		972A36952FC269E700DCCB24 /* Frameworks */ = {
+		972A2EFC2FBEF3D900DCCB24 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				972A36962FC269E700DCCB24 /* WidgetKit.framework */,
-				972A36982FC269E700DCCB24 /* SwiftUI.framework */,
+				972A2EFD2FBEF3D900DCCB24 /* WidgetKit.framework */,
+				972A2EFF2FBEF3D900DCCB24 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -181,12 +183,12 @@
 				816B81332FAC6CF1005B4085 /* Sources */,
 				816B81342FAC6CF1005B4085 /* Frameworks */,
 				816B81352FAC6CF1005B4085 /* Resources */,
-				972A36AB2FC269E800DCCB24 /* Embed Foundation Extensions */,
+				972A2F122FBEF3D900DCCB24 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				972A36A92FC269E800DCCB24 /* PBXTargetDependency */,
+				972A2F102FBEF3D900DCCB24 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				816B81392FAC6CF1005B4085 /* BUDGIE */,
@@ -244,26 +246,26 @@
 			productReference = 816B81502FAC6CF3005B4085 /* BUDGIEUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		972A36932FC269E700DCCB24 /* BudgieWidgetExtension */ = {
+		972A2EFA2FBEF3D900DCCB24 /* BudgieWidgetExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 972A36AF2FC269E800DCCB24 /* Build configuration list for PBXNativeTarget "BudgieWidgetExtension" */;
+			buildConfigurationList = 972A2F162FBEF3D900DCCB24 /* Build configuration list for PBXNativeTarget "BudgieWidgetExtension" */;
 			buildPhases = (
-				972A36902FC269E700DCCB24 /* Sources */,
-				972A36912FC269E700DCCB24 /* Frameworks */,
-				972A36922FC269E700DCCB24 /* Resources */,
+				972A2EF72FBEF3D900DCCB24 /* Sources */,
+				972A2EF82FBEF3D900DCCB24 /* Frameworks */,
+				972A2EF92FBEF3D900DCCB24 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				972A369A2FC269E700DCCB24 /* BudgieWidget */,
+				972A2F012FBEF3D900DCCB24 /* BudgieWidget */,
 			);
 			name = BudgieWidgetExtension;
 			packageProductDependencies = (
 			);
 			productName = BudgieWidgetExtension;
-			productReference = 972A36942FC269E700DCCB24 /* BudgieWidgetExtension.appex */;
+			productReference = 972A2EFB2FBEF3D900DCCB24 /* BudgieWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -287,7 +289,7 @@
 						CreatedOnToolsVersion = 26.0.1;
 						TestTargetID = 816B81362FAC6CF1005B4085;
 					};
-					972A36932FC269E700DCCB24 = {
+					972A2EFA2FBEF3D900DCCB24 = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
 				};
@@ -309,7 +311,7 @@
 				816B81362FAC6CF1005B4085 /* BUDGIE */,
 				816B81452FAC6CF3005B4085 /* BUDGIETests */,
 				816B814F2FAC6CF3005B4085 /* BUDGIEUITests */,
-				972A36932FC269E700DCCB24 /* BudgieWidgetExtension */,
+				972A2EFA2FBEF3D900DCCB24 /* BudgieWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -336,7 +338,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		972A36922FC269E700DCCB24 /* Resources */ = {
+		972A2EF92FBEF3D900DCCB24 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -367,7 +369,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		972A36902FC269E700DCCB24 /* Sources */ = {
+		972A2EF72FBEF3D900DCCB24 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -387,10 +389,10 @@
 			target = 816B81362FAC6CF1005B4085 /* BUDGIE */;
 			targetProxy = 816B81512FAC6CF3005B4085 /* PBXContainerItemProxy */;
 		};
-		972A36A92FC269E800DCCB24 /* PBXTargetDependency */ = {
+		972A2F102FBEF3D900DCCB24 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 972A36932FC269E700DCCB24 /* BudgieWidgetExtension */;
-			targetProxy = 972A36A82FC269E800DCCB24 /* PBXContainerItemProxy */;
+			target = 972A2EFA2FBEF3D900DCCB24 /* BudgieWidgetExtension */;
+			targetProxy = 972A2F0F2FBEF3D900DCCB24 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -524,10 +526,9 @@
 				CODE_SIGN_ENTITLEMENTS = BUDGIE/BUDGIEDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = F8N3463A3R;
+				DEVELOPMENT_TEAM = WCFHST4JKH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSFaceIDUsageDescription = "BUDGIE uses Face ID to lock and unlock your budget data.";
 				INFOPLIST_KEY_NSUserNotificationsUsageDescription = "BUDGIE sends alerts when expenses are tracked, need a category, or exceed your budget.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -540,7 +541,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Challenge7Team16.BUDGIE--Money-Tracker-App";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Team16.BUDGIE;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -560,10 +561,9 @@
 				CODE_SIGN_ENTITLEMENTS = BUDGIE/BUDGIE.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = F8N3463A3R;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSFaceIDUsageDescription = "BUDGIE uses Face ID to lock and unlock your budget data.";
 				INFOPLIST_KEY_NSUserNotificationsUsageDescription = "BUDGIE sends alerts when expenses are tracked, need a category, or exceed your budget.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -672,14 +672,15 @@
 			};
 			name = Release;
 		};
-		972A36AC2FC269E800DCCB24 /* Debug */ = {
+		972A2F132FBEF3D900DCCB24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = BudgieWidgetExtensionDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = F8N3463A3R;
+				DEVELOPMENT_TEAM = WCFHST4JKH;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BudgieWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BudgieWidget;
@@ -690,7 +691,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Challenge7Team16.BUDGIE--Money-Tracker-App.BudgieWidget";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Team16.BUDGIE;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -702,14 +703,14 @@
 			};
 			name = Debug;
 		};
-		972A36AD2FC269E800DCCB24 /* Release */ = {
+		972A2F142FBEF3D900DCCB24 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = F8N3463A3R;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BudgieWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BudgieWidget;
@@ -771,11 +772,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		972A36AF2FC269E800DCCB24 /* Build configuration list for PBXNativeTarget "BudgieWidgetExtension" */ = {
+		972A2F162FBEF3D900DCCB24 /* Build configuration list for PBXNativeTarget "BudgieWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				972A36AC2FC269E800DCCB24 /* Debug */,
-				972A36AD2FC269E800DCCB24 /* Release */,
+				972A2F132FBEF3D900DCCB24 /* Debug */,
+				972A2F142FBEF3D900DCCB24 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
