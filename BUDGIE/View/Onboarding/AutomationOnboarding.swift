@@ -174,7 +174,6 @@ struct AutomationImageView: View {
     }
 }
 
-
 // MARK: - SCREEN 3
 
 struct AutomationVideoView: View {
@@ -182,24 +181,47 @@ struct AutomationVideoView: View {
     var onOpenShortcuts: () -> Void
     var onSkip: () -> Void
     
-    private var player: AVPlayer {
-        if let url = Bundle.main.url(forResource: "shortcutTutorial", withExtension: "mp4") {
-            return AVPlayer(url: url)
-        }
+    @State private var showFullScreenVideo = false
+    
+    private var videoURL: URL? {
         
-        return AVPlayer()
+        let isArabic = Locale.current.language.languageCode?.identifier == "ar"
+        
+        let videoName = isArabic
+        ? "automationTutorialArabic"
+        : "automationTutorialEnglish"
+        
+        return Bundle.main.url(
+            forResource: videoName,
+            withExtension: "mp4"
+        )
     }
     
     var body: some View {
         
         VStack(spacing: 0) {
+            
             SetupStepProgress(currentStep: 2)
+            
             Spacer()
-            VideoPlayer(player: player)
-                .frame(height: 360)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+            
+            Button {
+                showFullScreenVideo = true
+            } label: {
+                
+                ZStack {
+                    
+                    RoundedRectangle(cornerRadius: 18)
+                        .fill(Color.black)
+                        .frame(height: 360)
+                    
+                    Image(systemName: "play.circle.fill")
+                        .font(.system(size: 72))
+                        .foregroundStyle(.white)
+                }
                 .padding(.horizontal, 28)
                 .padding(.top, 45)
+            }
             
             Spacer()
             
@@ -222,6 +244,7 @@ struct AutomationVideoView: View {
             VStack(spacing: 12) {
                 
                 Button(action: onOpenShortcuts) {
+                    
                     Text("Open Shortcuts")
                         .font(.headline)
                         .foregroundStyle(.white)
@@ -239,5 +262,40 @@ struct AutomationVideoView: View {
             .padding(.horizontal, 30)
             .padding(.bottom, 40)
         }
+        .fullScreenCover(isPresented: $showFullScreenVideo) {
+            
+            if let videoURL {
+                FullScreenTutorialVideo(videoURL: videoURL)
+                    .ignoresSafeArea()
+            }
+        }
     }
+}
+
+
+// MARK: - FULL SCREEN VIDEO
+
+struct FullScreenTutorialVideo: UIViewControllerRepresentable {
+    
+    let videoURL: URL
+    
+    func makeUIViewController(context: Context) -> AVPlayerViewController {
+        
+        let controller = AVPlayerViewController()
+        
+        let player = AVPlayer(url: videoURL)
+        
+        controller.player = player
+        controller.showsPlaybackControls = true
+        controller.videoGravity = .resizeAspect
+        
+        player.play()
+        
+        return controller
+    }
+    
+    func updateUIViewController(
+        _ uiViewController: AVPlayerViewController,
+        context: Context
+    ) { }
 }

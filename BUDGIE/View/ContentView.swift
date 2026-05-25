@@ -2,6 +2,7 @@
 //  ContentView.swift
 //  BUDGIE
 //
+
 import SwiftUI
 import SwiftData
 
@@ -64,110 +65,108 @@ struct ContentView: View {
             formattedDay
         )
     }
+
     @Environment(\.colorScheme) private var colorScheme
 
-        var oppositePrimary: Color {
-            colorScheme == .dark ? .black : .white
-        }
-        
-        var body: some View {
-            NavigationStack {
-                ZStack(alignment: .top) {
+    var oppositePrimary: Color {
+        colorScheme == .dark ? .black : .white
+    }
 
-                    LinearGradient(
-                        colors: [
-                            Color.darkNavy,
-                            Color.steelBlue,
-                            Color.skyBlue
-                        ],
-                        startPoint: .topTrailing,
-                        endPoint: .bottomLeading
-                    )
-                    .frame(height: 250)
-                    .ignoresSafeArea(edges: .top)
-                    LinearGradient(
-                        colors: [
-                            oppositePrimary.opacity(0.0),
-                            oppositePrimary
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .frame(height: 250)
-                    .ignoresSafeArea(edges: .top)
-                    
-            ScrollView(showsIndicators: false) {
-                
-                VStack(spacing: 16) {
-                    
-                    // MARK: Income Box
-                    
-                    if totalIncome == 0 {
-                        
-                        EmptyIncomeView()
-                        
-                    } else {
-                        
-                        FilledIncomeView(
-                            income: totalIncome,
-                            spent: totalSpent,
-                            remaining: remaining,
-                            progress: progressPercentage
-                        )
-                        
+    var body: some View {
+        NavigationStack {
+            ZStack(alignment: .top) {
+
+                LinearGradient(
+                    colors: [
+                        Color.darkNavy,
+                        Color.steelBlue,
+                        Color.skyBlue
+                    ],
+                    startPoint: .topTrailing,
+                    endPoint: .bottomLeading
+                )
+                .frame(height: 250)
+                .ignoresSafeArea(edges: .top)
+
+                LinearGradient(
+                    colors: [
+                        oppositePrimary.opacity(0.0),
+                        oppositePrimary
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 250)
+                .ignoresSafeArea(edges: .top)
+
+                ScrollView(showsIndicators: false) {
+
+                    VStack(spacing: 16) {
+
+                        // MARK: Income Box
+
+                        if totalIncome == 0 {
+
+                            EmptyIncomeView()
+
+                        } else {
+
+                            FilledIncomeView(
+                                income: totalIncome,
+                                spent: totalSpent,
+                                remaining: remaining,
+                                progress: progressPercentage
+                            )
+                        }
+
+                        // MARK: Insights
+
+                        InsightsView(totalIncome: totalIncome)
+                            .padding(.horizontal, 16)
+
+                        // MARK: Categories
+
+                        CategoryHomeView()
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 20)
                     }
-                    
-                    // MARK: Insights
-                    InsightsView(totalIncome: totalIncome)
-                        .padding(.horizontal, 16)
-                    
-                    // MARK: Categories
-                    
-                    CategoryHomeView()
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 20)
+                    .padding(.top, 8)
                 }
-                .padding(.top, 8)
-            }
-            
-            // MARK: Toolbar
-            
-            .toolbar {
-                
-                // MARK: Filter
-                
-                ToolbarItem(
-                    placement: .navigationBarTrailing
-                ) {
-                    
-                    NavigationLink(destination: FilterView()) {
-                        FilterToolbarButton(
-                            showsBadge: hasUncategorizedTransactions
-                        )
-                    }
-                }
-                
-                // MARK: Settings
-                
-                ToolbarItem(
-                    placement: .navigationBarTrailing
-                ) {
-                    
-                    NavigationLink(
-                        destination:
-                            MainSetting()
+                .toolbar {
+
+                    // MARK: Filter
+
+                    ToolbarItem(
+                        placement: .navigationBarTrailing
                     ) {
-                        
-                        Label(
-                            "Setting",
-                            systemImage: "gearshape"
-                        )
+
+                        NavigationLink(destination: FilterView()) {
+                            FilterToolbarButton(
+                                showsBadge: hasUncategorizedTransactions
+                            )
+                        }
+                    }
+
+                    // MARK: Settings
+
+                    ToolbarItem(
+                        placement: .navigationBarTrailing
+                    ) {
+
+                        NavigationLink(
+                            destination:
+                                MainSetting()
+                        ) {
+
+                            Label(
+                                "Setting",
+                                systemImage: "gearshape"
+                            )
+                        }
                     }
                 }
             }
         }
-        
-    }//Zstack
 
         // MARK: Import SMS
 
@@ -176,6 +175,7 @@ struct ContentView: View {
             importSMS()
             evaluateCategoryResetPrompt()
         }
+
         .onChange(of: totalIncome) { _, newIncome in
             categoriesViewModel.budgetAlertTotalIncome = newIncome
         }
@@ -185,16 +185,22 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, newPhase in
 
             if newPhase == .active {
+
                 categoriesViewModel.budgetAlertTotalIncome = totalIncome
-                importSMS()
+
+                // Reload latest SMS transactions
+                categoriesViewModel.reloadTransactionsFromShortcuts()
+
                 evaluateCategoryResetPrompt()
             }
         }
+
         .alert("Reset Category Payments?", isPresented: $showCategoryResetAlert) {
             Button("Confirm") {
                 categoriesViewModel.resetAllCategoryPayments()
                 categoriesViewModel.markCategoryResetConfirmed()
             }
+
             Button("Not Now", role: .cancel) {
                 categoriesViewModel.markCategoryResetDeclined()
             }
@@ -203,12 +209,12 @@ struct ContentView: View {
         }
 
         // MARK: Sheet
-        .sheet(isPresented: $showAddIncome) {
 
+        .sheet(isPresented: $showAddIncome) {
             Text("Add Income")
         }
     }
-    
+
     // MARK: Import SMS
 
     private func importSMS() {
@@ -225,6 +231,7 @@ struct ContentView: View {
         guard categoriesViewModel.shouldPromptForCategoryReset(incomeDate: incomeDate) else {
             return
         }
+
         showCategoryResetAlert = true
     }
 
@@ -286,12 +293,12 @@ struct EmptyIncomeView: View {
                 .fill(Color.budgieGroupedBoxBackground(for: colorScheme))
         )
         .overlay(alignment: .topLeading) {
-                    Image("main")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 76, height: 76)
-                        .offset(x: 34, y: -76)
-                }
+            Image("main")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 76, height: 76)
+                .offset(x: 34, y: -76)
+        }
         .padding(.horizontal, 16)
         .padding(.top, 16)
         .padding(.bottom, 16)
@@ -302,6 +309,7 @@ struct EmptyIncomeView: View {
 
 struct FilledIncomeView: View {
     @Environment(\.colorScheme) var colorScheme
+
     var income: Double
     var spent: Double
     var remaining: Double
@@ -414,12 +422,12 @@ struct FilledIncomeView: View {
                 .fill(Color.budgieGroupedBoxBackground(for: colorScheme))
         )
         .overlay(alignment: .topLeading) {
-                    Image("main")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 76, height: 76)
-                        .offset(x: 34, y: -76)
-                }
+            Image("main")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 76, height: 76)
+                .offset(x: 34, y: -76)
+        }
         .padding(.horizontal, 16)
         .padding(.top, 16)
         .padding(.bottom, 16)

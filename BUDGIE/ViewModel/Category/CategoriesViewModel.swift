@@ -19,7 +19,7 @@ final class CategoriesViewModel {
     // SMS transactions that could not be categorized
     var uncategorizedTransactions: [ParsedTransaction] = []
 
-    // Prevent importing same SMS twice
+    // Prevent importing same SMS twice 
     var importedTransactionIds: Set<UUID> = []
 
     /// Reset prompt handling for the current calendar month (`year-month`).
@@ -464,7 +464,16 @@ final class CategoriesViewModel {
             currentTotalSpent: totalSpentFromPayments
         )
     }
+    // MARK: - Reload Transactions From Shortcuts
 
+    func reloadTransactionsFromShortcuts() {
+
+        let shortcutService = ShortcutService()
+
+        let savedTransactions = shortcutService.getSavedTransactions()
+
+        importParsedTransactions(savedTransactions)
+    }
     // MARK: - Payments
 
     func payments(
@@ -503,3 +512,4 @@ final class CategoriesViewModel {
             : accentColor(for: category)
     }
 }
+

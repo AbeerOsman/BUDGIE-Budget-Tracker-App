@@ -16,7 +16,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "972A36932FC269E700DCCB24"
+               BlueprintIdentifier = "972A2EFA2FBEF3D900DCCB24"
                BuildableName = "BudgieWidgetExtension.appex"
                BlueprintName = "BudgieWidgetExtension"
                ReferencedContainer = "container:BUDGIE.xcodeproj">
@@ -62,7 +62,7 @@
          BundleIdentifier = "com.apple.springboard">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "972A36932FC269E700DCCB24"
+            BlueprintIdentifier = "972A2EFA2FBEF3D900DCCB24"
             BuildableName = "BudgieWidgetExtension.appex"
             BlueprintName = "BudgieWidgetExtension"
             ReferencedContainer = "container:BUDGIE.xcodeproj">
