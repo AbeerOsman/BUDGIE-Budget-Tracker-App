@@ -34,34 +34,64 @@ struct Provider: TimelineProvider {
         completion: @escaping (BudgetEntry) -> Void
     ) {
 
+        let defaults = UserDefaults(
+            suiteName: "group.com.raghad.BUDGIE"
+        )
+
+        let spent =
+        defaults?.double(
+            forKey: "widget_spent_today"
+        ) ?? 0
+
+        let budget =
+        defaults?.double(
+            forKey: "widget_daily_budget"
+        ) ?? 0
+
         completion(
             BudgetEntry(
                 date: .now,
-                spent: 33.04,
-                budget: 77
+                spent: spent,
+                budget: budget
             )
         )
     }
-
+    
     func getTimeline(
         in context: Context,
         completion: @escaping (Timeline<BudgetEntry>) -> Void
     ) {
 
+        let defaults = UserDefaults(
+            suiteName: "group.com.raghad.BUDGIE"
+        )
+
+        let spent =
+        defaults?.double(
+            forKey: "widget_spent_today"
+        ) ?? 0
+
+        let budget =
+        defaults?.double(
+            forKey: "widget_daily_budget"
+        ) ?? 0
+
         let entry = BudgetEntry(
             date: .now,
-            spent: 33.04,
-            budget: 77
+            spent: spent,
+            budget: budget
         )
 
         let timeline = Timeline(
             entries: [entry],
-            policy: .after(.now.addingTimeInterval(3600))
+            policy: .after(
+                .now.addingTimeInterval(3600)
+            )
         )
 
         completion(timeline)
     }
-}
+} // <-- Close Provider
 
 // MARK: - MAIN VIEW
 
@@ -72,7 +102,8 @@ struct BudgetWidgetView: View {
     let entry: BudgetEntry
 
     var progress: Double {
-        min(entry.spent / entry.budget, 1)
+        guard entry.budget > 0 else { return 0 }
+            return min(entry.spent / entry.budget, 1)
     }
 
     var body: some View {

@@ -176,6 +176,9 @@ struct ContentView: View {
             evaluateCategoryResetPrompt()
         }
 
+                importSMS()
+                evaluateCategoryResetPrompt()
+            }
         .onChange(of: totalIncome) { _, newIncome in
             categoriesViewModel.budgetAlertTotalIncome = newIncome
         }
