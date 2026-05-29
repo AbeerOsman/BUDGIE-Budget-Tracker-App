@@ -54,6 +54,7 @@
 		816B81372FAC6CF1005B4085 /* BUDGIE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BUDGIE.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		816B81462FAC6CF3005B4085 /* BUDGIETests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BUDGIETests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		816B81502FAC6CF3005B4085 /* BUDGIEUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BUDGIEUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		816B89FE2FC79A74005B4085 /* BudgieWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BudgieWidgetExtension.entitlements; sourceTree = "<group>"; };
 		972A2EFB2FBEF3D900DCCB24 /* BudgieWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BudgieWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		972A2EFD2FBEF3D900DCCB24 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		972A2EFF2FBEF3D900DCCB24 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -143,6 +144,7 @@
 		816B812E2FAC6CF1005B4085 = {
 			isa = PBXGroup;
 			children = (
+				816B89FE2FC79A74005B4085 /* BudgieWidgetExtension.entitlements */,
 				972A3D092FC44BE800DCCB24 /* BudgieWidgetExtensionDebug.entitlements */,
 				816B81392FAC6CF1005B4085 /* BUDGIE */,
 				816B81492FAC6CF3005B4085 /* BUDGIETests */,
@@ -526,9 +528,10 @@
 				CODE_SIGN_ENTITLEMENTS = BUDGIE/BUDGIEDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = WCFHST4JKH;
+				DEVELOPMENT_TEAM = F8N3463A3R;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "BUDGIE: Money Tracker App";
 				INFOPLIST_KEY_NSUserNotificationsUsageDescription = "BUDGIE sends alerts when expenses are tracked, need a category, or exceed your budget.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -541,7 +544,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Team16.BUDGIE;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Challenge7Team16.BUDGIE--Money-Tracker-App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -561,9 +564,10 @@
 				CODE_SIGN_ENTITLEMENTS = BUDGIE/BUDGIE.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = AM6BY2Y4YH;
+				DEVELOPMENT_TEAM = F8N3463A3R;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "BUDGIE: Money Tracker App";
 				INFOPLIST_KEY_NSUserNotificationsUsageDescription = "BUDGIE sends alerts when expenses are tracked, need a category, or exceed your budget.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -594,7 +598,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = AM6BY2Y4YH;
+				DEVELOPMENT_TEAM = F8N3463A3R;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
@@ -616,7 +620,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = AM6BY2Y4YH;
+				DEVELOPMENT_TEAM = F8N3463A3R;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
@@ -637,7 +641,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = AM6BY2Y4YH;
+				DEVELOPMENT_TEAM = F8N3463A3R;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Challenge7Team16.BUDGIE--Money-Tracker-App";
@@ -657,7 +661,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = AM6BY2Y4YH;
+				DEVELOPMENT_TEAM = F8N3463A3R;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Challenge7Team16.BUDGIE--Money-Tracker-App";
@@ -679,8 +683,8 @@
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = BudgieWidgetExtensionDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = AM6BY2Y4YH;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = F8N3463A3R;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BudgieWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BudgieWidget;
@@ -691,7 +695,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Team16.BUDGIE.BudgieWidgetExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Challenge7Team16.BUDGIE--Money-Tracker-App.widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -708,9 +712,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = BudgieWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = AM6BY2Y4YH;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = F8N3463A3R;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BudgieWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = BudgieWidget;
@@ -721,7 +726,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Team16.BUDGIE.BudgieWidgetExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Challenge7Team16.BUDGIE--Money-Tracker-App.widget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
