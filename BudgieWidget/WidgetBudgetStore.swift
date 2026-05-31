@@ -8,7 +8,7 @@ import Foundation
 import WidgetKit
 
 enum WidgetBudgetStore {
-    static let suiteName = "group.com.raghad.BUDGIE"
+    static let suiteName = "group.com.Challenge7Team16.BUDGIE--Money-Tracker-App"
 
     private static let spentKey = "widget_spent_today"
     private static let budgetKey = "widget_daily_budget"
