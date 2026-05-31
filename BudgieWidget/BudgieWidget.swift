@@ -33,12 +33,13 @@ struct Provider: TimelineProvider {
         in context: Context,
         completion: @escaping (BudgetEntry) -> Void
     ) {
+        let values = WidgetBudgetStore.read()
 
         completion(
             BudgetEntry(
                 date: .now,
-                spent: 33.04,
-                budget: 77
+                spent: values.spent,
+                budget: values.budget
             )
         )
     }
@@ -47,11 +48,12 @@ struct Provider: TimelineProvider {
         in context: Context,
         completion: @escaping (Timeline<BudgetEntry>) -> Void
     ) {
+        let values = WidgetBudgetStore.read()
 
         let entry = BudgetEntry(
             date: .now,
-            spent: 33.04,
-            budget: 77
+            spent: values.spent,
+            budget: values.budget
         )
 
         let timeline = Timeline(
@@ -72,7 +74,8 @@ struct BudgetWidgetView: View {
     let entry: BudgetEntry
 
     var progress: Double {
-        min(entry.spent / entry.budget, 1)
+        guard entry.budget > 0 else { return 0 }
+            return min(entry.spent / entry.budget, 1)
     }
 
     var body: some View {
