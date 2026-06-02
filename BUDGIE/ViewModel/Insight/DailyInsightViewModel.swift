@@ -56,9 +56,9 @@ final class DailyInsightViewModel {
         }
 
         // 👇 ربط الودجت
-        WidgetBudgetStore.save(
-            spentToday: totalSpentToday,
-            dailyBudget: dailyBudget
-        )
+//        WidgetBudgetStore.save(
+//            spentToday: totalSpentToday,
+//            dailyBudget: dailyBudget
+//        )
     }
 }

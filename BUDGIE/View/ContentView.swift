@@ -173,6 +173,7 @@ struct ContentView: View {
         .onAppear {
             categoriesViewModel.budgetAlertTotalIncome = totalIncome
             importSMS()
+            refreshMonthlyResetReminder()
             evaluateCategoryResetPrompt()
         }
 
@@ -191,6 +192,7 @@ struct ContentView: View {
                 // Reload latest SMS transactions
                 categoriesViewModel.reloadTransactionsFromShortcuts()
 
+                refreshMonthlyResetReminder()
                 evaluateCategoryResetPrompt()
             }
         }
@@ -223,6 +225,14 @@ struct ContentView: View {
             .importSavedTransactions(
                 into: categoriesViewModel
             )
+    }
+
+    private func refreshMonthlyResetReminder() {
+        guard let incomeDate = primaryIncomeRecord?.date else {
+            BudgieNotificationService.shared.cancelMonthlyResetReminder()
+            return
+        }
+        BudgieNotificationService.shared.scheduleMonthlyResetReminder(incomeDate: incomeDate)
     }
 
     private func evaluateCategoryResetPrompt() {

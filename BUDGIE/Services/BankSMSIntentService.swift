@@ -24,7 +24,12 @@ struct ProcessBankSMSIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult {
         let shortcutService = ShortcutService()
-        shortcutService.receiveTransaction(from: messageText)
+        let parsed = shortcutService.receiveTransaction(from: messageText)
+        BudgieNotificationService.shared.notifyIncomingSMSTransaction(
+            merchant: parsed.merchantName,
+            amount: parsed.amount,
+            categoryName: parsed.categoryName
+        )
         return .result()
     }
 }

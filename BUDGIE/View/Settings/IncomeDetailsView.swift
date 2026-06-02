@@ -232,6 +232,7 @@ struct IncomeDetailsView: View {
             try modelContext.save()
             title = trimmedTitle
             amount = formatAmount(incomeAmount)
+            BudgieNotificationService.shared.scheduleMonthlyResetReminder(incomeDate: date)
             onSave()
             dismiss()
         } catch {
