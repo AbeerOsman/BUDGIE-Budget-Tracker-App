@@ -7,6 +7,17 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    private enum ResetAlertState: Identifiable {
+        case monthlyPrompt
+        case resetLaterInfo
+        
+        var id: Int {
+            switch self {
+            case .monthlyPrompt: return 1
+            case .resetLaterInfo: return 2
+            }
+        }
+    }
 
     @Environment(CategoriesViewModel.self) private var categoriesViewModel
     @Environment(\.modelContext) private var modelContext
@@ -15,7 +26,7 @@ struct ContentView: View {
     @Query private var items: [Income]
 
     @State private var showAddIncome = false
-    @State private var showCategoryResetAlert = false
+    @State private var resetAlertState: ResetAlertState?
 
     // MARK: - Income
 
@@ -55,14 +66,17 @@ struct ContentView: View {
     }
 
     private var categoryResetAlertMessage: String {
-        guard let incomeDate = primaryIncomeRecord?.date else {
+        guard let income = primaryIncomeRecord else {
             return String(localized: "Today is your monthly date to reset category payments. Do you want to reset all category payments now?")
         }
 
-        let formattedDay = CategoryPaymentResetScheduler.formattedIncomeDay(incomeDate: incomeDate)
+        let formattedPeriod = CategoryPaymentResetScheduler.formattedIncomePeriod(
+            fromDay: income.normalizedSalaryPeriodFromDay,
+            toDay: income.normalizedSalaryPeriodToDay
+        )
         return String(
             format: String(localized: "Today is your monthly date to reset category payments (based on your income date, %@). Do you want to reset all category payments and clear spending totals?"),
-            formattedDay
+            formattedPeriod
         )
     }
 
@@ -197,17 +211,28 @@ struct ContentView: View {
             }
         }
 
-        .alert("Reset Category Payments?", isPresented: $showCategoryResetAlert) {
-            Button("Confirm") {
-                categoriesViewModel.resetAllCategoryPayments()
-                categoriesViewModel.markCategoryResetConfirmed()
+        .alert(item: $resetAlertState) { state in
+            switch state {
+            case .monthlyPrompt:
+                return Alert(
+                    title: Text("Reset Category Payments?"),
+                    message: Text(categoryResetAlertMessage),
+                    primaryButton: .default(Text("Confirm")) {
+                        categoriesViewModel.resetAllCategoryPayments()
+                        categoriesViewModel.markCategoryResetConfirmed()
+                    },
+                    secondaryButton: .cancel(Text("Not Now")) {
+                        categoriesViewModel.markCategoryResetDeclined()
+                        resetAlertState = .resetLaterInfo
+                    }
+                )
+            case .resetLaterInfo:
+                return Alert(
+                    title: Text("Reset Category Payments"),
+                    message: Text("You can reset category payments anytime from Settings > Reset Category Payments."),
+                    dismissButton: .default(Text("OK"))
+                )
             }
-
-            Button("Not Now", role: .cancel) {
-                categoriesViewModel.markCategoryResetDeclined()
-            }
-        } message: {
-            Text(categoryResetAlertMessage)
         }
 
         // MARK: Sheet
@@ -228,21 +253,25 @@ struct ContentView: View {
     }
 
     private func refreshMonthlyResetReminder() {
-        guard let incomeDate = primaryIncomeRecord?.date else {
+        guard let income = primaryIncomeRecord else {
             BudgieNotificationService.shared.cancelMonthlyResetReminder()
             return
         }
-        BudgieNotificationService.shared.scheduleMonthlyResetReminder(incomeDate: incomeDate)
+        BudgieNotificationService.shared.scheduleMonthlyResetReminder(
+            resetDay: income.normalizedSalaryPeriodToDay
+        )
     }
 
     private func evaluateCategoryResetPrompt() {
-        guard let incomeDate = primaryIncomeRecord?.date else { return }
+        guard let income = primaryIncomeRecord else { return }
         guard categoriesViewModel.hasCategoryPaymentHistory else { return }
-        guard categoriesViewModel.shouldPromptForCategoryReset(incomeDate: incomeDate) else {
+        guard categoriesViewModel.shouldPromptForCategoryReset(
+            paydayToDay: income.normalizedSalaryPeriodToDay
+        ) else {
             return
         }
 
-        showCategoryResetAlert = true
+        resetAlertState = .monthlyPrompt
     }
 
     // MARK: Delete

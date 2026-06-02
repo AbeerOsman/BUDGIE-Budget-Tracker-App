@@ -67,9 +67,12 @@ final class CategoriesViewModel {
 
     // MARK: - Monthly payment reset (linked to income date)
 
-    func shouldPromptForCategoryReset(incomeDate: Date, today: Date = Date()) -> Bool {
+    func shouldPromptForCategoryReset(
+        paydayToDay: Int,
+        today: Date = Date()
+    ) -> Bool {
         guard CategoryPaymentResetScheduler.isResetDayToday(
-            incomeDate: incomeDate,
+            resetDay: paydayToDay,
             today: today
         ) else {
             return false

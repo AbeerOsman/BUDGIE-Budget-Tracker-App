@@ -128,6 +128,21 @@ struct HelpSection: View {
 
 // MARK: - Security Section
 struct SecuritySection: View {
+    private enum SecurityAlertState: Identifiable {
+        case confirmReset
+        case resetDone
+        
+        var id: Int {
+            switch self {
+            case .confirmReset: return 1
+            case .resetDone: return 2
+            }
+        }
+    }
+    
+    @Environment(CategoriesViewModel.self) private var categoriesViewModel
+    @State private var alertState: SecurityAlertState?
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             SectionTitle("Security")
@@ -150,6 +165,18 @@ struct SecuritySection: View {
                 Divider()
                     .background(Color.gray.opacity(0.5))
 
+                SettingRow(
+                    icon: "arrow.counterclockwise.circle",
+                    title: "Reset Category Payments",
+                    hasChevron: false,
+                    action: {
+                        alertState = .confirmReset
+                    }
+                )
+                
+                Divider()
+                    .background(Color.gray.opacity(0.5))
+
                 // Delete Data
                 NavigationLink(destination: DeleteDataView()) {
                     SettingRow(
@@ -165,6 +192,27 @@ struct SecuritySection: View {
                     .fill(Color.gray.opacity(0.08))
             )
             .padding(.horizontal, 20)
+        }
+        .alert(item: $alertState) { state in
+            switch state {
+            case .confirmReset:
+                return Alert(
+                    title: Text("Reset Category Payments?"),
+                    message: Text("This will clear spending totals for all categories. You can continue adding new payments right away."),
+                    primaryButton: .destructive(Text("Reset Now")) {
+                        categoriesViewModel.resetAllCategoryPayments()
+                        categoriesViewModel.markCategoryResetConfirmed()
+                        alertState = .resetDone
+                    },
+                    secondaryButton: .cancel()
+                )
+            case .resetDone:
+                return Alert(
+                    title: Text("Reset Category Payments"),
+                    message: Text("Category payments were reset successfully."),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
         }
     }
 }
