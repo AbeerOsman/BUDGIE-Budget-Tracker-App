@@ -24,6 +24,7 @@ final class BudgieNotificationService {
     private let center = UNUserNotificationCenter.current()
     private let incomeExceededKey = "budgie.notifications.incomeExceeded"
     private let categoryExceededPrefix = "budgie.notifications.categoryExceeded."
+    private let monthlyResetIdentifier = "budget.monthly.reset.reminder"
 
     private init() {}
 
@@ -38,6 +39,48 @@ final class BudgieNotificationService {
                 print("Notification permission not granted")
             }
         }
+    }
+
+    func scheduleMonthlyResetReminder(incomeDate: Date) {
+        center.getNotificationSettings { [weak self] settings in
+            guard let self else { return }
+            guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else {
+                return
+            }
+
+            self.center.removePendingNotificationRequests(withIdentifiers: [self.monthlyResetIdentifier])
+
+            let calendar = Calendar.current
+            let incomeDay = calendar.component(.day, from: incomeDate)
+
+            var dateComponents = DateComponents()
+            dateComponents.day = incomeDay
+            dateComponents.hour = 9
+            dateComponents.minute = 0
+
+            let content = UNMutableNotificationContent()
+            content.title = String(localized: "Monthly Budget Check")
+            content.body = String(localized: "Today is your reset day. Open Budgie to reset category spending if needed.")
+            content.sound = .default
+
+            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+            let request = UNNotificationRequest(
+                identifier: self.monthlyResetIdentifier,
+                content: content,
+                trigger: trigger
+            )
+
+            self.center.add(request) { error in
+                if let error {
+                    print("Failed to schedule monthly reset reminder:", error)
+                }
+            }
+        }
+    }
+
+    func cancelMonthlyResetReminder() {
+        center.removePendingNotificationRequests(withIdentifiers: [monthlyResetIdentifier])
+        center.removeDeliveredNotifications(withIdentifiers: [monthlyResetIdentifier])
     }
 
     // MARK: - Transaction notifications
@@ -82,6 +125,43 @@ final class BudgieNotificationService {
             title: String(localized: "Transaction Needs Filter"),
             body: body,
             identifier: "expense.filter.\(UUID().uuidString)"
+        )
+    }
+
+    func notifyIncomingSMSTransaction(
+        merchant: String?,
+        amount: Double?,
+        categoryName: String?
+    ) {
+        let merchantName = merchant ?? String(localized: "Unknown Merchant")
+        let body: String
+
+        if let amount {
+            if let categoryName {
+                body = String(
+                    format: String(localized: "New SMS payment %@ from %@ (%@)."),
+                    formatCurrency(amount),
+                    merchantName,
+                    categoryName
+                )
+            } else {
+                body = String(
+                    format: String(localized: "New SMS payment %@ from %@ needs a category."),
+                    formatCurrency(amount),
+                    merchantName
+                )
+            }
+        } else {
+            body = String(
+                format: String(localized: "New SMS payment from %@ needs review."),
+                merchantName
+            )
+        }
+
+        schedule(
+            title: String(localized: "New Bank SMS"),
+            body: body,
+            identifier: "sms.incoming.\(UUID().uuidString)"
         )
     }
 
@@ -153,6 +233,7 @@ final class BudgieNotificationService {
     func clearAllNotificationState() {
         clearCategoryExceededFlags()
         UserDefaults.standard.removeObject(forKey: incomeExceededKey)
+        cancelMonthlyResetReminder()
     }
 
     func clearCategoryExceededFlag(categoryId: UUID) {

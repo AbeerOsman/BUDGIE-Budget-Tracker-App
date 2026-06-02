@@ -20,10 +20,12 @@ final class ShortcutService {
     
     private let storageKey = "parsedTransactions"
     
-    func receiveTransaction(from message: String) {
+    @discardableResult
+    func receiveTransaction(from message: String) -> ParsedTransaction {
         let parser = SMSParserService()
         let parsedTransaction = parser.parse(message)
         save(parsedTransaction)
+        return parsedTransaction
     }
     
     func getSavedTransactions() -> [ParsedTransaction] {
