@@ -15,8 +15,8 @@ struct CategoryHomeView: View {
     @State private var selectedCategoryId: UUID?
 
     private let columns = [
-        GridItem(.fixed(181), spacing: 12),
-        GridItem(.fixed(181), spacing: 12)
+        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12)
     ]
 
     var body: some View {
@@ -154,7 +154,7 @@ private struct CategoryCardView: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 12)
-        .frame(width: 181, height: 90)
+        .frame(height: 90)
         .background(accentColor)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }

@@ -41,7 +41,7 @@ final class BudgieNotificationService {
         }
     }
 
-    func scheduleMonthlyResetReminder(incomeDate: Date) {
+    func scheduleMonthlyResetReminder(resetDay: Int) {
         center.getNotificationSettings { [weak self] settings in
             guard let self else { return }
             guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else {
@@ -51,10 +51,15 @@ final class BudgieNotificationService {
             self.center.removePendingNotificationRequests(withIdentifiers: [self.monthlyResetIdentifier])
 
             let calendar = Calendar.current
-            let incomeDay = calendar.component(.day, from: incomeDate)
+            let today = Date()
+            let daysInMonth = calendar.range(of: .day, in: .month, for: today)?.count ?? 31
+            
+            // If the user's payday falls on a short month (e.g. 31st), clamp the reminder
+            // to the last valid day so at least one reminder can fire.
+            let effectiveResetDay = min(max(resetDay, 1), daysInMonth)
 
             var dateComponents = DateComponents()
-            dateComponents.day = incomeDay
+            dateComponents.day = effectiveResetDay
             dateComponents.hour = 9
             dateComponents.minute = 0
 

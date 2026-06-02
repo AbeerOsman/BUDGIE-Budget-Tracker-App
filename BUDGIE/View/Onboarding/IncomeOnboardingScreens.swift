@@ -58,13 +58,14 @@ struct IncomeIntroView: View {
 // MARK: - SCREEN 2: Form
 
 struct IncomeFormView: View {
-    var onSave: (String, Double, Date) -> Void
+    var onSave: (String, Double, Int, Int) -> Void
 
     @Environment(\.colorScheme) private var colorScheme
 
     @State private var title: String = ""
     @State private var amount: String = ""
-    @State private var date: Date = Date()
+    @State private var fromDay: Int = min(31, max(1, Calendar.current.component(.day, from: Date())))
+    @State private var toDay: Int = min(31, max(1, Calendar.current.component(.day, from: Date())))
 
     private var canSave: Bool {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -108,14 +109,23 @@ struct IncomeFormView: View {
                                 .background(Color.gray.opacity(0.5))
                         }
 
-                        // Date
-                        DatePicker(
-                            "Date of Income",
-                            selection: $date,
-                            displayedComponents: .date
-                        )
-                        .colorScheme(colorScheme == .dark ? .dark : .light)
-                        .foregroundColor(.primary)
+                        // Income Period (no calendar).
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Income Period")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            
+                            IncomePayDayRangePicker(
+                                fromDay: $fromDay,
+                                toDay: $toDay,
+                                fromLabel: "From Day",
+                                toLabel: "To Day"
+                            )
+                            .colorScheme(colorScheme == .dark ? .dark : .light)
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .padding(25)
                     .background(
@@ -136,7 +146,7 @@ struct IncomeFormView: View {
                 Button {
                     let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
                     let value = BudgieNumericInput.parseDouble(from: amount) ?? 0
-                    onSave(trimmed, value, date)
+                    onSave(trimmed, value, fromDay, toDay)
                 } label: {
                     Text("Save Income")
                         .font(.headline)
@@ -209,7 +219,7 @@ struct IncomeReadyView: View {
 #Preview {
     VStack {
         IncomeIntroView(onSetup: {}, onSkip: {})
-        IncomeFormView { _, _, _ in }
+        IncomeFormView { _, _, _, _ in }
         IncomeReadyView(onContinue: {}, onSkip: {})
     }
     .padding()

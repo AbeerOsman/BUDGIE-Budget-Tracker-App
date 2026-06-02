@@ -16,7 +16,8 @@ struct IncomeDetailsView: View {
 
     @State private var title = ""
     @State private var amount = ""
-    @State private var date = Date()
+    @State private var fromDay: Int = min(31, max(1, Calendar.current.component(.day, from: Date())))
+    @State private var toDay: Int = min(31, max(1, Calendar.current.component(.day, from: Date())))
     @State private var editingIncome: Income?
     @State private var didLoadSavedIncome = false
 
@@ -129,13 +130,22 @@ struct IncomeDetailsView: View {
                             }
                         }
 
-                        DatePicker(
-                            "Date of Income",
-                            selection: $date,
-                            displayedComponents: .date
-                        )
-                        .colorScheme(colorScheme == .dark ? .dark : .light)
-                        .foregroundColor(.primary)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Income Period")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            
+                            IncomePayDayRangePicker(
+                                fromDay: $fromDay,
+                                toDay: $toDay,
+                                fromLabel: "From Day",
+                                toLabel: "To Day"
+                            )
+                            .colorScheme(colorScheme == .dark ? .dark : .light)
+                            .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .padding(25)
                     .background(
@@ -202,7 +212,8 @@ struct IncomeDetailsView: View {
         editingIncome = primary
         title = primary.title
         amount = formatAmount(primary.amount)
-        date = primary.date
+        fromDay = primary.normalizedSalaryPeriodFromDay
+        toDay = primary.normalizedSalaryPeriodToDay
         didLoadSavedIncome = true
     }
 
@@ -210,18 +221,29 @@ struct IncomeDetailsView: View {
         guard let incomeAmount = BudgieNumericInput.parseDouble(from: amount) else { return }
 
         let trimmedTitle = title.trimmingCharacters(in: .whitespaces)
+        let calendar = Calendar.current
+        let daysInMonth = calendar.range(of: .day, in: .month, for: Date())?.count ?? 31
+        let effectiveToDay = min(max(toDay, 1), daysInMonth)
+        
+        var dateComponents = calendar.dateComponents([.year, .month], from: Date())
+        dateComponents.day = effectiveToDay
+        let paydayDate = calendar.date(from: dateComponents) ?? Date()
 
         if let existing = editingIncome {
             existing.title = trimmedTitle
             existing.amount = incomeAmount
-            existing.date = date
+            existing.salaryPeriodFromDay = min(max(fromDay, 1), 31)
+            existing.salaryPeriodToDay = min(max(toDay, 1), 31)
+            existing.date = paydayDate
             existing.timestamp = Date()
         } else {
             let newIncome = Income(
                 title: trimmedTitle,
                 amount: incomeAmount,
-                date: date,
-                type: "income"
+                date: Date(),
+                type: "income",
+                salaryPeriodFromDay: fromDay,
+                salaryPeriodToDay: toDay
             )
             modelContext.insert(newIncome)
             editingIncome = newIncome
@@ -232,7 +254,7 @@ struct IncomeDetailsView: View {
             try modelContext.save()
             title = trimmedTitle
             amount = formatAmount(incomeAmount)
-            BudgieNotificationService.shared.scheduleMonthlyResetReminder(incomeDate: date)
+            BudgieNotificationService.shared.scheduleMonthlyResetReminder(resetDay: toDay)
             onSave()
             dismiss()
         } catch {

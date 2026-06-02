@@ -50,13 +50,15 @@ struct IncomeOnboarding: View {
                     }
                     
                 case 1:
-                    IncomeFormView { title, amount, date in
+                    IncomeFormView { title, amount, fromDay, toDay in
                         // Save income to SwiftData
                         let newIncome = Income(
                             title: title,
                             amount: amount,
-                            date: date,
-                            type: "income"
+                            date: Date(),
+                            type: "income",
+                            salaryPeriodFromDay: fromDay,
+                            salaryPeriodToDay: toDay
                         )
                         modelContext.insert(newIncome)
                         
