@@ -27,16 +27,48 @@ final class CategoriesViewModel {
     var lastDeclinedCategoryResetPeriod: String?
 
     /// Used for income-wide budget notifications (set from ContentView).
-    var budgetAlertTotalIncome: Double = 0
+    var budgetAlertTotalIncome: Double = 0 {
+        didSet {
+            syncWidgetBudgetSnapshot()
+        }
+    }
 
     init() {
         if let state = CategoriesPersistence.load() {
             CategoriesPersistence.apply(state, to: self)
         }
+        syncWidgetBudgetSnapshot()
     }
 
     private func persist() {
         CategoriesPersistence.save(from: self)
+        syncWidgetBudgetSnapshot()
+    }
+
+    /// Keep lock-screen widget values aligned with app's current daily insight source data.
+    private func syncWidgetBudgetSnapshot(calendar: Calendar = .current) {
+        let todaySpent = paymentsByCategoryId.values
+            .flatMap { $0 }
+            .filter { calendar.isDateInToday($0.date) }
+            .reduce(0) { $0 + $1.amount }
+
+        let categoryDailyLimits = spendingCategories
+            .compactMap { $0.dailyLimit }
+            .reduce(0, +)
+
+        let derivedDailyBudget: Double
+        if categoryDailyLimits > 0 {
+            derivedDailyBudget = categoryDailyLimits
+        } else {
+            derivedDailyBudget = budgetAlertTotalIncome > 0
+                ? budgetAlertTotalIncome / 30
+                : 0
+        }
+
+        WidgetBudgetStore.save(
+            spentToday: todaySpent,
+            dailyBudget: derivedDailyBudget
+        )
     }
 
     var isEmpty: Bool {

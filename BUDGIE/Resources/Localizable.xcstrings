@@ -1307,9 +1307,6 @@
         }
       }
     },
-    "Process bank SMS: ${messageText}" : {
-
-    },
     "Quickly log manual payments from the widget without opening the app, making expense tracking easier and more accessible." : {
       "localizations" : {
         "ar" : {

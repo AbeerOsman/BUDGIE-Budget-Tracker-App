@@ -54,11 +54,5 @@ final class DailyInsightViewModel {
         } else {
             dailyBudget = totalIncome > 0 ? totalIncome / 30 : 0
         }
-
-        // 👇 ربط الودجت
-//        WidgetBudgetStore.save(
-//            spentToday: totalSpentToday,
-//            dailyBudget: dailyBudget
-//        )
     }
 }

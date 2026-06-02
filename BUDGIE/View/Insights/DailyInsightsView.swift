@@ -45,6 +45,12 @@ struct DailyInsightsView: View {
         .onChange(of: totalIncome) { _, _ in
             refresh()
         }
+        .onChange(of: categoriesViewModel.categories) { _, _ in
+            refresh()
+        }
+        .onChange(of: categoriesViewModel.paymentsByCategoryId) { _, _ in
+            refresh()
+        }
     }
 
     private func refresh() {

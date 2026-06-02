@@ -10,7 +10,9 @@ import SwiftUI
 import WidgetKit
 
 struct BudgieWidgetControl: ControlWidget {
-    static let kind: String = "com.Challenge7Team16.BUDGIE--Money-Tracker-App.BudgieWidget"
+    static let kind: String = "com.Challenge7Team16.BUDGIE--Money-Tracker-App.widget"
+    //static let kind: String = "com.Challenge7Team16.BUDGIE--Money-Tracker-App.BudgieWidget"
+    
 
     var body: some ControlWidgetConfiguration {
         AppIntentControlConfiguration(
