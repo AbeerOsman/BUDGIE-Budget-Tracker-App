@@ -39,7 +39,13 @@ final class DailyInsightViewModel {
         totalIncome: Double,
         calendar: Calendar = .current
     ) {
-        let todayPayments = categoriesViewModel.paymentsByCategoryId.values
+        let spendingCategoryIds = Set(
+            categoriesViewModel.spendingCategories.map { $0.id }
+        )
+
+        let todayPayments = categoriesViewModel.paymentsByCategoryId
+            .filter { spendingCategoryIds.contains($0.key) }
+            .values
             .flatMap { $0 }
             .filter { calendar.isDateInToday($0.date) }
 

@@ -21,7 +21,13 @@ struct MonthlyInsightsView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     private var allPayments: [CategoryPayment] {
-        categoriesViewModel.paymentsByCategoryId.values
+        let spendingCategoryIds = Set(
+            categoriesViewModel.spendingCategories.map { $0.id }
+        )
+
+        return categoriesViewModel.paymentsByCategoryId
+            .filter { spendingCategoryIds.contains($0.key) }
+            .values
             .flatMap { $0 }
     }
 

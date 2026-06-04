@@ -45,7 +45,13 @@ struct WeeklyInsightsView: View {
             calendar.date(byAdding: .day, value: -6 + index, to: today)
         }
 
-        let allPayments = categoriesViewModel.paymentsByCategoryId.values
+        let spendingCategoryIds = Set(
+            categoriesViewModel.spendingCategories.map { $0.id }
+        )
+
+        let allPayments = categoriesViewModel.paymentsByCategoryId
+            .filter { spendingCategoryIds.contains($0.key) }
+            .values
             .flatMap { $0 }
 
         return dates.map { date in
