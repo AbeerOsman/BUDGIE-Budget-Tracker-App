@@ -20,6 +20,8 @@ struct MonthlyInsightsView: View {
     @Environment(CategoriesViewModel.self) private var categoriesViewModel
     @Environment(\.colorScheme) private var colorScheme
 
+    @State private var selectedPoint: MonthlySpendingPoint?
+
     private var allPayments: [CategoryPayment] {
         let spendingCategoryIds = Set(
             categoriesViewModel.spendingCategories.map { $0.id }
@@ -91,13 +93,56 @@ struct MonthlyInsightsView: View {
                 )
                 .foregroundStyle(Color(hex: "#3FAFD3"))
                 .cornerRadius(3)
+
+                if let selectedPoint,
+                   selectedPoint.monthName == point.monthName {
+
+                    RuleMark(
+                        x: .value(String(localized: "Selected"), point.monthName),
+                        yStart: .value("Line Start", point.amount + 10),
+                        yEnd: .value("Line End", maxChartValue * 0.68)
+                    )
+                    .foregroundStyle(Color(hex: "#3FAFD3"))
+                    .lineStyle(
+                        StrokeStyle(
+                            lineWidth: 2,
+                            lineCap: .round
+                        )
+                    )
+                    .annotation(
+                        position: .top,
+                        alignment: .center
+                    ) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(point.monthName.uppercased())
+                                .font(BudgieFont.caption)
+                                .foregroundStyle(.secondary)
+
+                            CurrencyAmountDoubleView(
+                                amount: point.amount,
+                                font: BudgieFont.title3,
+                                iconSize: 16,
+                                tint: .white
+                            )
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(
+                                    colorScheme == .dark
+                                    ? Color.white.opacity(0.18)
+                                    : Color.black.opacity(0.16)
+                                )
+                        )
+                        .offset(y: 10)
+                    }
+                }
             }
         }
         .chartYScale(domain: 0...(maxChartValue * 1.2))
         .chartXAxis {
-
             AxisMarks { _ in
-
                 AxisGridLine()
                     .foregroundStyle(gridLineColor)
 
@@ -106,9 +151,7 @@ struct MonthlyInsightsView: View {
             }
         }
         .chartYAxis {
-
             AxisMarks(position: .trailing) { _ in
-
                 AxisGridLine()
                     .foregroundStyle(gridLineColor)
 
@@ -116,9 +159,35 @@ struct MonthlyInsightsView: View {
                     .foregroundStyle(axisTextColor)
             }
         }
+        .chartOverlay { proxy in
+            GeometryReader { geometry in
+                Rectangle()
+                    .fill(.clear)
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { value in
+                                guard let plotFrame = proxy.plotFrame else { return }
+
+                                let origin = geometry[plotFrame].origin
+                                let locationX = value.location.x - origin.x
+
+                                if let month: String = proxy.value(
+                                    atX: locationX,
+                                    as: String.self
+                                ) {
+                                    selectedPoint = monthlyData.first {
+                                        $0.monthName == month
+                                    }
+                                }
+                            }
+                            .onEnded { _ in
+                                selectedPoint = nil
+                            }
+                    )
+            }
+        }
         .frame(height: 240)
         .padding(.top, 16)
     }
 }
-
-

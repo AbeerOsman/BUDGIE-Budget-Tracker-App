@@ -11,6 +11,7 @@ struct InsightsPeriodPicker: View {
     @Environment(\.colorScheme) private var colorScheme
     @Binding var selected: InsightsPeriod
     @Namespace private var animation
+    @State private var isMoving = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -19,62 +20,28 @@ struct InsightsPeriodPicker: View {
             tabButton("Month", .month)
         }
         .padding(3)
-        .background(
+        .background {
             Capsule()
-                .fill(backgroundFill)
-                .overlay(
-                    Capsule()
-                        .stroke(borderColor, lineWidth: 1)
-                )
-        )
+                .fill(trackColor)
+        }
     }
 
-    private var backgroundFill: some ShapeStyle {
-        LinearGradient(
-            colors: colorScheme == .dark
-            ? [
-                Color.white.opacity(0.10),
-                Color.white.opacity(0.05),
-                Color.black.opacity(0.18)
-            ]
-            : [
-                Color.black.opacity(0.08),
-                Color.white.opacity(0.55),
-                Color.black.opacity(0.05)
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-    }
-
-    private var selectedFill: some ShapeStyle {
-        LinearGradient(
-            colors: colorScheme == .dark
-            ? [
-                Color.white.opacity(0.22),
-                Color.white.opacity(0.10),
-                Color.black.opacity(0.12)
-            ]
-            : [
-                Color.white.opacity(0.85),
-                Color.white.opacity(0.45),
-                Color.black.opacity(0.06)
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-    }
-
-    private var borderColor: Color {
+    private var trackColor: Color {
         colorScheme == .dark
-        ? Color.white.opacity(0.20)
-        : Color.black.opacity(0.14)
+        ? Color.white.opacity(0.10)
+        : Color.black.opacity(0.08)
     }
 
-    private var selectedBorderColor: Color {
+    private var selectedColor: Color {
         colorScheme == .dark
-        ? Color.white.opacity(0.30)
-        : Color.white.opacity(0.90)
+        ? Color.white.opacity(0.14)
+        : Color.black.opacity(0.10)
+    }
+
+    private var movingBorder: Color {
+        colorScheme == .dark
+        ? Color.white.opacity(0.40)
+        : Color.white.opacity(0.95)
     }
 
     private func tabButton(
@@ -82,9 +49,18 @@ struct InsightsPeriodPicker: View {
         _ period: InsightsPeriod
     ) -> some View {
         Button {
-            withAnimation(.spring(response: 0.32, dampingFraction: 0.86)) {
+            isMoving = true
+
+            withAnimation(.spring(response: 0.34, dampingFraction: 0.78)) {
                 selected = period
             }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.28) {
+                withAnimation(.easeOut(duration: 0.18)) {
+                    isMoving = false
+                }
+            }
+
         } label: {
             Text(title)
                 .font(selected == period ? BudgieFont.headline : BudgieFont.subheadline)
@@ -95,24 +71,23 @@ struct InsightsPeriodPicker: View {
                 )
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
-                .glassEffect()
                 .background {
                     if selected == period {
                         Capsule()
-                            .fill(selectedFill)
-                            .overlay(
-                                Capsule()
-                                    .stroke(selectedBorderColor, lineWidth: 1)
-                            )
+                            .fill(selectedColor)
+                            .glassEffect()
                             .shadow(
-                                color: .black.opacity(colorScheme == .dark ? 0.28 : 0.12),
+                                color: isMoving
+                                ? Color.white.opacity(colorScheme == .dark ? 0.12 : 0.35)
+                                : Color.clear,
                                 radius: 8,
-                                y: 3
+                                y: 0
                             )
                             .matchedGeometryEffect(id: "TAB", in: animation)
                     }
                 }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PlainButtonStyle())
     }
 }
+
