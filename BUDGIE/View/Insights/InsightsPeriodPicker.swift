@@ -18,31 +18,71 @@ struct InsightsPeriodPicker: View {
             tabButton("Week", .week)
             tabButton("Month", .month)
         }
-        .padding(4)
+        .padding(3)
         .background(
             Capsule()
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.10),
-                            Color.white.opacity(0.03),
-                            Color.black.opacity(0.18)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
+                .fill(backgroundFill)
                 .overlay(
                     Capsule()
-                        .stroke(Color.white.opacity(0.22), lineWidth: 1)
+                        .stroke(borderColor, lineWidth: 1)
                 )
-                .shadow(color: .black.opacity(0.45), radius: 10, y: 5)
         )
     }
 
-    private func tabButton(_ title: LocalizedStringKey, _ period: InsightsPeriod) -> some View {
+    private var backgroundFill: some ShapeStyle {
+        LinearGradient(
+            colors: colorScheme == .dark
+            ? [
+                Color.white.opacity(0.10),
+                Color.white.opacity(0.05),
+                Color.black.opacity(0.18)
+            ]
+            : [
+                Color.black.opacity(0.08),
+                Color.white.opacity(0.55),
+                Color.black.opacity(0.05)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+
+    private var selectedFill: some ShapeStyle {
+        LinearGradient(
+            colors: colorScheme == .dark
+            ? [
+                Color.white.opacity(0.22),
+                Color.white.opacity(0.10),
+                Color.black.opacity(0.12)
+            ]
+            : [
+                Color.white.opacity(0.85),
+                Color.white.opacity(0.45),
+                Color.black.opacity(0.06)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+
+    private var borderColor: Color {
+        colorScheme == .dark
+        ? Color.white.opacity(0.20)
+        : Color.black.opacity(0.14)
+    }
+
+    private var selectedBorderColor: Color {
+        colorScheme == .dark
+        ? Color.white.opacity(0.30)
+        : Color.white.opacity(0.90)
+    }
+
+    private func tabButton(
+        _ title: LocalizedStringKey,
+        _ period: InsightsPeriod
+    ) -> some View {
         Button {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.82)) {
+            withAnimation(.spring(response: 0.32, dampingFraction: 0.86)) {
                 selected = period
             }
         } label: {
@@ -51,35 +91,24 @@ struct InsightsPeriodPicker: View {
                 .foregroundStyle(
                     selected == period
                     ? Color.primary
-                    : Color.secondary
+                    : Color.secondary.opacity(0.85)
                 )
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 11)
+                .padding(.vertical, 10)
+                .glassEffect()
                 .background {
                     if selected == period {
                         Capsule()
-                            .fill(
-                                LinearGradient(
-                                    colors: colorScheme == .dark
-                                    ? [
-                                        Color.white.opacity(0.10),
-                                        Color.white.opacity(0.03),
-                                        Color.black.opacity(0.18)
-                                    ]
-                                    : [
-                                        Color.black.opacity(0.06),
-                                        Color.white.opacity(0.65),
-                                        Color.black.opacity(0.04)
-                                    ],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
+                            .fill(selectedFill)
                             .overlay(
                                 Capsule()
-                                    .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                                    .stroke(selectedBorderColor, lineWidth: 1)
                             )
-                            .shadow(color: .black.opacity(0.35), radius: 8, y: 4)
+                            .shadow(
+                                color: .black.opacity(colorScheme == .dark ? 0.28 : 0.12),
+                                radius: 8,
+                                y: 3
+                            )
                             .matchedGeometryEffect(id: "TAB", in: animation)
                     }
                 }
