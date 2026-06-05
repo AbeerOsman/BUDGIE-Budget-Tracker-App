@@ -74,7 +74,17 @@ struct WeeklyInsightsView: View {
             1
         )
     }
-    
+    private var chartUpperBound: Double {
+        maxChartValue * 1.65
+    }
+
+    private var tooltipAnchorY: Double {
+        maxChartValue * 1.18
+    }
+
+    private func lineStartY(for amount: Double) -> Double {
+        min(amount + chartUpperBound * 0.03, tooltipAnchorY - chartUpperBound * 0.03)
+    }
     private var gridLineColor: Color {
         Color.gray.opacity(0.35)
     }
@@ -120,9 +130,10 @@ struct WeeklyInsightsView: View {
 
                     RuleMark(
                         x: .value(String(localized: "Selected"), point.dayName),
-                        yStart: .value("Line Start", point.amount + 8),
-                        yEnd: .value("Line End", maxChartValue * 0.78)
+                        yStart: .value("Line Start", lineStartY(for: point.amount)),
+                        yEnd: .value("Line End", tooltipAnchorY)
                     )
+                    
                     .foregroundStyle(Color(hex: "#3FAFD3"))
                     .lineStyle(
                         StrokeStyle(
@@ -160,12 +171,12 @@ struct WeeklyInsightsView: View {
                                     : Color.black.opacity(0.16)
                                 )
                         )
-                        .offset(y: 20)
+                        .offset(y: 6)
                     }
                 }
             }
         }
-        .chartYScale(domain: 0...(maxChartValue * 1.25))
+        .chartYScale(domain: 0...chartUpperBound)
         .chartXAxis {
             AxisMarks { _ in
                 AxisGridLine()
@@ -187,8 +198,6 @@ struct WeeklyInsightsView: View {
         .chartPlotStyle { plotArea in
             plotArea
                 .padding(.trailing, 18)
-        }
-        .chartOverlay { proxy in
         }
         .chartOverlay { proxy in
             GeometryReader { geometry in

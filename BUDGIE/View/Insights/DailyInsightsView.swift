@@ -38,7 +38,8 @@ struct DailyInsightsView: View {
 
             Spacer()
         }
-        .padding(.top, 20)
+        .padding(.horizontal, 12) 
+        .padding(.top, 30)
         .onAppear {
             refresh()
         }
