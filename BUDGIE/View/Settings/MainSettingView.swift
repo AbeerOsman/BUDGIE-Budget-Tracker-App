@@ -59,7 +59,7 @@ struct GeneralSection: View {
                 SettingRow(
                     icon: "bell.badge",
                     title: "Notifications",
-                    hasChevron: false,
+                    hasChevron: true,
                     action: {
                         openSystemSettings(scheme: UIApplication.openSettingsURLString)
                     }
@@ -96,25 +96,30 @@ struct HelpSection: View {
 
             VStack(spacing: 16) {
                 // Setup Shortcut Automation - Open System Settings
-                SettingRow(
-                    icon: "bolt.circle",
-                    title: "Setup Shortcut Automation",
-                    hasChevron: false,
-                    action: openShortcutsApp
-                )
+                
+                NavigationLink(destination: ShortCutVideoView(onOpenShortcuts: {
+                    if let url = URL(string: "https://apps.apple.com/sa/app/shortcuts/id1462947752") {
+                        UIApplication.shared.open(url)
+                    }
+                })) {
+                    SettingRow(
+                        icon: "bolt.circle",
+                        title: "Setup Shortcut Automation",
+                        hasChevron: true
+                    )
+                }
 
                 Divider()
                     .background(Color.gray.opacity(0.5))
 
                 // Setup Widget - Open System Settings
-                SettingRow(
-                    icon: "square.grid.2x2",
-                    title: "Setup Widget",
-                    hasChevron: false,
-                    action: {
-                        openSystemSettings(scheme: UIApplication.openSettingsURLString)
-                    }
-                )
+                NavigationLink(destination: SetupWidgetView()) {
+                    SettingRow(
+                        icon: "square.grid.2x2",
+                        title: "Setup Widget",
+                        hasChevron: true
+                    )
+                }
             }
             .padding(25)
             .background(

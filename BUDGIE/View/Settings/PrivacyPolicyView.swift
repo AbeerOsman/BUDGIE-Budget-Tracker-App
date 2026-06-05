@@ -101,6 +101,8 @@ struct PrivacyPolicyView: View {
             .padding(.top, 20)
             .padding(.bottom, 30)
         }
+        .background(Color(.systemBackground))
+        .navigationTitle("Privacy Policy")
         .navigationBarTitleDisplayMode(.inline)
     }
 
