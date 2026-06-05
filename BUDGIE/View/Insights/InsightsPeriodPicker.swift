@@ -11,6 +11,7 @@ struct InsightsPeriodPicker: View {
     @Environment(\.colorScheme) private var colorScheme
     @Binding var selected: InsightsPeriod
     @Namespace private var animation
+    @State private var isMoving = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -18,72 +19,75 @@ struct InsightsPeriodPicker: View {
             tabButton("Week", .week)
             tabButton("Month", .month)
         }
-        .padding(4)
-        .background(
+        .padding(3)
+        .background {
             Capsule()
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.10),
-                            Color.white.opacity(0.03),
-                            Color.black.opacity(0.18)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .overlay(
-                    Capsule()
-                        .stroke(Color.white.opacity(0.22), lineWidth: 1)
-                )
-                .shadow(color: .black.opacity(0.45), radius: 10, y: 5)
-        )
+                .fill(trackColor)
+        }
     }
 
-    private func tabButton(_ title: LocalizedStringKey, _ period: InsightsPeriod) -> some View {
+    private var trackColor: Color {
+        colorScheme == .dark
+        ? Color.white.opacity(0.10)
+        : Color.black.opacity(0.08)
+    }
+
+    private var selectedColor: Color {
+        colorScheme == .dark
+        ? Color.white.opacity(0.14)
+        : Color.black.opacity(0.10)
+    }
+
+    private var movingBorder: Color {
+        colorScheme == .dark
+        ? Color.white.opacity(0.40)
+        : Color.white.opacity(0.95)
+    }
+
+    private func tabButton(
+        _ title: LocalizedStringKey,
+        _ period: InsightsPeriod
+    ) -> some View {
         Button {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.82)) {
+            isMoving = true
+
+            withAnimation(.spring(response: 0.34, dampingFraction: 0.78)) {
                 selected = period
             }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.28) {
+                withAnimation(.easeOut(duration: 0.18)) {
+                    isMoving = false
+                }
+            }
+
         } label: {
             Text(title)
                 .font(selected == period ? BudgieFont.headline : BudgieFont.subheadline)
                 .foregroundStyle(
                     selected == period
                     ? Color.primary
-                    : Color.secondary
+                    : Color.secondary.opacity(0.85)
                 )
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 11)
+                .padding(.vertical, 10)
                 .background {
                     if selected == period {
                         Capsule()
-                            .fill(
-                                LinearGradient(
-                                    colors: colorScheme == .dark
-                                    ? [
-                                        Color.white.opacity(0.10),
-                                        Color.white.opacity(0.03),
-                                        Color.black.opacity(0.18)
-                                    ]
-                                    : [
-                                        Color.black.opacity(0.06),
-                                        Color.white.opacity(0.65),
-                                        Color.black.opacity(0.04)
-                                    ],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
+                            .fill(selectedColor)
+                            .glassEffect()
+                            .shadow(
+                                color: isMoving
+                                ? Color.white.opacity(colorScheme == .dark ? 0.12 : 0.35)
+                                : Color.clear,
+                                radius: 8,
+                                y: 0
                             )
-                            .overlay(
-                                Capsule()
-                                    .stroke(Color.white.opacity(0.18), lineWidth: 1)
-                            )
-                            .shadow(color: .black.opacity(0.35), radius: 8, y: 4)
                             .matchedGeometryEffect(id: "TAB", in: animation)
                     }
                 }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PlainButtonStyle())
     }
 }
+

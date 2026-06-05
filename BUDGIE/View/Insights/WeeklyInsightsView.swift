@@ -17,42 +17,48 @@ struct WeeklySpendingPoint: Identifiable {
 }
 
 struct WeeklyInsightsView: View {
-
+    
     @Environment(CategoriesViewModel.self) private var categoriesViewModel
     @Environment(\.colorScheme) private var colorScheme
-
+    
     let totalIncome: Double
-
+    
     @State private var selectedPoint: WeeklySpendingPoint?
-
+    
     private var dailyBudget: Double {
         let categoryDailyLimits = categoriesViewModel.spendingCategories
             .compactMap { $0.dailyLimit }
             .reduce(0, +)
-
+        
         if categoryDailyLimits > 0 {
             return categoryDailyLimits
         }
-
+        
         return totalIncome > 0 ? totalIncome / 30 : 0
     }
-
+    
     private var weeklyData: [WeeklySpendingPoint] {
         let calendar = Calendar.current
         let today = Date()
-
+        
         let dates = (0..<7).compactMap { index in
             calendar.date(byAdding: .day, value: -6 + index, to: today)
         }
-
-        let allPayments = categoriesViewModel.paymentsByCategoryId.values
+        
+        let spendingCategoryIds = Set(
+            categoriesViewModel.spendingCategories.map { $0.id }
+        )
+        
+        let allPayments = categoriesViewModel.paymentsByCategoryId
+            .filter { spendingCategoryIds.contains($0.key) }
+            .values
             .flatMap { $0 }
-
+        
         return dates.map { date in
             let total = allPayments
                 .filter { calendar.isDate($0.date, inSameDayAs: date) }
                 .reduce(0) { $0 + $1.amount }
-
+            
             return WeeklySpendingPoint(
                 date: date,
                 dayName: date.formatted(.dateTime.weekday(.abbreviated)),
@@ -60,7 +66,7 @@ struct WeeklyInsightsView: View {
             )
         }
     }
-
+    
     private var maxChartValue: Double {
         max(
             weeklyData.map(\.amount).max() ?? 0,
@@ -68,25 +74,24 @@ struct WeeklyInsightsView: View {
             1
         )
     }
-
+    
     private var gridLineColor: Color {
         Color.gray.opacity(0.35)
     }
-
+    
     private var selectedLineColor: Color {
         Color.gray.opacity(0.55)
     }
-
+    
     private var axisTextColor: Color {
         colorScheme == .dark
-            ? Color.white.opacity(0.55)
-            : Color.black.opacity(0.55)
+        ? Color.white.opacity(0.55)
+        : Color.black.opacity(0.55)
     }
-
+    
     var body: some View {
         Chart {
             ForEach(weeklyData) { point in
-
                 BarMark(
                     x: .value("Day", point.dayName),
                     y: .value(String(localized: "Spent"), point.amount)
@@ -108,47 +113,55 @@ struct WeeklyInsightsView: View {
                         }
                 }
 
-                if let selectedPoint,
-                   selectedPoint.dayName == point.dayName {
+                // Transparent rule to improve hit testing without drawing a line
+                // Fixed tooltip position under the period picker
+                // Fixed tooltip near top of chart
+                if let selectedPoint, selectedPoint.dayName == point.dayName {
 
-                    RuleMark(x: .value(String(localized: "Selected"), point.dayName))
-                        .foregroundStyle(selectedLineColor)
-                        .lineStyle(StrokeStyle(lineWidth: 2))
-                        .annotation(
-                            position: .top,
-                            alignment: .center,
-                            overflowResolution: .init(
-                                x: .fit(to: .chart),
-                                y: .disabled
+                    RuleMark(
+                        x: .value(String(localized: "Selected"), point.dayName),
+                        yStart: .value("Line Start", point.amount + 8),
+                        yEnd: .value("Line End", maxChartValue * 0.78)
+                    )
+                    .foregroundStyle(Color(hex: "#3FAFD3"))
+                    .lineStyle(
+                        StrokeStyle(
+                            lineWidth: 2,
+                            lineCap: .round
+                        )
+                    )
+                    .annotation(
+                        position: .top,
+                        alignment: .center
+                    ) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(point.dayName.uppercased())
+                                .font(BudgieFont.caption)
+                                .foregroundStyle(.secondary)
+
+                            CurrencyAmountDoubleView(
+                                amount: point.amount,
+                                font: BudgieFont.title3,
+                                iconSize: 16,
+                                tint: .white
                             )
-                        ) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(point.dayName.uppercased())
-                                    .font(BudgieFont.caption)
-                                    .foregroundStyle(.secondary)
 
-                                CurrencyAmountDoubleView(
-                                    amount: point.amount,
-                                    font: BudgieFont.title3,
-                                    iconSize: 16,
-                                    tint: .white
-                                )
-
-                                Text(point.date.formatted(.dateTime.day().month(.abbreviated).year()))
-                                    .font(BudgieFont.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 10)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(
-                                        colorScheme == .dark
-                                            ? Color.white.opacity(0.16)
-                                            : Color.black.opacity(0.16)
-                                    )
-                            )
+                            Text(point.date.formatted(.dateTime.day().month(.abbreviated).year()))
+                                .font(BudgieFont.caption)
+                                .foregroundStyle(.secondary)
                         }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(
+                                    colorScheme == .dark
+                                    ? Color.white.opacity(0.18)
+                                    : Color.black.opacity(0.16)
+                                )
+                        )
+                        .offset(y: 20)
+                    }
                 }
             }
         }
@@ -171,6 +184,12 @@ struct WeeklyInsightsView: View {
                     .foregroundStyle(axisTextColor)
             }
         }
+        .chartPlotStyle { plotArea in
+            plotArea
+                .padding(.trailing, 18)
+        }
+        .chartOverlay { proxy in
+        }
         .chartOverlay { proxy in
             GeometryReader { geometry in
                 Rectangle()
@@ -188,9 +207,7 @@ struct WeeklyInsightsView: View {
                                     atX: locationX,
                                     as: String.self
                                 ) {
-                                    selectedPoint = weeklyData.first {
-                                        $0.dayName == day
-                                    }
+                                    selectedPoint = weeklyData.first { $0.dayName == day }
                                 }
                             }
                             .onEnded { _ in
@@ -202,4 +219,5 @@ struct WeeklyInsightsView: View {
         .frame(height: 240)
         .padding(.top, 16)
     }
+    
 }

@@ -15,7 +15,7 @@ struct InsightsView: View {
     @State private var viewModel = InsightsViewModel()
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: 10) {
 
             Text("Insights")
                 .font(BudgieFont.title2)
@@ -48,7 +48,7 @@ struct InsightsView: View {
             }
         }
         .padding(16)
-        .padding(.top, 14)
+        .padding(.top, 4)
         .padding(.bottom, 16)
         .background(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
