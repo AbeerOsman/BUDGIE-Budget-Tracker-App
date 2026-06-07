@@ -68,6 +68,20 @@ struct MonthlyInsightsView: View {
             1
         )
     }
+    private var chartUpperBound: Double {
+        maxChartValue * 1.65
+    }
+
+    private var tooltipAnchorY: Double {
+        maxChartValue * 1.18
+    }
+
+    private func lineStartY(for amount: Double) -> Double {
+        min(
+            amount + chartUpperBound * 0.03,
+            tooltipAnchorY - chartUpperBound * 0.03
+        )
+    }
 
     private var gridLineColor: Color {
         colorScheme == .dark
@@ -99,8 +113,8 @@ struct MonthlyInsightsView: View {
 
                     RuleMark(
                         x: .value(String(localized: "Selected"), point.monthName),
-                        yStart: .value("Line Start", point.amount + 10),
-                        yEnd: .value("Line End", maxChartValue * 0.68)
+                        yStart: .value("Line Start", lineStartY(for: point.amount)),
+                        yEnd: .value("Line End", tooltipAnchorY)
                     )
                     .foregroundStyle(Color(hex: "#3FAFD3"))
                     .lineStyle(
@@ -135,12 +149,12 @@ struct MonthlyInsightsView: View {
                                     : Color.black.opacity(0.16)
                                 )
                         )
-                        .offset(y: 10)
+                        .offset(y: 6)
                     }
                 }
             }
         }
-        .chartYScale(domain: 0...(maxChartValue * 1.2))
+        .chartYScale(domain: 0...chartUpperBound)
         .chartXAxis {
             AxisMarks { _ in
                 AxisGridLine()

@@ -15,13 +15,14 @@ struct InsightsView: View {
     @State private var viewModel = InsightsViewModel()
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 14) {
 
             Text("Insights")
                 .font(BudgieFont.title2)
                 .tracking(-0.26)
                 .foregroundColor(.primary)
-                .padding(.top, 2)
+                .padding(.top, 0)
+                
 
             if viewModel.hasInsights(
                 categoriesViewModel: categoriesViewModel,
@@ -29,6 +30,7 @@ struct InsightsView: View {
             ) {
 
                 InsightsPeriodPicker(selected: $viewModel.selectedPeriod)
+                    .padding(.top, -6)
 
                 switch viewModel.selectedPeriod {
                 case .day:
