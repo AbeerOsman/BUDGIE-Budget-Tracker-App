@@ -7,28 +7,22 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct IncomeOnboarding: View {
     
-    @State private var step = 0
-    @State private var goToAutomation = false
+    @State private var currentStep = 0
     @State private var goToMain = false
+    @AppStorage("hasOnboarded") private var hasOnboarded: Bool = false
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.modelContext) private var modelContext
-    @AppStorage("hasOnboarded") private var hasOnboarded: Bool = false
 
     var body: some View {
         
-        if goToAutomation {
-            AutomationOnboarding()
-            
-        } else if goToMain {
+        if goToMain {
             ContentView()
-            
         } else {
-            
             ZStack {
-                
                 Image(colorScheme == .dark ? "DarkBG" : "LightBG")
                     .resizable()
                     .ignoresSafeArea()
@@ -36,57 +30,82 @@ struct IncomeOnboarding: View {
                     .offset(x:30,y:-500)
                     .blur(radius: 60)
                 
-                switch step {
+                VStack(spacing: 0) {
+                    SetupStepProgress(currentStep: currentStep + 1)
                     
-                case 0:
-                    IncomeIntroView {
-                        withAnimation {
-                            step = 1
-                        }
-                    } onSkip: {
-                        withAnimation {
-                            goToAutomation = true
-                        }
-                    }
-                    
-                case 1:
-                    IncomeFormView { title, amount, fromDay, toDay in
-                        // Save income to SwiftData
-                        let newIncome = Income(
-                            title: title,
-                            amount: amount,
-                            date: Date(),
-                            type: "income",
-                            salaryPeriodFromDay: fromDay,
-                            salaryPeriodToDay: toDay
+                    TabView(selection: $currentStep) {
+                        IncomeFormView(
+                            onSave: saveIncomeAndAdvance,
+                            onSkip: { goToStep(1) }
                         )
-                        modelContext.insert(newIncome)
+                        .tag(0)
                         
-                        do {
-                            try modelContext.save()
-                        } catch {
-                            print("Error saving income: \(error)")
-                        }
+                        AutomationVideoView(
+                            onOpenShortcuts: {
+                                if let url = URL(string: "https://apps.apple.com/sa/app/shortcuts/id1462947752") {
+                                    UIApplication.shared.open(url)
+                                }
+                            },
+                            onNext: { goToStep(2) },
+                            onSkip: { goToStep(2) }
+                        )
+                        .tag(1)
                         
-                        withAnimation {
-                            step = 2
-                        }
+                        WidgetSetupOnboardingView(onFinish: completeOnboarding)
+                        .tag(2)
                     }
-                    
-                default:
-                    IncomeReadyView {
-                        withAnimation {
-                            goToAutomation = true
-                        }
-                    } onSkip: {
-                        withAnimation {
-                            hasOnboarded = true
-                            goToMain = true
+                    .tabViewStyle(.page(indexDisplayMode: .never))
+                    .animation(.easeInOut(duration: 0.35), value: currentStep)
+                    .onChange(of: currentStep) { oldStep, newStep in
+                        if oldStep != newStep {
+                            dismissKeyboard()
                         }
                     }
                 }
             }
-            .animation(.easeInOut, value: step)
+        }
+    }
+    
+    private func goToStep(_ step: Int) {
+        dismissKeyboard()
+        withAnimation(.easeInOut(duration: 0.35)) {
+            currentStep = step
+        }
+    }
+    
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(
+            #selector(UIResponder.resignFirstResponder),
+            to: nil,
+            from: nil,
+            for: nil
+        )
+    }
+    
+    private func saveIncomeAndAdvance(title: String, amount: Double, fromDay: Int, toDay: Int) {
+        let newIncome = Income(
+            title: title,
+            amount: amount,
+            date: Date(),
+            type: "income",
+            salaryPeriodFromDay: fromDay,
+            salaryPeriodToDay: toDay
+        )
+        modelContext.insert(newIncome)
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Error saving income: \(error)")
+        }
+        
+        goToStep(1)
+    }
+    
+    private func completeOnboarding() {
+        withAnimation(.easeInOut(duration: 0.35)) {
+            hasOnboarded = true
+            goToMain = true
         }
     }
 }

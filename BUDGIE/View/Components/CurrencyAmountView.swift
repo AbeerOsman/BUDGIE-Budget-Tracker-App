@@ -48,6 +48,7 @@ struct CurrencyAmountView: View {
 
             SARIcon(size: iconSize, tint: tint)
         }
+        .foregroundStyle(tint ?? Color.primary)
         .lineLimit(1)
         .minimumScaleFactor(0.7)
     }
@@ -73,6 +74,7 @@ struct CurrencyAmountDoubleView: View {
 
             SARIcon(size: iconSize, tint: tint)
         }
+        .foregroundStyle(tint ?? Color.primary)
         .lineLimit(1)
         .minimumScaleFactor(0.7)
     }
@@ -105,6 +107,7 @@ struct CurrencyRatioView: View {
                 tint: tint
             )
         }
+        .foregroundStyle(tint ?? Color.primary)
         .lineLimit(1)
         .minimumScaleFactor(0.7)
     }
