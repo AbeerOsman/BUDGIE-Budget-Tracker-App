@@ -12,7 +12,7 @@ struct SetupStepProgress: View {
     private let steps = [
         String(localized: "Income"),
         String(localized: "Automation"),
-        String(localized: "Shortcut")
+        String(localized: "Widget")
     ]
     
     var body: some View {

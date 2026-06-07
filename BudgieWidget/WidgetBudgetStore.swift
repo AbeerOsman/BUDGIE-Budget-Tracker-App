@@ -8,7 +8,7 @@ import WidgetKit
 
 enum WidgetBudgetStore {
     /// Must match BUDGIE/Services/WidgetBudgetStore.swift and App Group entitlements.
-    static let suiteName = "group.com.Challenge7Team16.BUDGIE--Money-Tracker-App"
+    static let suiteName = "group.com.Challenge7Team16.BUDGIE--Money-Tracker-App.BudgieWidget"
 
     private static let spentKey = "widget_spent_today"
     private static let budgetKey = "widget_daily_budget"

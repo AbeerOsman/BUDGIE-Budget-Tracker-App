@@ -7,6 +7,20 @@
 import SwiftUI
 
 struct SetupWidgetView: View {
+    var body: some View {
+        ScrollView {
+            WidgetSetupInstructionsContent()
+                .padding(.vertical, 20)
+        }
+        .background(Color(.systemBackground))
+        .navigationTitle("Setup Widget")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct WidgetSetupInstructionsContent: View {
+    var showsHowToTitle: Bool = true
+
     @Environment(\.colorScheme) private var colorScheme
 
     private let steps: [LocalizedStringKey] = [
@@ -17,47 +31,43 @@ struct SetupWidgetView: View {
     ]
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 28) {
+        VStack(spacing: 28) {
+            if showsHowToTitle {
                 Text("How to add the widget?")
                     .font(BudgieFont.title2)
                     .foregroundStyle(.primary)
                     .multilineTextAlignment(.center)
                     .padding(.top, 10)
                     .padding(.horizontal, 20)
+            }
 
-                VStack(alignment: .leading, spacing: 16) {
-                    HStack {
-                        Image(systemName: "lock.square")
-                            .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Image(systemName: "lock.square")
+                        .foregroundStyle(.secondary)
 
-                        Text("Add widget to Lock Screen")
-                            .font(BudgieFont.headline)
-                            .foregroundStyle(.primary)
+                    Text("Add widget to Lock Screen")
+                        .font(BudgieFont.headline)
+                        .foregroundStyle(.primary)
 
-                        Spacer()
-                    }
+                    Spacer()
+                }
 
-                    VStack(spacing: 14) {
-                        ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
-                            StepRow(number: index + 1, text: step)
-                        }
+                VStack(spacing: 14) {
+                    ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
+                        StepRow(number: index + 1, text: step)
                     }
                 }
-                .padding(18)
-                .background(
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .fill(cardBackground)
-                )
-                .padding(.horizontal, 20)
-
-                Spacer(minLength: 20)
             }
-            .padding(.vertical, 20)
+            .padding(18)
+            .background(
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .fill(cardBackground)
+            )
+            .padding(.horizontal, 20)
+
+            Spacer(minLength: 20)
         }
-        .background(Color(.systemBackground))
-        .navigationTitle("Setup Widget")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     private var cardBackground: Color {
