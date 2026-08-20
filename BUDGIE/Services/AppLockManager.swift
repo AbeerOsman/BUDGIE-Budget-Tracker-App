@@ -14,10 +14,20 @@ final class AppLockManager {
     var isUnlocked = false
     var lastErrorMessage: String?
 
-    var isEnabled: Bool {
-        get { UserDefaults.standard.bool(forKey: enabledKey) }
-        set { UserDefaults.standard.set(newValue, forKey: enabledKey) }
+    /// Real stored property so @Observable tracks changes and SwiftUI updates reliably.
+    /// Backed by UserDefaults via didSet instead of a computed get/set.
+    var isEnabled: Bool = UserDefaults.standard.bool(forKey: "budgie.appLock.enabled") {
+        didSet {
+            UserDefaults.standard.set(isEnabled, forKey: enabledKey)
+        }
     }
+
+    /// Guards against overlapping LAContext.evaluatePolicy calls. Face ID's system
+    /// sheet causes scenePhase to briefly go .inactive/.active, which can trigger
+    /// BUDGIEApp's scenePhase handlers to fire a second, colliding authenticate()
+    /// call while a user-initiated one (e.g. from the Settings toggle) is still
+    /// in flight. This flag makes those reactive calls a no-op while one is active.
+    private var isAuthenticating = false
 
     var biometryName: String {
         let context = LAContext()
@@ -49,6 +59,10 @@ final class AppLockManager {
 
     @MainActor
     func authenticate() async -> Bool {
+        guard !isAuthenticating else { return false }
+        isAuthenticating = true
+        defer { isAuthenticating = false }
+
         lastErrorMessage = nil
         let context = LAContext()
         context.localizedCancelTitle = String(localized: "Cancel")
